@@ -16,7 +16,6 @@
 package utils
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/Unknwon/com"
@@ -24,8 +23,7 @@ import (
 )
 
 var (
-	Cfg     *goconfig.ConfigFile
-	Message *goconfig.ConfigFile
+	Cfg *goconfig.ConfigFile
 )
 
 // LoadConfig loads configuration file.
@@ -35,12 +33,4 @@ func LoadConfig(cfgPath string) (*goconfig.ConfigFile, error) {
 	}
 
 	return goconfig.LoadConfigFile(cfgPath)
-}
-
-// I18n translates content to the target language.
-func I18n(lang, format string, args ...interface{}) string {
-	if lang != "en-US" {
-		format = Message.MustValue(lang, format)
-	}
-	return fmt.Sprintf(format, args...)
 }

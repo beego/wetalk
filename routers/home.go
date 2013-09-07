@@ -14,9 +14,7 @@
 
 package routers
 
-import (
-	"github.com/beego/beebbs/utils"
-)
+import ()
 
 // HomeRouter serves home page.
 type HomeRouter struct {
@@ -28,8 +26,8 @@ func (this *HomeRouter) Get() {
 	this.Data["IsHome"] = true
 	this.TplNames = "home.html"
 
-	// Get language.
-	this.Data["Hello"] = utils.I18n(this.langVer, "hello, %s", "joe")
+	// Set language.
+	this.Data["Hello"] = this.Locale.Tr("hello, %s", "joe")
 	this.Data["Hey"] = "hello, %s"
 	this.Data["Name"] = "jim"
 }

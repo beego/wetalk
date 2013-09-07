@@ -21,6 +21,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/beego/beebbs/routers"
 	"github.com/beego/beebbs/utils"
+	"github.com/beego/i18n"
 )
 
 const (
@@ -37,9 +38,9 @@ func initialize() {
 	if err != nil {
 		panic("Fail to load configuration file: " + err.Error())
 	}
-	utils.Message, err = utils.LoadConfig("conf/message.ini")
+	err = i18n.SetMessage("conf/message.ini")
 	if err != nil {
-		panic("Fail to load configuration file: " + err.Error())
+		panic("Fail to set message file: " + err.Error())
 	}
 
 	// Trim 4th part.
@@ -67,7 +68,7 @@ func main() {
 	beego.Router("/", &routers.HomeRouter{})
 
 	// Register template functions.
-	beego.AddFuncMap("i18n", utils.I18n)
+	beego.AddFuncMap("i18n", i18n.Tr)
 
 	// "robot.txt"
 	beego.Router("/robot.txt", &routers.RobotRouter{})

@@ -21,6 +21,7 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/beego/beebbs/utils"
+	"github.com/beego/i18n"
 )
 
 var (
@@ -39,7 +40,7 @@ type langType struct {
 // baseRouter implemented global settings for all other routers.
 type baseRouter struct {
 	beego.Controller
-	langVer string
+	*i18n.Locale
 }
 
 // Prepare implemented Prepare method for baseRouter.
@@ -63,8 +64,8 @@ func (this *baseRouter) Prepare() {
 		}
 	}
 
-	var isNeedRedir bool
-	isNeedRedir, this.langVer = setLangVer(this.Ctx, this.Input(), this.Data)
+	isNeedRedir, langVer := setLangVer(this.Ctx, this.Input(), this.Data)
+	this.Locale = &i18n.Locale{langVer}
 	// Redirect to make URL clean.
 	if isNeedRedir {
 		this.Data["IsNeedRedir"] = true
