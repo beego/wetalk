@@ -7,7 +7,7 @@
 		"controllers": "routers",
 		"models": "",
 		"others": [
-			"conf"
+			"conf", "utils"
 		]
 	},
 	"bale": {

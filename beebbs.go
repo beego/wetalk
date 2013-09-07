@@ -14,3 +14,64 @@
 
 // An open source project for Gopher community.
 package main
+
+import (
+	"strings"
+
+	"github.com/astaxie/beego"
+	"github.com/beego/beebbs/routers"
+	"github.com/beego/beebbs/utils"
+)
+
+const (
+	APP_VER = "0.0.1.0907"
+)
+
+// We have to call a initialize function manully
+// because we use `bee bale` to pack static resources
+// and we cannot make sure that which init() execute first.
+func initialize() {
+	var err error
+	// Load configuration, set app version and log level.
+	utils.Cfg, err = utils.LoadConfig("conf/app.ini")
+	if err != nil {
+		panic("Fail to load configuration file: " + err.Error())
+	}
+	utils.Message, err = utils.LoadConfig("conf/message.ini")
+	if err != nil {
+		panic("Fail to load configuration file: " + err.Error())
+	}
+
+	// Trim 4th part.
+	routers.AppVer = strings.Join(strings.Split(APP_VER, ".")[:3], ".")
+
+	beego.AppName = utils.Cfg.MustValue("beego", "app_name")
+	beego.RunMode = utils.Cfg.MustValue("beego", "run_mode")
+	beego.HttpPort = utils.Cfg.MustInt("beego", "http_port_"+beego.RunMode)
+
+	routers.IsBeta = utils.Cfg.MustBool("server", "beta")
+	routers.IsProMode = beego.RunMode == "pro"
+	if routers.IsProMode {
+		beego.SetLevel(beego.LevelInfo)
+		beego.Info("Product mode enabled")
+		beego.Info(beego.AppName, APP_VER)
+	}
+}
+
+func main() {
+	initialize()
+
+	beego.Info(beego.AppName, APP_VER)
+
+	// Register routers.
+	beego.Router("/", &routers.HomeRouter{})
+
+	// Register template functions.
+	beego.AddFuncMap("i18n", utils.I18n)
+
+	// "robot.txt"
+	beego.Router("/robot.txt", &routers.RobotRouter{})
+
+	// For all unknown pages.
+	beego.Run()
+}
