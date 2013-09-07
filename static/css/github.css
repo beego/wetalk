@@ -1,0 +1,227 @@
+/*
+
+github.com style (c) Vasily Polovnyov <vast@whiteants.net>
+
+*/
+
+.markdown {
+  font-family: Helvetica, arial, freesans, clean, sans-serif;
+  font-size: 13px;
+}
+
+.markdown .anchor-wrap {
+  margin-top: -70px;
+  padding-top: 70px;
+}
+
+.markdown table {
+  display: block;
+  overflow: auto;
+  width: 100%;
+}
+
+.markdown table{
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+
+.markdown table th {
+  font-weight: bold;
+}
+
+.markdown table th,
+.markdown table td {
+  border: 1px solid #DDDDDD;
+  padding:6px 13px;
+}
+
+.markdown table tr {
+  background-color: #FFFFFF;
+  border-top: 1px solid #CCCCCC;
+}
+
+.markdown table tr:nth-child(2n) {
+  background-color: #F8F8F8;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  line-height: 1.7;
+  margin: 0 0 15px;
+  padding: 0.5em 0 0 0;
+  font-weight: bold;
+  cursor: text;
+  position: relative;
+}
+
+.markdown h1{ border-bottom:1px solid #BBBBBB; font-size:2.5em; }
+.markdown h2{ border-bottom:1px solid #CCCCCC; font-size:2em; }
+.markdown h3{ font-size:1.5em; }
+.markdown h4{ font-size:1.2em; }
+.markdown h5{ font-size:1em; }
+.markdown h6{ color:#777777; font-size:1em; }
+
+.markdown p a {text-decoration: none;}
+
+.markdown > p,
+.markdown > ul,
+.markdown > table,
+.markdown > ol {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.markdown ul li,
+.markdown ol li {
+  line-height: 25px;
+}
+
+.markdown code,
+.markdown pre {
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+.markdown pre {
+  background-color: #fafafa;
+  white-space: pre;       /* css-3 */
+  white-space: -moz-pre;  /* Mozilla, since 1999 */
+  white-space: -pre;      /* Opera 4-6 */
+  white-space: -o-pre;    /* Opera 7 */
+  word-break: normal;
+  word-wrap: normal;
+  overflow: auto;
+  padding: 5px 10px;
+}
+
+.markdown pre code {
+  word-wrap: normal;
+  white-space: pre;
+  color: #333;
+}
+
+.markdown pre .comment,
+.markdown pre .template_comment,
+.markdown pre .diff .header,
+.markdown pre .javadoc {
+  color: #998;
+  font-style: italic
+}
+
+.markdown pre .keyword,
+.markdown pre .css .rule .keyword,
+.markdown pre .winutils,
+.markdown pre .javascript .title,
+.markdown pre .nginx .title,
+.markdown pre .subst,
+.markdown pre .request,
+.markdown pre .status {
+  color: #333;
+  font-weight: bold
+}
+
+.markdown pre .number,
+.markdown pre .hexcolor,
+.markdown pre .ruby .constant {
+  color: #099;
+}
+
+.markdown pre .string,
+.markdown pre .tag .value,
+.markdown pre .phpdoc,
+.markdown pre .tex .formula {
+  color: #d14
+}
+
+.markdown pre .title,
+.markdown pre .id,
+.markdown pre .coffeescript .params,
+.markdown pre .scss .preprocessor {
+  color: #900;
+  font-weight: bold
+}
+
+.markdown pre .javascript .title,
+.markdown pre .lisp .title,
+.markdown pre .clojure .title,
+.markdown pre .subst {
+  font-weight: normal
+}
+
+.markdown pre .class .title,
+.markdown pre .haskell .type,
+.markdown pre .vhdl .literal,
+.markdown pre .tex .command {
+  color: #458;
+  font-weight: bold
+}
+
+.markdown pre .tag,
+.markdown pre .tag .title,
+.markdown pre .rules .property,
+.markdown pre .django .tag .keyword {
+  color: #000080;
+  font-weight: normal
+}
+
+.markdown pre .attribute,
+.markdown pre .variable,
+.markdown pre .lisp .body {
+  color: #008080
+}
+
+.markdown pre .regexp {
+  color: #009926
+}
+
+.markdown pre .class {
+  color: #458;
+  font-weight: bold
+}
+
+.markdown pre .symbol,
+.markdown pre .ruby .symbol .string,
+.markdown pre .lisp .keyword,
+.markdown pre .tex .special,
+.markdown pre .prompt {
+  color: #990073
+}
+
+.markdown pre .built_in,
+.markdown pre .lisp .title,
+.markdown pre .clojure .built_in {
+  color: #0086b3
+}
+
+.markdown pre .preprocessor,
+.markdown pre .pi,
+.markdown pre .doctype,
+.markdown pre .shebang,
+.markdown pre .cdata {
+  color: #999;
+  font-weight: bold
+}
+
+.markdown pre .deletion {
+  background: #fdd
+}
+
+.markdown pre .addition {
+  background: #dfd
+}
+
+.markdown pre .diff .change {
+  background: #0086b3
+}
+
+.markdown pre .chunk {
+  color: #aaa
+}
+
+.markdown pre .typename {
+  color: #445588;
+  font-weight: bold;
+}

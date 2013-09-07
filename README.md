@@ -1,6 +1,6 @@
 # What is this?
 
-An open source project for Gopher forum.
+An open source project for Gopher community.
 
 ## License
 

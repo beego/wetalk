@@ -12,5 +12,5 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
-// An open source project for Gopher community.
-package main
+// Package models implemented database access funtions.
+package models
