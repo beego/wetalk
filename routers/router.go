@@ -68,9 +68,9 @@ func (this *baseRouter) Prepare() {
 	this.Locale = &i18n.Locale{langVer}
 	// Redirect to make URL clean.
 	if isNeedRedir {
-		this.Data["IsNeedRedir"] = true
 		i := strings.Index(this.Ctx.Request.RequestURI, "?")
-		this.Data["RedirURL"] = this.Ctx.Request.RequestURI[:i]
+		this.Redirect(this.Ctx.Request.RequestURI[:i], 302)
+		return
 	}
 }
 

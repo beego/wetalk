@@ -1,0 +1,400 @@
+.debug {
+  border: 2px dotted red !important;
+}
+body {
+  margin-top: 70px;
+}
+p a {
+  text-decoration: underline;
+}
+.brand.logo a {
+  text-decoration: none;
+}
+.navbar .navbar-inner {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.navbar .brand {
+  margin-top: 5px;
+  margin-left: 0px;
+  float: left;
+  display: block;
+}
+.brand.logo a {
+  color: white;
+}
+.navbar .nav li a {
+  padding: 25px 20px 25px;
+}
+.nav-underline {
+  height: 6px;
+  background-color: #71afc0;
+}
+.nav-login li a {
+  color: white;
+  padding: 10px 15px 10px;
+}
+.inline-icon {
+  margin-bottom: 6px;
+}
+.row {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+div[class*='span'] {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.box {
+  padding: 30px;
+  background-color: white;
+  margin-top: 8px;
+}
+.paper {
+  background-color: white;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+.copy-headline {
+  margin-top: 20px;
+}
+.box h1,
+.box h2,
+.box h3,
+.box h4 {
+  margin-top: -5px;
+}
+.nested {
+  padding: 30px;
+}
+.box.div {
+  padding: 30px;
+}
+span.read-more {
+  margin-left: 15px;
+  white-space: nowrap;
+}
+.forcetopalign {
+  margin-top: 15px !important;
+}
+.forcetopmargin {
+  margin-top: 23px !important;
+}
+.forceleftalign {
+  margin-left: 15px !important;
+}
+.forceleftmargin {
+  margin-left: 21px !important;
+}
+.textcenter {
+  text-align: center;
+}
+.textright {
+  text-align: right;
+}
+.textsmaller {
+  font-size: 11.9px;
+}
+.modal-backdrop {
+  opacity: 0.4;
+}
+/* generic page copy styles */
+.copy-headline h1 {
+  font-size: 24px;
+}
+/* =======================
+   Social footer
+======================= */
+.social {
+  margin-left: 0px;
+}
+.social .twitter,
+.social .github,
+.social .googleplus {
+  background: url("../img/footer-links.png") no-repeat transparent;
+  display: inline-block;
+  height: 35px;
+  overflow: hidden;
+  text-indent: 9999px;
+  width: 35px;
+  margin-right: 10px;
+}
+.social .twitter {
+  background-position: 0px 2px;
+}
+.social .github {
+  background-position: -59px 2px;
+}
+.social .googleplus {
+  background-position: -118px 2px;
+}
+form table th {
+  vertical-align: top;
+  text-align: right;
+  white-space: nowrap;
+}
+form .labeldd label {
+  font-weight: bold;
+}
+form .helptext {
+  font-size: 11.9px;
+  margin-top: -4px;
+  margin-bottom: 10px;
+}
+form .fielddd input {
+  width: 250px;
+}
+form .error {
+  color: #a30000;
+}
+form [type=submit] {
+  margin-top: -8px;
+}
+div.alert.alert-block {
+  margin-bottom: 15px;
+}
+footer,
+.footer {
+  margin-top: 160px;
+  margin-bottom: 10px;
+}
+footer .ligaturesymbols,
+.footer .ligaturesymbols {
+  font-size: 30px;
+  color: black;
+}
+footer .ligaturesymbols a,
+.footer .ligaturesymbols a {
+  color: black;
+}
+.footer-landscape {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.footer-landscape-image {
+  background-image: url('../img/website-footer.svg');
+  background-repeat: repeat-x;
+  height: 250px;
+}
+.float-left {
+  float: left;
+  margin-right: 15px;
+  margin-bottom: 15px;
+}
+.float-right {
+  float: right;
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+/* ******************************
+ For the homepage
+****************************** */
+#top {
+  background-color: #F5F5F5;
+  position: relative;
+  left: 0;
+  right: 0;
+}
+
+#main-image {
+  width: 213px;
+  margin: 20px;
+}
+.main-banner {
+  padding: 15px;
+}
+.copy-introduction {
+  margin-top: 15px;
+}
+.tweets-container {
+  height: 250px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+.tweets-container .tweet {
+  margin: 5px;
+  width: 290px;
+  height: 95px;
+  display: block;
+  float: left;
+  padding: 4px;
+}
+.tweets-container .tweet img {
+  float: left;
+  margin: 3px 8px 8px 0;
+  width: 48px;
+  height: 48px;
+}
+.tweets-container .tweet .handle {
+  font-weight: bold;
+}
+.tweets-container .tweet .username {
+  clear: right;
+}
+.tweet:hover {
+  background-color: #d8d8d8;
+}
+.tweets-block {
+  position: relative;
+}
+.tweet-navigator {
+  display: block;
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  width: 18px;
+}
+.tweet-navigator:hover {
+  background-color: rgba(155, 155, 155, 0.15);
+}
+.tweet-navigator-left {
+  display: none;
+  left: 0;
+  margin-left: -18px;
+}
+.tweet-navigator-left.shadow {
+  box-shadow: 5px 0 5px #DDD;
+}
+.tweet-navigator-right {
+  right: 0;
+  margin-right: -18px;
+  box-shadow: -3px 0 2px #bbbbbb;
+}
+.vertical-middle {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin-top: 80px;
+}
+.tweet-surface {
+  width: 950px;
+  height: 200px;
+}
+.primary-action-button,
+.secondary-action-button {
+  border-radius: 0px;
+  padding: 17px 30px 17px 30px ;
+  background: #394d54;
+}
+.primary-action-button:hover {
+  background: #333333 !important;
+}
+.secondary-action-button {
+  background: #628591;
+}
+.secondary-action-button:hover {
+  background: #7e9da8;
+}
+button:hover {
+  background-color: white;
+}
+.block_updates {
+  padding: 10px;
+}
+.copy-introduction {
+  font-size: 17px;
+}
+.copy_news img:hover {
+  opacity: 0.7;
+}
+/* ******************************
+ For the about page
+****************************** */
+.table {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.table td {
+  padding: 5px;
+}
+.table thead {
+  font-weight: bold;
+  font-size: larger;
+}
+.table tbody td:first-child {
+  font-weight: bold;
+}
+.striped-table tbody tr:nth-child(even) {
+  background-color: #f5f5f5;
+}
+.striped-table tbody tr:nth-child(odd) {
+  background-color: rgba(0, 103, 177, 0.14);
+}
+.slideshare-presentation {
+  box-shadow: 1px 2px 15px #888888;
+  margin-bottom: 15px;
+}
+/* ******************************
+ For the getting started page
+****************************** */
+.option-chooser-blocks {
+  position: relative;
+  margin-left: -8px;
+}
+.option-chooser-blocks img {
+  opacity: 0.8;
+  height: 80px;
+  width: 80px;
+}
+.option-chooser-blocks a {
+  color: black;
+}
+.option-chooser-blocks li {
+  list-style-type: none;
+  display: block;
+  float: left;
+  height: 115px;
+  width: 115px;
+  background-color: #eaeaea;
+  border: 2px solid #b0c0bf;
+  margin: 6px;
+  text-align: center;
+  padding: 5px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+.option-chooser-blocks li:hover {
+  background-color: #d1d1d1;
+}
+/* ******************************
+ For the community page
+****************************** */
+.botbot-button {
+  background-color: #de6222;
+  padding: 4px;
+  height: 60px;
+}
+.botbot-button img {
+  height: 50px;
+  float: left;
+}
+.botbot-button .bbme-title {
+  font-size: larger;
+  color: white;
+}
+
+.container {
+  width: 1100px;
+}
+
+.span3 {
+  width: 300px;
+}
+
+.content, #comments {
+  margin-bottom: 20px;
+  padding: 8px;
+  background-color: white;
+  border: 1px solid #DDD;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -o-border-radius: 4px;
+  -khtml-border-radius: 4px;
+}

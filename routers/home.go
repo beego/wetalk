@@ -26,8 +26,4 @@ func (this *HomeRouter) Get() {
 	this.Data["IsHome"] = true
 	this.TplNames = "home.html"
 
-	// Set language.
-	this.Data["Hello"] = this.Locale.Tr("hello, %s", "joe")
-	this.Data["Hey"] = "hello, %s"
-	this.Data["Name"] = "jim"
 }

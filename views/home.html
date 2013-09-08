@@ -1,2 +1,36 @@
-{{.Hello}}
-{{i18n .Lang .Hey "hahahahah"}}
+{{template "header"}}
+		<title>{{i18n .Lang "Beego Community - an open source project for Gopher community"}}</title>
+	</head>	
+
+	<body>
+		{{template "navbar" .}}
+
+		<div class="container">
+		    <div class="row">
+		        <div class="span10">
+			    	<div class="content">
+			    		<h3>当前话题</h3>
+			    		<div class="header">
+			    			124
+			    		</div>
+			    	<button class="btn btn-success">
+			    		最新回复
+			    	</button>
+			    		<ul class="nav nav-tabs pull-right">
+			    			<li class="active">
+			    				<a href="123">最新回复</a>
+			    			</li>
+			    		</ul>
+			            <div class="clearfix">wokao</div>
+			        </div>
+		    	</div>
+
+		        <div class="span3">
+			    	<div class="content">
+			            <div class="clearfix">wokao</div>
+			        </div>
+		        </div>
+		    </div>
+		</div>
+	</body>
+</html>
