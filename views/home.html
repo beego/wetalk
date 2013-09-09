@@ -81,19 +81,63 @@
 		    	</div>
 		        <div id="sidebar" class="col-md-4">
 		        	<div class="box">
-		        		<div class="cell first"></div>
+		        		<div class="cell first">{{i18n .Lang "Community News"}}</div>
+		        		<div class="cell">The earth is going to hit the sun.</div>
+	        		</div>
+
+		        	<div class="box">
+		        		<div class="cell first">{{i18n .Lang "Hot Topics"}}</div>
+		        		<div class="cell">Are you going to kill her? Just because I don't like her?</div>
+	        		</div>
+
+		        	<div class="box">
+		        		<div class="cell first">{{i18n .Lang "Zero-replies"}}</div>
+		        		<div class="cell">How can I have millions of dollars?</div>
 	        		</div>
 		        	<div class="box">
-		        		<div class="cell first"></div>
+		        		<div class="cell first">{{i18n .Lang "Top Walking Dictionaries"}}</div>
+		        		<div class="cell">1. Who am I</div>
 	        		</div>
+
 		        	<div class="box">
-		        		<div class="cell first"></div>
+		        		<div class="cell first">{{i18n .Lang "Community Stars"}}</div>
+		        		<div class="cell">1. Oh, yeah</div>
 	        		</div>
+
 		        	<div class="box">
-		        		<div class="cell first"></div>
+		        		<div class="cell first">{{i18n .Lang "Friend Links"}}</div>
+		        		<div class="cell">Golang</div>
 	        		</div>
 		        </div>
 		    </div>
 		</div>
+
+		<footer>
+			<div class="footer_main">
+				<div class="links">
+					<a class="dark" href="/about"><strong>{{i18n .Lang "About"}}</strong></a>
+					|
+					<a class="dark" href="/faq"><strong>FAQ</strong></a>
+					|
+					<a class="dark" href="https://github.com/cnodejs/nodeclub/" target="_blank"><strong>GitHub</strong></a>
+				</div>
+				{{i18n .Lang "Copyright"}} © 2013 Beego Community <br>
+				{{i18n .Lang "As an open source project, contribute is welcome!"}} <br>
+				{{i18n .Lang "Based on"}} <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>. {{i18n .Lang "Icons from"}} <a target="_blank" href="http://fortawesome.github.io/Font-Awesome/">Font Awesome</a>. <br>
+				<strong>{{i18n .Lang "Language"}}:</strong>
+
+				<script type="text/javascript" src="http://cdn.staticfile.org/jquery/1.10.1/jquery.min.js"></script>
+				<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+			    <div class="btn-group dropup">
+				    <button class="btn dropdown-toggle" data-toggle="dropdown">{{.CurLang}} <span class="caret"></span></button>
+				    <ul class="dropdown-menu">
+					{{$keyword := .Keyword}}
+				    	{{range .RestLangs}}
+				    	<li><a href="?lang={{.Lang}}">{{.Name}}</a></li>
+				    	{{end}}
+				    </ul>
+			    </div>
+			</div>
+		</footer>
 	</body>
 </html>

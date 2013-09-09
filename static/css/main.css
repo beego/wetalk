@@ -4,7 +4,7 @@ body {
 
 #navbar .logo img {
   height: 30px;
-  margin: 5px 10px 0 0;
+  margin: 9px 10px 0 0;
 }
 
 #navbar .avatar {
@@ -193,4 +193,20 @@ body {
 
 .auth-page .title .icon {
   margin-right: 10px;
+}
+
+footer {
+height: 200px;
+clear: both;
+background: hsla(0,100%,100%,1);
+position: relative;
+box-shadow: 0 -1px 0 hsl(0,0%,90%);
+margin-top: 8px;
+}
+
+.footer_main {
+width: 1040px;
+margin: 0 auto;
+color: hsl(0,0%,67%);
+padding: 20px 0;
 }

@@ -19,8 +19,8 @@
         </form>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
-                <li><a href="{{.AppUrl}}">{{i18n .Lang "Home"}}</a></li>
-                <li><a href="/resource">{{i18n .Lang "Resource"}}</a></li>
+                <li {{if .IsHome}}class="active"{{end}}><a href="{{.AppUrl}}">{{i18n .Lang "Home"}}</a></li>
+                <li {{if .IsResource}}class="active"{{end}}><a href="/resource">{{i18n .Lang "Resource"}}</a></li>
                 <li><a target="_blank" href="http://beego.me">{{i18n .Lang "Official website"}}</a></li>
             </ul>
             <ul class="nav navbar-nav pull-right">

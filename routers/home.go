@@ -25,5 +25,4 @@ type HomeRouter struct {
 func (this *HomeRouter) Get() {
 	this.Data["IsHome"] = true
 	this.TplNames = "home.html"
-
 }

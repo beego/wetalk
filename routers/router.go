@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	"github.com/beego/beebbs/utils"
 	"github.com/beego/i18n"
 )
@@ -82,7 +83,7 @@ func (this *baseRouter) Prepare() {
 }
 
 // setLangVer sets site language version.
-func setLangVer(ctx *beego.Context, input url.Values, data map[interface{}]interface{}) (bool, string) {
+func setLangVer(ctx *context.Context, input url.Values, data map[interface{}]interface{}) (bool, string) {
 	isNeedRedir := false
 
 	// 1. Check URL arguments.
