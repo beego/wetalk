@@ -14,3 +14,132 @@
 
 // Package models implemented database access funtions.
 package models
+
+import (
+	"time"
+
+	"github.com/astaxie/beego/orm"
+)
+
+// global settings name -> value
+type Setting struct {
+	Id      int
+	Name    string `orm:"unique"`
+	Value   string `orm:"type(text)"`
+	Updated string `orm:"auto_now"`
+}
+
+// main user table
+type User struct {
+	Id        int
+	UserName  string `orm:"size(30);unique"`
+	NickName  string `orm:"size(30)"`
+	Password  string `orm:"size(128)"`
+	Url       string `orm:"size(100)"`
+	Email     string `orm:"size(80);unique"`
+	GrEmail   string `orm:"size(80)"`
+	Info      string
+	HideEmail bool
+	Followers int
+	Following int
+	IsAdmin   bool      `orm:"index"`
+	IsActive  bool      `orm:"index"`
+	Created   time.Time `orm:"auto_now_add"`
+}
+
+// user follow
+type Follow struct {
+	Id         int
+	User       *User `orm:"rel(fk)"`
+	FollowUser *User `orm:"rel(fk)"`
+	Mutual     bool
+	Created    time.Time `orm:"auto_now_add"`
+}
+
+func (*Follow) TableUnique() [][]string {
+	return [][]string{
+		[]string{"User", "FollowUser"},
+	}
+}
+
+// post content
+type Post struct {
+	Id           int
+	User         *User  `orm:"rel(fk)"`
+	Slug         string `orm:"size(100);unique"`
+	Title        string `orm:"size(100)"`
+	Content      string `orm:"type(text)"`
+	ContentCache string `orm:"type(text)"`
+	Browsers     int
+	Replys       int
+	Favorites    int
+	LastReply    *User     `orm:"rel(fk)"`
+	Created      time.Time `orm:"auto_now_add"`
+	Updated      time.Time `orm:"auto_now;index"`
+}
+
+// post topic
+type Topic struct {
+	Id         int
+	Name       string `orm:"size(30);unique"`
+	Intro      string `orm:"type(text)"`
+	IntroCache string `orm:"type(text)"`
+	Slug       string `orm:"size(100);unique"`
+	Followers  int
+	Cat        *TopicCat `orm:"rel(one)"`
+	Created    time.Time `orm:"auto_now_add"`
+	Updated    time.Time `orm:"auto_now;index"`
+}
+
+// topic category
+type TopicCat struct {
+	Id    int
+	Name  string
+	Slug  string `orm:"size(100);unique"`
+	Order int
+}
+
+// commnet content for post
+type Comment struct {
+	Id           int
+	Post         *Post    `orm:"rel(fk)"`
+	Parent       *Comment `orm:"rel(fk)"`
+	Message      string   `orm:"type(text)"`
+	MessageCache string   `orm:"type(text)"`
+	Status       int
+	Created      time.Time `orm:"auto_now_add;index"`
+}
+
+// user follow topics
+type FollowTopic struct {
+	Id      int
+	User    *User     `orm:"rel(fk)"`
+	Topic   *Topic    `orm:"rel(fk)"`
+	Created time.Time `orm:"auto_now_add"`
+}
+
+func (*FollowTopic) TableUnique() [][]string {
+	return [][]string{
+		[]string{"User", "Topic"},
+	}
+}
+
+// user favorite posts
+type FavoritePost struct {
+	Id      int
+	User    *User     `orm:"rel(fk)"`
+	Post    *Post     `orm:"rel(fk)"`
+	Created time.Time `orm:"auto_now_add"`
+}
+
+func (*FavoritePost) TableUnique() [][]string {
+	return [][]string{
+		[]string{"User", "Post"},
+	}
+}
+
+func init() {
+	orm.RegisterModel(new(Setting), new(User), new(Follow))
+	orm.RegisterModel(new(Post), new(FavoritePost), new(Comment))
+	orm.RegisterModel(new(Topic), new(TopicCat), new(FollowTopic))
+}

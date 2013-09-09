@@ -19,6 +19,8 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+	_ "github.com/beego/beebbs/models"
 	"github.com/beego/beebbs/routers"
 	"github.com/beego/beebbs/utils"
 	"github.com/beego/i18n"
@@ -50,6 +52,11 @@ func initialize() {
 	beego.RunMode = utils.Cfg.MustValue("beego", "run_mode")
 	beego.HttpPort = utils.Cfg.MustInt("beego", "http_port_"+beego.RunMode)
 
+	routers.AppName = beego.AppName
+	routers.AppUrl = utils.Cfg.MustValue("app", "app_url")
+	routers.AppDescription = utils.Cfg.MustValue("app", "description")
+	routers.AppKeywords = utils.Cfg.MustValue("app", "keywords")
+
 	routers.IsBeta = utils.Cfg.MustBool("server", "beta")
 	routers.IsProMode = beego.RunMode == "pro"
 	if routers.IsProMode {
@@ -57,6 +64,17 @@ func initialize() {
 		beego.Info("Product mode enabled")
 		beego.Info(beego.AppName, APP_VER)
 	}
+
+	orm.Debug, _ = utils.Cfg.Bool("orm", "debug_log")
+
+	driverName, _ := utils.Cfg.GetValue("orm", "driver_name")
+	dataSource, _ := utils.Cfg.GetValue("orm", "data_source")
+	maxIdle, _ := utils.Cfg.Int("orm", "max_idle_conn")
+
+	// set default database
+	orm.RegisterDataBase("default", driverName, dataSource, maxIdle)
+
+	orm.RunCommand()
 }
 
 func main() {
@@ -66,6 +84,10 @@ func main() {
 
 	// Register routers.
 	beego.Router("/", &routers.HomeRouter{})
+	beego.Router("/login", &routers.LoginRouter{})
+	beego.Router("/register", &routers.RegisterRouter{})
+	beego.Router("/forgot", &routers.ForgotRouter{})
+	beego.Router("/reset", &routers.ResetRouter{})
 
 	// Register template functions.
 	beego.AddFuncMap("i18n", i18n.Tr)

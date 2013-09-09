@@ -1,34 +1,97 @@
-{{template "header"}}
-		<title>{{i18n .Lang "Beego Community - an open source project for Gopher community"}}</title>
+{{template "header" .}}
+		<title>{{i18n .Lang .AppName}} - {{i18n .Lang "an open source project for Gopher community"}}</title>
 	</head>	
-
 	<body>
 		{{template "navbar" .}}
-
-		<div class="container">
+		<div id="main" class="container">
 		    <div class="row">
-		        <div class="span10">
-			    	<div class="content">
-			    		<h3>当前话题</h3>
-			    		<div class="header">
-			    			124
-			    		</div>
-			    	<button class="btn btn-success">
-			    		最新回复
-			    	</button>
-			    		<ul class="nav nav-tabs pull-right">
-			    			<li class="active">
-			    				<a href="123">最新回复</a>
-			    			</li>
-			    		</ul>
-			            <div class="clearfix">wokao</div>
-			        </div>
+		        <div id="content" class="col-md-8">
+		        	<div class="box">
+		        		<div class="cell first cat-list">
+	        				<span class="cat"><a class="active" href="">全部</a></span>
+	        				<span class="cat"><a href="">技术</a></span>
+	        				<span class="cat"><a href="">数码</a></span>
+	        				<span class="cat"><a href="">创意</a></span>
+	        				<span class="cat"><a href="">问答</a></span>
+	        				<span class="cat"><a href="">工作</a></span>
+	        				<span class="cat"><a href="">城市</a></span>
+	        				<span class="cat"><a href="">交易</a></span>
+	        				<span class="cat"><a href="">玩乐</a></span>
+		        		</div>
+		        		<div class="cell tag-list">
+	        				<span class="tag"><a>go</a></span>
+	        				<span class="tag"><a>beego</a></span>
+	        				<span class="tag"><a>北京</a></span>
+	        				<span class="tag"><a>上海</a></span>
+	        				<span class="tag"><a>手机</a></span>
+		        		</div>
+	        			<div class="post-list">
+	        				<div class="post cell">
+		        				<div class="avatar">
+		        					<a href="" title="slene">
+		        						<img src="http://gravatar.qiniudn.com/avatar/50c6d70b642671bea1c8144e92f1ac6f?size=48">
+		        					</a>
+		        				</div>
+		        				<h3 class="title">
+		        					<a href="">开源社区 go beego 开源社区</a>
+		        				</h3>
+		        				<div class="meta">
+		        					<a class="tag" href="">开源</a> • <span class="time">7分钟前</span> • <span class="last-reply">最后回复来自 <a>slene</a></span>
+		        				</div>
+		        				<div class="data hidden-xs">
+		        					 <i class="icon-comment"> 44</i> <i class="icon-heart"> 22</i> <i class="icon-eye-open"> 555</i>
+		        				</div>
+	        				</div>
+	        				<div class="post cell">
+		        				<div class="avatar">
+		        					<a href="" title="slene">
+		        						<img src="http://gravatar.qiniudn.com/avatar/50c6d70b642671bea1c8144e92f1ac6f?size=48">
+		        					</a>
+		        				</div>
+		        				<h3 class="title">
+		        					<a href="">Linode 开始支持 SSD，公开申请中</a>
+		        				</h3>
+		        				<div class="meta">
+		        					<a class="tag" href="">VPS</a> • <span class="time">7分钟前</span> • <span class="last-reply">最后回复来自 <a>slene</a></span>
+		        				</div>
+		        				<div class="data hidden-xs">
+		        					 <i class="icon-comment"> 10</i> <i class="icon-heart"> 1</i> <i class="icon-eye-open"> 232</i>
+		        				</div>
+	        				</div>
+	        				<div class="post cell">
+		        				<div class="avatar">
+		        					<a href="" title="slene">
+		        						<img src="http://gravatar.qiniudn.com/avatar/50c6d70b642671bea1c8144e92f1ac6f?size=48">
+		        					</a>
+		        				</div>
+		        				<h3 class="title">
+		        					<a href="">美国打叙利亚，中国又怂了</a>
+		        				</h3>
+		        				<div class="meta">
+		        					<a class="tag" href="">开源</a> • <span class="time">7分钟前</span> • <span class="last-reply">最后回复来自 <a>slene</a></span>
+		        				</div>
+		        				<div class="data hidden-xs">
+		        					 <i class="icon-comment"> 49</i> <i class="icon-heart"> 56</i> <i class="icon-eye-open"> 1000</i>
+		        				</div>
+	        				</div>
+	        			</div>
+		        		<div class="cell last">
+		        		</div>
+		        	</div>
 		    	</div>
-
-		        <div class="span3">
-			    	<div class="content">
-			            <div class="clearfix">wokao</div>
-			        </div>
+		        <div id="sidebar" class="col-md-4">
+		        	<div class="box">
+		        		<div class="cell first"></div>
+	        		</div>
+		        	<div class="box">
+		        		<div class="cell first"></div>
+	        		</div>
+		        	<div class="box">
+		        		<div class="cell first"></div>
+	        		</div>
+		        	<div class="box">
+		        		<div class="cell first"></div>
+	        		</div>
 		        </div>
 		    </div>
 		</div>

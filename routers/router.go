@@ -25,9 +25,13 @@ import (
 )
 
 var (
-	AppVer    string
-	IsProMode bool
-	IsBeta    bool
+	AppName        string
+	AppDescription string
+	AppKeywords    string
+	AppVer         string
+	AppUrl         string
+	IsProMode      bool
+	IsBeta         bool
 )
 
 var langTypes []*langType // Languages are supported.
@@ -40,13 +44,17 @@ type langType struct {
 // baseRouter implemented global settings for all other routers.
 type baseRouter struct {
 	beego.Controller
-	*i18n.Locale
+	i18n.Locale
 }
 
 // Prepare implemented Prepare method for baseRouter.
 func (this *baseRouter) Prepare() {
 	// Setting properties.
+	this.Data["AppDescription"] = AppDescription
+	this.Data["AppKeywords"] = AppKeywords
+	this.Data["AppName"] = AppName
 	this.Data["AppVer"] = AppVer
+	this.Data["AppUrl"] = AppUrl
 	this.Data["IsProMode"] = IsProMode
 	this.Data["IsBeta"] = IsBeta
 
@@ -65,12 +73,11 @@ func (this *baseRouter) Prepare() {
 	}
 
 	isNeedRedir, langVer := setLangVer(this.Ctx, this.Input(), this.Data)
-	this.Locale = &i18n.Locale{langVer}
+	this.Locale.CurrentLocale = langVer
 	// Redirect to make URL clean.
 	if isNeedRedir {
 		i := strings.Index(this.Ctx.Request.RequestURI, "?")
 		this.Redirect(this.Ctx.Request.RequestURI[:i], 302)
-		return
 	}
 }
 

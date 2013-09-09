@@ -1,28 +1,39 @@
 {{define "navbar"}}
-<div class="navbar navbar-static-top">
-    <div class="navbar-inner navbar-fixed-top ">
-        <div class="container">
-        	<div class="brand">
-	            <a class="logo" href="/">
-	            	<img src="/static/img/bee.gif" style="height: 60px;">
-	            </a>
-        	</div>
-            <div style="padding-left: 80px;">
-                <form class="navbar-search" action="/">
-                    <input id="navbar_search_box" class="search-query" type="text" placeholder="{{i18n .Lang "Search"}}" name="q">
-                </form>
+<nav id="navbar" class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="logo" href="{{.AppUrl}}">
+                <img src="/static/img/bee.gif">
+            </a>
+        </div>
+        <form class="navbar-form navbar-left" role="search">
+            <div class="form-group">
+                <input id="search-box" class="form-control" type="text" placeholder="{{i18n .Lang "Search"}}" name="q">
             </div>
-
-            <ul class="nav pull-right">
-                <li {{if .IsHome}}class="active"{{end}}><a href="/">{{i18n .Lang "Home"}}</a></li>
-                <li {{if .IsResource}}class="active"{{end}}><a href="/resource">{{i18n .Lang "Resource"}}</a></li>
+        </form>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="{{.AppUrl}}">{{i18n .Lang "Home"}}</a></li>
+                <li><a href="/resource">{{i18n .Lang "Resource"}}</a></li>
                 <li><a target="_blank" href="http://beego.me">{{i18n .Lang "Official website"}}</a></li>
+            </ul>
+            <ul class="nav navbar-nav pull-right">
                 {{if .IsLogin}}
                 {{else}}
                 <li><a href="/login">{{i18n .Lang "Login"}}</a></li>
+                <li><a href="/register">{{i18n .Lang "Register"}}</a></li>
                 {{end}}
+                <li class="avatar">
+                    <img class="small" src="http://gravatar.qiniudn.com/avatar/50c6d70b642671bea1c8144e92f1ac6f?size=48">
+                </li>
             </ul>
         </div>
     </div>
-</div>
+</nav>
 {{end}}

@@ -1,0 +1,59 @@
+{{template "header" .}}
+		<title>{{i18n .Lang "Login"}} - {{i18n .Lang .AppName}}</title>
+	</head>	
+	<body>
+		{{template "navbar" .}}
+		<div id="main" class="container">
+		    <div class="row">
+		        <div id="content" class="col-md-8 col-md-offset-2">
+		        	<div class="box">
+		        		<div class="cell first breadcrumb">
+		        			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang .AppName}}</a>
+		        		</div>
+		        		<div class="cell last">
+		        			<div class="container">
+		        				<div class="col-md-4 auth-page">
+		        					<h3 class="title">
+		        						<i class="icon icon-user"></i> {{i18n .Lang "Sign Up"}}
+		        					</h3>
+		        					<form role="form">
+		        						<div class="form-group">
+	                                    	<label for="register-username">{{i18n .Lang "Username"}}</label>
+	                                    	<input id="register-username" type="text" name="username" class="form-control">
+                                    	</div>
+		        						<div class="form-group">
+	                                    	<label for="register-email">{{i18n .Lang "Email"}}</label>
+	                                    	<input id="register-email" type="text" name="email" class="form-control">
+                                    	</div>
+		        						<div class="form-group">
+	                                    	<label for="register-passowrd">{{i18n .Lang "Password"}}</label>
+	                                    	<input id="register-passowrd" type="password" name="password" class="form-control">
+                                    	</div>
+		        						<div class="form-group">
+	                                    	<label for="register-repeat-passowrd">{{i18n .Lang "Retype Password"}}</label>
+	                                    	<input id="register-repeat-passowrd" type="password" name="password-re" class="form-control">
+	                                    </div>
+	                                    <button class="btn btn-primary">{{i18n .Lang "Sign Up"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+		        					</form>
+		        				</div>
+		        				<div class="col-md-3 auth-page">
+			        				<div class="auth-page">
+			        					<h3 class="title">
+			        						<i class="icon icon-question"></i> {{i18n .Lang "Login"}}
+			        					</h3>
+			        					<p class="well">
+			        						{{i18n .Lang "If you have already registered. Please Sign In."}}
+			        					</p>
+			        					<p>
+	                                    	<a href="/login" class="btn btn-default">{{i18n .Lang "Login Now"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a>
+			        					</p>
+				        			</div>
+		        				</div>
+		        			</div>
+	        			</div>
+		        	</div>
+		    	</div>
+		    </div>
+		</div>
+	</body>
+</html>
