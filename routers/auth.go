@@ -23,7 +23,13 @@ type LoginRouter struct {
 
 // Get implemented Get method for LoginRouter.
 func (this *LoginRouter) Get() {
+	this.Data["IsLoginPage"] = true
 	this.TplNames = "login.html"
+}
+
+// Post implemented Post method for LoginRouter.
+func (this *LoginRouter) Post() {
+
 }
 
 // RegisterRouter serves login page.
@@ -33,7 +39,13 @@ type RegisterRouter struct {
 
 // Get implemented Get method for RegisterRouter.
 func (this *RegisterRouter) Get() {
+	this.Data["IsRegister"] = true
 	this.TplNames = "register.html"
+}
+
+// Post implemented Post method for RegisterRouter.
+func (this *RegisterRouter) Post() {
+
 }
 
 // ForgotRouter serves login page.

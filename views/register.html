@@ -16,22 +16,22 @@
 		        					<h3 class="title">
 		        						<i class="icon icon-user"></i> {{i18n .Lang "Sign Up"}}
 		        					</h3>
-		        					<form role="form">
+		        					<form method="POST">
 		        						<div class="form-group">
 	                                    	<label for="register-username">{{i18n .Lang "Username"}}</label>
-	                                    	<input id="register-username" type="text" name="username" class="form-control">
+	                                    	<input id="register-username" type="text" name="username" class="form-control" placeholder="{{i18n .Lang "Please enter your username"}}">
                                     	</div>
 		        						<div class="form-group">
 	                                    	<label for="register-email">{{i18n .Lang "Email"}}</label>
-	                                    	<input id="register-email" type="text" name="email" class="form-control">
+	                                    	<input id="register-email" type="text" name="email" class="form-control" placeholder="{{i18n .Lang "Please enter your e-mail address"}}">
                                     	</div>
 		        						<div class="form-group">
 	                                    	<label for="register-passowrd">{{i18n .Lang "Password"}}</label>
-	                                    	<input id="register-passowrd" type="password" name="password" class="form-control">
+	                                    	<input id="register-passowrd" type="password" name="password" class="form-control" placeholder="{{i18n .Lang "Please enter your password"}}">
                                     	</div>
 		        						<div class="form-group">
 	                                    	<label for="register-repeat-passowrd">{{i18n .Lang "Retype Password"}}</label>
-	                                    	<input id="register-repeat-passowrd" type="password" name="password-re" class="form-control">
+	                                    	<input id="register-repeat-passowrd" type="password" name="password-re" class="form-control" placeholder="{{i18n .Lang "Please enter your password again"}}">
 	                                    </div>
 	                                    <button class="btn btn-primary">{{i18n .Lang "Sign Up"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
 		        					</form>
@@ -39,7 +39,7 @@
 		        				<div class="col-md-3 auth-page">
 			        				<div class="auth-page">
 			        					<h3 class="title">
-			        						<i class="icon icon-question"></i> {{i18n .Lang "Login"}}
+			        						<i class="icon icon-question"></i> {{i18n .Lang "Help"}}
 			        					</h3>
 			        					<p class="well">
 			        						{{i18n .Lang "If you have already registered. Please Sign In."}}
@@ -55,5 +55,6 @@
 		    	</div>
 		    </div>
 		</div>
+		{{template "footer" .}}
 	</body>
 </html>

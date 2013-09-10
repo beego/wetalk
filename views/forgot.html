@@ -19,19 +19,20 @@
 		        					<form role="form">
 		        						<div class="form-group">
 	                                    	<label for="the-username">{{i18n .Lang "Username"}} or {{i18n .Lang "Email"}}</label>
-	                                    	<input id="the-username" type="text" name="username" class="form-control">
-    										<p class="help-block">{{i18n .Lang "help for forgot password"}}</p>
+	                                    	<input id="the-username" type="text" name="username" class="form-control" placeholder="{{i18n .Lang "Please enter your username or e-mail"}}">
+    										<p class="help-block">{{i18n .Lang "This operaion lead to send your an e-mail with a reset secure link"}}</p>
 		        						</div>
-	                                    <button class="btn btn-primary">{{i18n .Lang "Sign Up"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+	                                    <button class="btn btn-primary">{{i18n .Lang "Reset Password"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
 		        					</form>
 		        				</div>
+
 		        				<div class="col-md-3 auth-page">
 			        				<div class="auth-page">
 			        					<h3 class="title">
 			        						<i class="icon icon-question"></i> {{i18n .Lang "Login"}}
 			        					</h3>
 			        					<p class="well">
-			        						{{i18n .Lang "If you have already registered. Please Sign In."}}
+			        						{{i18n .Lang "If you remember your password suddently, please Sign In."}}
 			        					</p>
 			        					<p>
 	                                    	<a href="/login" class="btn btn-default">{{i18n .Lang "Login Now"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a>
@@ -44,5 +45,6 @@
 		    	</div>
 		    </div>
 		</div>
+		{{template "footer" .}}
 	</body>
 </html>

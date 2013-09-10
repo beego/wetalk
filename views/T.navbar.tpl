@@ -25,13 +25,13 @@
             </ul>
             <ul class="nav navbar-nav pull-right">
                 {{if .IsLogin}}
-                {{else}}
-                <li><a href="/login">{{i18n .Lang "Login"}}</a></li>
-                <li><a href="/register">{{i18n .Lang "Register"}}</a></li>
-                {{end}}
                 <li class="avatar">
                     <img class="small" src="http://gravatar.qiniudn.com/avatar/50c6d70b642671bea1c8144e92f1ac6f?size=48">
                 </li>
+                {{else}}
+                <li {{if .IsLoginPage}}class="active"{{end}}><a href="/login">{{i18n .Lang "Login"}}</a></li>
+                <li {{if .IsRegister}}class="active"{{end}}><a href="/register">{{i18n .Lang "Register"}}</a></li>
+                {{end}}
             </ul>
         </div>
     </div>
