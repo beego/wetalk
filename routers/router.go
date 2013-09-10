@@ -18,6 +18,7 @@ package routers
 import (
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
@@ -31,6 +32,8 @@ var (
 	AppKeywords    string
 	AppVer         string
 	AppUrl         string
+	AppJsVer       string
+	AppCssVer      string
 	IsProMode      bool
 	IsBeta         bool
 )
@@ -50,12 +53,20 @@ type baseRouter struct {
 
 // Prepare implemented Prepare method for baseRouter.
 func (this *baseRouter) Prepare() {
+	if IsProMode {
+	} else {
+		AppJsVer = beego.Date(time.Now(), "YmdHis")
+		AppCssVer = beego.Date(time.Now(), "YmdHis")
+	}
+
 	// Setting properties.
 	this.Data["AppDescription"] = AppDescription
 	this.Data["AppKeywords"] = AppKeywords
 	this.Data["AppName"] = AppName
 	this.Data["AppVer"] = AppVer
 	this.Data["AppUrl"] = AppUrl
+	this.Data["AppJsVer"] = AppJsVer
+	this.Data["AppCssVer"] = AppCssVer
 	this.Data["IsProMode"] = IsProMode
 	this.Data["IsBeta"] = IsBeta
 

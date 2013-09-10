@@ -56,6 +56,8 @@ func initialize() {
 	routers.AppUrl = utils.Cfg.MustValue("app", "app_url")
 	routers.AppDescription = utils.Cfg.MustValue("app", "description")
 	routers.AppKeywords = utils.Cfg.MustValue("app", "keywords")
+	routers.AppJsVer = utils.Cfg.MustValue("app", "js_ver")
+	routers.AppCssVer = utils.Cfg.MustValue("app", "css_ver")
 
 	routers.IsBeta = utils.Cfg.MustBool("server", "beta")
 	routers.IsProMode = beego.RunMode == "pro"

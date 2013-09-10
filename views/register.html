@@ -1,60 +1,55 @@
 {{template "header" .}}
-		<title>{{i18n .Lang "Login"}} - {{i18n .Lang .AppName}}</title>
-	</head>	
-	<body>
-		{{template "navbar" .}}
-		<div id="main" class="container">
-		    <div class="row">
-		        <div id="content" class="col-md-8 col-md-offset-2">
-		        	<div class="box">
-		        		<div class="cell first breadcrumb">
-		        			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang .AppName}}</a>
-		        		</div>
-		        		<div class="cell last">
-		        			<div class="container">
-		        				<div class="col-md-4 auth-page">
-		        					<h3 class="title">
-		        						<i class="icon icon-user"></i> {{i18n .Lang "Sign Up"}}
-		        					</h3>
-		        					<form method="POST">
-		        						<div class="form-group">
-	                                    	<label for="register-username">{{i18n .Lang "Username"}}</label>
-	                                    	<input id="register-username" type="text" name="username" class="form-control" placeholder="{{i18n .Lang "Please enter your username"}}">
-                                    	</div>
-		        						<div class="form-group">
-	                                    	<label for="register-email">{{i18n .Lang "Email"}}</label>
-	                                    	<input id="register-email" type="text" name="email" class="form-control" placeholder="{{i18n .Lang "Please enter your e-mail address"}}">
-                                    	</div>
-		        						<div class="form-group">
-	                                    	<label for="register-passowrd">{{i18n .Lang "Password"}}</label>
-	                                    	<input id="register-passowrd" type="password" name="password" class="form-control" placeholder="{{i18n .Lang "Please enter your password"}}">
-                                    	</div>
-		        						<div class="form-group">
-	                                    	<label for="register-repeat-passowrd">{{i18n .Lang "Retype Password"}}</label>
-	                                    	<input id="register-repeat-passowrd" type="password" name="password-re" class="form-control" placeholder="{{i18n .Lang "Please enter your password again"}}">
-	                                    </div>
-	                                    <button class="btn btn-primary">{{i18n .Lang "Sign Up"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
-		        					</form>
-		        				</div>
-		        				<div class="col-md-3 auth-page">
-			        				<div class="auth-page">
-			        					<h3 class="title">
-			        						<i class="icon icon-question"></i> {{i18n .Lang "Help"}}
-			        					</h3>
-			        					<p class="well">
-			        						{{i18n .Lang "If you have already registered. Please Sign In."}}
-			        					</p>
-			        					<p>
-	                                    	<a href="/login" class="btn btn-default">{{i18n .Lang "Login Now"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a>
-			        					</p>
-				        			</div>
-		        				</div>
-		        			</div>
+		<title>{{i18n .Lang "Register"}} - {{i18n .Lang .AppName}}</title>
+{{template "bodyHeader" .}}
+<div class="row">
+    <div id="content" class="col-md-8 col-md-offset-2">
+    	<div class="box">
+    		<div class="cell first breadcrumb">
+    			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang .AppName}}</a>
+    		</div>
+    		<div class="cell last">
+    			<div class="container">
+    				<div class="col-md-4 auth-page">
+    					<h3 class="title">
+    						<i class="icon icon-user"></i> {{i18n .Lang "Sign Up"}}
+    					</h3>
+    					<form method="POST" action="">
+    						<div class="form-group{{if .FormError.UserName}} has-error{{end}}">
+                            	<label for="register-username">{{i18n .Lang "Username"}}</label>
+                            	<input id="register-username" value="{{.Form.UserName}}" type="text" name="username" class="form-control" {{if .FormError.UserName}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.UserName.Tmpl .FormError.UserName.LimitValue}}"{{end}}>
+                                <p class="help-block">{{i18n .Lang "min length %d" 5}}, {{i18n .Lang "only contain %s" "a-z 0-9 - _"}}</p>
+                        	</div>
+    						<div class="form-group{{if .FormError.Email}} has-error{{end}}">
+                            	<label for="register-email">{{i18n .Lang "Email"}}</label>
+                            	<input id="register-email" value="{{.Form.Email}}" type="text" name="email" class="form-control" {{if .FormError.Email}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.Email.Tmpl .FormError.Email.LimitValue}}"{{end}}>
+                        	</div>
+    						<div class="form-group{{if .FormError.Password}} has-error{{end}}">
+                            	<label for="register-passowrd">{{i18n .Lang "Password"}}</label>
+                            	<input id="register-passowrd" value="{{.Form.Password}}" type="password" name="password" class="form-control" {{if .FormError.Password}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.Password.Tmpl .FormError.Password.LimitValue}}"{{end}}>
+                        	</div>
+    						<div class="form-group{{if .FormError.PasswordRe}} has-error{{end}}">
+                            	<label for="register-repeat-passowrd">{{i18n .Lang "Retype Password"}}</label>
+                            	<input id="register-repeat-passowrd" value="{{.Form.PasswordRe}}" type="password" name="passwordre" class="form-control" {{if .FormError.PasswordRe}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.PasswordRe.Tmpl .FormError.PasswordRe.LimitValue}}"{{end}}>
+                            </div>
+                            <button class="btn btn-primary">{{i18n .Lang "Sign Up"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+    					</form>
+    				</div>
+    				<div class="col-md-3 auth-page">
+        				<div class="auth-page">
+        					<h3 class="title">
+        						<i class="icon icon-question"></i> {{i18n .Lang "Help"}}
+        					</h3>
+        					<p class="well">
+        						{{i18n .Lang "If you have already registered. Please Sign In."}}
+        					</p>
+        					<p>
+                            	<a href="/login" class="btn btn-default">{{i18n .Lang "Login Now"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a>
+        					</p>
 	        			</div>
-		        	</div>
-		    	</div>
-		    </div>
-		</div>
-		{{template "footer" .}}
-	</body>
-</html>
+    				</div>
+    			</div>
+			</div>
+    	</div>
+	</div>
+</div>
+{{template "bodyFooter" .}}

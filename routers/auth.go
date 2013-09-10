@@ -11,10 +11,12 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations
 // under the License.
-
 package routers
 
-import ()
+import (
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/validation"
+)
 
 // LoginRouter serves login page.
 type LoginRouter struct {
@@ -45,7 +47,60 @@ func (this *RegisterRouter) Get() {
 
 // Post implemented Post method for RegisterRouter.
 func (this *RegisterRouter) Post() {
+	this.Data["IsRegister"] = true
+	this.TplNames = "register.html"
 
+	form := RegisterForm{}
+	this.ParseForm(&form)
+
+	this.Data["Form"] = form
+
+	errors := make(map[string]validation.ValidationError)
+	this.Data["FormError"] = errors
+
+	valid := validation.Validation{}
+	if ok, _ := valid.Valid(&form); !ok {
+		getFirstValidError(valid.Errors, &errors)
+
+	} else {
+		if form.Password != form.PasswordRe {
+			errors["PasswordRe"] = validation.ValidationError{
+				Tmpl: this.Locale.Tr("Password not match first input"),
+			}
+			return
+		}
+
+		if e1, e2, err := canRegistered(form.UserName, form.Email); err != nil {
+			beego.Error(err)
+		} else {
+
+			if e1 && e2 {
+				if err := registerUser(form); err == nil {
+
+					// TODO
+					// forbid re submit
+					// need send verify email
+					// and redirect to /register/success
+
+				} else {
+					beego.Error(err)
+				}
+
+			} else {
+				if !e1 {
+					errors["UserName"] = validation.ValidationError{
+						Tmpl: this.Locale.Tr("Username already used by other user"),
+					}
+				}
+
+				if !e2 {
+					errors["Email"] = validation.ValidationError{
+						Tmpl: this.Locale.Tr("Email already used by other user"),
+					}
+				}
+			}
+		}
+	}
 }
 
 // ForgotRouter serves login page.
