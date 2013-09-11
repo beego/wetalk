@@ -16,6 +16,7 @@ package routers
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/validation"
+	"github.com/beego/beebbs/models"
 )
 
 // LoginRouter serves login page.
@@ -50,53 +51,57 @@ func (this *RegisterRouter) Post() {
 	this.Data["IsRegister"] = true
 	this.TplNames = "register.html"
 
+	// Get input form.
 	form := RegisterForm{}
 	this.ParseForm(&form)
-
+	// Put data back in case users input invalid data for any section.
 	this.Data["Form"] = form
 
-	errors := make(map[string]validation.ValidationError)
-	this.Data["FormError"] = errors
+	errs := make(map[string]validation.ValidationError)
+	this.Data["FormError"] = errs
 
+	// Verify basic input.
 	valid := validation.Validation{}
 	if ok, _ := valid.Valid(&form); !ok {
-		getFirstValidError(valid.Errors, &errors)
+		getFirstValidError(valid.Errors, &errs)
+		return
+	}
 
-	} else {
-		if form.Password != form.PasswordRe {
-			errors["PasswordRe"] = validation.ValidationError{
-				Tmpl: this.Locale.Tr("Password not match first input"),
-			}
-			return
+	// Check if passwords of two times are same.
+	if form.Password != form.PasswordRe {
+		errs["PasswordRe"] = validation.ValidationError{
+			Tmpl: this.Locale.Tr("Password not match first input"),
 		}
+		return
+	}
 
-		if e1, e2, err := canRegistered(form.UserName, form.Email); err != nil {
-			beego.Error(err)
-		} else {
+	// Process register.
+	if e1, e2, err := models.CanRegistered(form.UserName, form.Email); err != nil {
+		beego.Error(err)
+	} else {
 
-			if e1 && e2 {
-				if err := registerUser(form); err == nil {
+		if e1 && e2 {
+			if err := registerUser(form); err == nil {
 
-					// TODO
-					// forbid re submit
-					// need send verify email
-					// and redirect to /register/success
-
-				} else {
-					beego.Error(err)
-				}
+				// TODO
+				// forbid re submit
+				// need send verify email
+				// and redirect to /register/success
 
 			} else {
-				if !e1 {
-					errors["UserName"] = validation.ValidationError{
-						Tmpl: this.Locale.Tr("Username already used by other user"),
-					}
-				}
+				beego.Error(err)
+			}
 
-				if !e2 {
-					errors["Email"] = validation.ValidationError{
-						Tmpl: this.Locale.Tr("Email already used by other user"),
-					}
+		} else {
+			if !e1 {
+				errs["UserName"] = validation.ValidationError{
+					Tmpl: this.Locale.Tr("Username has been already taken"),
+				}
+			}
+
+			if !e2 {
+				errs["Email"] = validation.ValidationError{
+					Tmpl: this.Locale.Tr("Email has been already taken"),
 				}
 			}
 		}

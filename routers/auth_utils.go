@@ -27,46 +27,13 @@ func registerUser(form RegisterForm) error {
 	salt := getRandomString(10)
 	pwd := encodePassword(form.Password, salt)
 
-	user := models.User{}
+	user := &models.User{}
 	user.UserName = form.UserName
 	user.Email = form.Email
 	user.Password = fmt.Sprintf("%s$%s", salt, pwd)
 	user.GrEmail = encodeMd5(form.Email)
 
-	_, err := orm.NewOrm().Insert(&user)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func canRegistered(userName string, email string) (bool, bool, error) {
-	cond := orm.NewCondition()
-	cond = cond.Or("UserName", userName).Or("Email", email)
-
-	var maps []orm.Params
-	o := orm.NewOrm()
-	n, err := o.QueryTable("user").SetCond(cond).Values(&maps, "UserName", "Email")
-	if err != nil {
-		return false, false, err
-	}
-
-	e1 := true
-	e2 := true
-
-	if n > 0 {
-		for _, m := range maps {
-			if e1 && orm.ToStr(m["UserName"]) == userName {
-				e1 = false
-			}
-			if e2 && orm.ToStr(m["Email"]) == email {
-				e2 = false
-			}
-		}
-	}
-
-	return e1, e2, nil
+	return models.NewUser(user)
 }
 
 func verifyUser(username, password string, user *models.User) bool {
