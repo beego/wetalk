@@ -79,39 +79,37 @@ func (this *RegisterRouter) Post() {
 	}
 
 	// Process register.
-	if e1, e2, err := models.CanRegistered(form.UserName, form.Email); err != nil {
+	e1, e2, err := models.CanRegistered(form.UserName, form.Email)
+	if err != nil {
 		beego.Error(err)
-	} else {
+		return
+	}
 
-		if e1 && e2 {
-			// Create new user.
-			user := new(models.User)
-			if err := models.RegisterUser(form, user); err == nil {
-
-				models.SendRegisterMail(this.Locale, user)
-
-				// TODO
-				// forbid re submit
-				// and redirect to /register/success
-
-			} else {
-				beego.Error(err)
-			}
+	if e1 && e2 {
+		// Create new user.
+		user := new(models.User)
+		if err := models.RegisterUser(form, user); err == nil {
+			models.SendRegisterMail(this.Locale, user)
+			this.Data["IsSuccess"] = true
 
 		} else {
-			if !e1 {
-				errs["UserName"] = validation.ValidationError{
-					Tmpl: this.Locale.Tr("Username has been already taken"),
-				}
-			}
+			beego.Error(err)
+		}
 
-			if !e2 {
-				errs["Email"] = validation.ValidationError{
-					Tmpl: this.Locale.Tr("Email has been already taken"),
-				}
+	} else {
+		if !e1 {
+			errs["UserName"] = validation.ValidationError{
+				Tmpl: this.Locale.Tr("Username has been already taken"),
+			}
+		}
+
+		if !e2 {
+			errs["Email"] = validation.ValidationError{
+				Tmpl: this.Locale.Tr("Email has been already taken"),
 			}
 		}
 	}
+
 }
 
 // Success implemented Register Success Page.

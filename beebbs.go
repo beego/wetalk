@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	APP_VER = "0.0.2.0910"
+	APP_VER = "0.0.2.0911"
 )
 
 // We have to call a initialize function manully
@@ -95,6 +95,7 @@ func initialize() {
 	// set default database
 	orm.RegisterDataBase("default", driverName, dataSource, maxIdle)
 
+	orm.RunSyncdb("default", false, true)
 	orm.RunCommand()
 }
 
