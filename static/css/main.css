@@ -67,12 +67,11 @@ input[type="password"]:-ms-input-placeholder {
 #footer {
   background: #fff;
   box-shadow: 0 -1px 0 #e6e6e6;
-  height: 220px;
-  margin-top: 20px;
+  margin-top: 65px;
 }
 
 #footer .footer-wrap {
-  padding: 20px 0 40px;
+  padding: 20px 0px;
 }
 
 #footer .desc {
@@ -263,5 +262,13 @@ input[type="password"]:-ms-input-placeholder {
 .btn-checked.active {
   color: #000;
 }
-
-
+.dropdown-menu > li > a:focus {
+  color: rgb(255, 255, 255);
+  background-color: rgb(0, 131, 174);
+  background-image: linear-gradient(to bottom, rgb(0, 139, 184), rgb(0, 120, 159));
+}
+.dropdown-menu > li > a:hover {
+  color: rgb(255, 255, 255);
+  background-color: rgb(0, 131, 174);
+  background-image: linear-gradient(to bottom, rgb(0, 139, 184), rgb(0, 120, 159));
+}

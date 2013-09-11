@@ -16,24 +16,28 @@
     					<form method="POST" action="">
     						<div class="form-group{{if .FormError.UserName}} has-error{{end}}">
                             	<label for="register-username">{{i18n .Lang "Username"}}</label>
-                            	<input id="register-username" value="{{.Form.UserName}}" type="text" name="username" class="form-control" {{if .FormError.UserName}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.UserName.Tmpl .FormError.UserName.LimitValue}}"{{end}}>
-                                <p class="help-block">{{i18n .Lang "min length %d" 5}}, {{i18n .Lang "only contain %s" "a-z 0-9 - _"}}</p>
+                            	<input id="register-username" value="{{.Form.UserName}}" type="text" name="username" class="form-control" {{if .FormError.UserName}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.UserName.Tmpl .FormError.UserName.LimitValue}}"{{end}} placeholder="{{i18n .Lang "Please enter your username"}}">
+                                <p class="help-block">{{i18n .Lang "Min-length is %d" 5}}, {{i18n .Lang "only contains %s" "a-z 0-9 - _"}}</p>
                         	</div>
+
     						<div class="form-group{{if .FormError.Email}} has-error{{end}}">
                             	<label for="register-email">{{i18n .Lang "Email"}}</label>
-                            	<input id="register-email" value="{{.Form.Email}}" type="text" name="email" class="form-control" {{if .FormError.Email}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.Email.Tmpl .FormError.Email.LimitValue}}"{{end}}>
+                            	<input id="register-email" value="{{.Form.Email}}" type="text" name="email" class="form-control" {{if .FormError.Email}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.Email.Tmpl .FormError.Email.LimitValue}}"{{end}} placeholder="{{i18n .Lang "Please enter your e-mail address"}}">
                         	</div>
+
     						<div class="form-group{{if .FormError.Password}} has-error{{end}}">
                             	<label for="register-passowrd">{{i18n .Lang "Password"}}</label>
-                            	<input id="register-passowrd" value="{{.Form.Password}}" type="password" name="password" class="form-control" {{if .FormError.Password}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.Password.Tmpl .FormError.Password.LimitValue}}"{{end}}>
+                            	<input id="register-passowrd" value="{{.Form.Password}}" type="password" name="password" class="form-control" {{if .FormError.Password}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.Password.Tmpl .FormError.Password.LimitValue}}"{{end}} placeholder="{{i18n .Lang "Please enter your password"}}">
                         	</div>
+
     						<div class="form-group{{if .FormError.PasswordRe}} has-error{{end}}">
                             	<label for="register-repeat-passowrd">{{i18n .Lang "Retype Password"}}</label>
-                            	<input id="register-repeat-passowrd" value="{{.Form.PasswordRe}}" type="password" name="passwordre" class="form-control" {{if .FormError.PasswordRe}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.PasswordRe.Tmpl .FormError.PasswordRe.LimitValue}}"{{end}}>
+                            	<input id="register-repeat-passowrd" value="{{.Form.PasswordRe}}" type="password" name="passwordre" class="form-control" {{if .FormError.PasswordRe}}data-show="tooltip" data-tooltip-text="{{i18n .Lang .FormError.PasswordRe.Tmpl .FormError.PasswordRe.LimitValue}}"{{end}} placeholder="{{i18n .Lang "Please reenter your password"}}">
                             </div>
                             <button class="btn btn-primary">{{i18n .Lang "Sign Up"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
     					</form>
     				</div>
+
     				<div class="col-md-3 auth-page">
         				<div class="auth-page">
         					<h3 class="title">
