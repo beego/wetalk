@@ -23,6 +23,23 @@ import (
 )
 
 var (
+	AppName           string
+	AppDescription    string
+	AppKeywords       string
+	AppVer            string
+	AppUrl            string
+	AppJsVer          string
+	AppCssVer         string
+	SecretKey         string
+	IsProMode         bool
+	IsBeta            bool
+	MailUser          string
+	MailFrom          string
+	ActiveCodeLives   int
+	ResetPwdCodeLives int
+)
+
+var (
 	Cfg *goconfig.ConfigFile
 )
 

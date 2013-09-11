@@ -20,10 +20,11 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	_ "github.com/beego/beebbs/models"
+	"github.com/beego/i18n"
+
+	"github.com/beego/beebbs/mailer"
 	"github.com/beego/beebbs/routers"
 	"github.com/beego/beebbs/utils"
-	"github.com/beego/i18n"
 )
 
 const (
@@ -46,22 +47,29 @@ func initialize() {
 	}
 
 	// Trim 4th part.
-	routers.AppVer = strings.Join(strings.Split(APP_VER, ".")[:3], ".")
+	utils.AppVer = strings.Join(strings.Split(APP_VER, ".")[:3], ".")
 
 	beego.AppName = utils.Cfg.MustValue("beego", "app_name")
 	beego.RunMode = utils.Cfg.MustValue("beego", "run_mode")
 	beego.HttpPort = utils.Cfg.MustInt("beego", "http_port_"+beego.RunMode)
 
-	routers.AppName = beego.AppName
-	routers.AppUrl = utils.Cfg.MustValue("app", "app_url")
-	routers.AppDescription = utils.Cfg.MustValue("app", "description")
-	routers.AppKeywords = utils.Cfg.MustValue("app", "keywords")
-	routers.AppJsVer = utils.Cfg.MustValue("app", "js_ver")
-	routers.AppCssVer = utils.Cfg.MustValue("app", "css_ver")
+	utils.AppName = beego.AppName
+	utils.AppUrl = utils.Cfg.MustValue("app", "app_url")
+	utils.AppDescription = utils.Cfg.MustValue("app", "description")
+	utils.AppKeywords = utils.Cfg.MustValue("app", "keywords")
+	utils.AppJsVer = utils.Cfg.MustValue("app", "js_ver")
+	utils.AppCssVer = utils.Cfg.MustValue("app", "css_ver")
 
-	routers.IsBeta = utils.Cfg.MustBool("server", "beta")
-	routers.IsProMode = beego.RunMode == "pro"
-	if routers.IsProMode {
+	utils.MailUser = utils.Cfg.MustValue("app", "mail_user")
+	utils.MailFrom = utils.Cfg.MustValue("app", "mail_from")
+
+	utils.SecretKey = utils.Cfg.MustValue("app", "secret_key")
+	utils.ActiveCodeLives = utils.Cfg.MustInt("app", "acitve_code_live_days")
+	utils.ResetPwdCodeLives = utils.Cfg.MustInt("app", "resetpwd_code_live_days")
+
+	utils.IsBeta = utils.Cfg.MustBool("server", "beta")
+	utils.IsProMode = beego.RunMode == "pro"
+	if utils.IsProMode {
 		beego.SetLevel(beego.LevelInfo)
 		beego.Info("Product mode enabled")
 		beego.Info(beego.AppName, APP_VER)
@@ -72,6 +80,17 @@ func initialize() {
 	driverName, _ := utils.Cfg.GetValue("orm", "driver_name")
 	dataSource, _ := utils.Cfg.GetValue("orm", "data_source")
 	maxIdle, _ := utils.Cfg.Int("orm", "max_idle_conn")
+
+	// session settings
+	beego.SessionOn = true
+	beego.SessionProvider = utils.Cfg.MustValue("app", "session_provider")
+	beego.SessionSavePath = utils.Cfg.MustValue("app", "session_path")
+	beego.SessionName = utils.Cfg.MustValue("app", "session_name")
+
+	// set mailer connect args
+	mailer.MailHost = utils.Cfg.MustValue("mailer", "host")
+	mailer.AuthUser = utils.Cfg.MustValue("mailer", "user")
+	mailer.AuthPass = utils.Cfg.MustValue("mailer", "pass")
 
 	// set default database
 	orm.RegisterDataBase("default", driverName, dataSource, maxIdle)
@@ -87,7 +106,13 @@ func main() {
 	// Register routers.
 	beego.Router("/", &routers.HomeRouter{})
 	beego.Router("/login", &routers.LoginRouter{})
+
 	beego.Router("/register", &routers.RegisterRouter{})
+	beego.Router("/register/success", &routers.RegisterRouter{}, "get:Success")
+	beego.Router("/active/success", &routers.RegisterRouter{}, "get:ActiveSuccess")
+	beego.Router("/active/:code([0-9a-zA-Z]+)", &routers.RegisterRouter{}, "get:Active")
+	beego.Router("/active/resend", &routers.RegisterRouter{}, "post:Resend")
+
 	beego.Router("/forgot", &routers.ForgotRouter{})
 	beego.Router("/reset", &routers.ResetRouter{})
 

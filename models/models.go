@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/orm"
+	"github.com/beego/beebbs/utils"
 )
 
 // global settings name -> value
@@ -30,6 +31,9 @@ type Setting struct {
 }
 
 // main user table
+// IsAdmin: user is admininstator
+// IsActive: set active when email is verified
+// IsForbid: forbid user login
 type User struct {
 	Id        int
 	UserName  string `orm:"size(30);unique"`
@@ -44,7 +48,20 @@ type User struct {
 	Following int
 	IsAdmin   bool      `orm:"index"`
 	IsActive  bool      `orm:"index"`
+	IsForbid  bool      `orm:"index"`
+	Rands     string    `orm:"size(10)"`
 	Created   time.Time `orm:"auto_now_add"`
+	Updated   time.Time `orm:"auto_now"`
+}
+
+// NewUser saves 'User' into database.
+func NewUser(u *User) error {
+	u.Rands = utils.GetRandomString(10)
+	_, err := orm.NewOrm().Insert(u)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // user follow

@@ -22,20 +22,10 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
-	"github.com/beego/beebbs/utils"
 	"github.com/beego/i18n"
-)
 
-var (
-	AppName        string
-	AppDescription string
-	AppKeywords    string
-	AppVer         string
-	AppUrl         string
-	AppJsVer       string
-	AppCssVer      string
-	IsProMode      bool
-	IsBeta         bool
+	"github.com/beego/beebbs/models"
+	"github.com/beego/beebbs/utils"
 )
 
 var langTypes []*langType // Languages are supported.
@@ -49,26 +39,27 @@ type langType struct {
 type baseRouter struct {
 	beego.Controller
 	i18n.Locale
+	user models.User
 }
 
 // Prepare implemented Prepare method for baseRouter.
 func (this *baseRouter) Prepare() {
-	if IsProMode {
+	if utils.IsProMode {
 	} else {
-		AppJsVer = beego.Date(time.Now(), "YmdHis")
-		AppCssVer = beego.Date(time.Now(), "YmdHis")
+		utils.AppJsVer = beego.Date(time.Now(), "YmdHis")
+		utils.AppCssVer = beego.Date(time.Now(), "YmdHis")
 	}
 
 	// Setting properties.
-	this.Data["AppDescription"] = AppDescription
-	this.Data["AppKeywords"] = AppKeywords
-	this.Data["AppName"] = AppName
-	this.Data["AppVer"] = AppVer
-	this.Data["AppUrl"] = AppUrl
-	this.Data["AppJsVer"] = AppJsVer
-	this.Data["AppCssVer"] = AppCssVer
-	this.Data["IsProMode"] = IsProMode
-	this.Data["IsBeta"] = IsBeta
+	this.Data["AppDescription"] = utils.AppDescription
+	this.Data["AppKeywords"] = utils.AppKeywords
+	this.Data["AppName"] = utils.AppName
+	this.Data["AppVer"] = utils.AppVer
+	this.Data["AppUrl"] = utils.AppUrl
+	this.Data["AppJsVer"] = utils.AppJsVer
+	this.Data["AppCssVer"] = utils.AppCssVer
+	this.Data["IsProMode"] = utils.IsProMode
+	this.Data["IsBeta"] = utils.IsBeta
 
 	// Setting language version.
 	if len(langTypes) == 0 {

@@ -11,12 +11,15 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations
 // under the License.
+
 package routers
 
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/validation"
+
 	"github.com/beego/beebbs/models"
+	"github.com/beego/beebbs/utils"
 )
 
 // LoginRouter serves login page.
@@ -52,7 +55,7 @@ func (this *RegisterRouter) Post() {
 	this.TplNames = "register.html"
 
 	// Get input form.
-	form := RegisterForm{}
+	form := models.RegisterForm{}
 	this.ParseForm(&form)
 	// Put data back in case users input invalid data for any section.
 	this.Data["Form"] = form
@@ -63,7 +66,7 @@ func (this *RegisterRouter) Post() {
 	// Verify basic input.
 	valid := validation.Validation{}
 	if ok, _ := valid.Valid(&form); !ok {
-		getFirstValidError(valid.Errors, &errs)
+		utils.GetFirstValidErrors(valid.Errors, &errs)
 		return
 	}
 
@@ -81,11 +84,14 @@ func (this *RegisterRouter) Post() {
 	} else {
 
 		if e1 && e2 {
-			if err := registerUser(form); err == nil {
+			// Create new user.
+			user := new(models.User)
+			if err := models.RegisterUser(form, user); err == nil {
+
+				models.SendRegisterMail(this.Locale, user)
 
 				// TODO
 				// forbid re submit
-				// need send verify email
 				// and redirect to /register/success
 
 			} else {
@@ -106,6 +112,26 @@ func (this *RegisterRouter) Post() {
 			}
 		}
 	}
+}
+
+// Success implemented Register Success Page.
+func (this *RegisterRouter) Success() {
+
+}
+
+// Resend implemented post resend active code.
+func (this *RegisterRouter) Resend() {
+
+}
+
+// Active implemented check Email actice code.
+func (this *RegisterRouter) Active() {
+
+}
+
+// ActiveSuccess implemented Email active success page .
+func (this *RegisterRouter) ActiveSuccess() {
+
 }
 
 // ForgotRouter serves login page.
