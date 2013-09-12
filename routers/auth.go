@@ -30,7 +30,7 @@ type LoginRouter struct {
 // Get implemented Get method for LoginRouter.
 func (this *LoginRouter) Get() {
 	this.Data["IsLoginPage"] = true
-	this.TplNames = "login.html"
+	this.TplNames = "auth/login.html"
 }
 
 // Post implemented Post method for LoginRouter.
@@ -46,13 +46,13 @@ type RegisterRouter struct {
 // Get implemented Get method for RegisterRouter.
 func (this *RegisterRouter) Get() {
 	this.Data["IsRegister"] = true
-	this.TplNames = "register.html"
+	this.TplNames = "auth/register.html"
 }
 
 // Post implemented Post method for RegisterRouter.
 func (this *RegisterRouter) Post() {
 	this.Data["IsRegister"] = true
-	this.TplNames = "register.html"
+	this.TplNames = "auth/register.html"
 
 	// Get input form.
 	form := models.RegisterForm{}
@@ -139,7 +139,7 @@ type ForgotRouter struct {
 
 // Get implemented Get method for ForgotRouter.
 func (this *ForgotRouter) Get() {
-	this.TplNames = "forgot.html"
+	this.TplNames = "auth/forgot.html"
 }
 
 // ResetRouter serves login page.
@@ -149,5 +149,5 @@ type ResetRouter struct {
 
 // Get implemented Get method for ResetRouter.
 func (this *ResetRouter) Get() {
-	this.TplNames = "reset.html"
+	this.TplNames = "auth/reset.html"
 }
