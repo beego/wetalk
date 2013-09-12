@@ -10,15 +10,6 @@
 
     		<div class="cell last">
     			<div class="container">
-                    {{if .IsSuccess}}
-                    <p>
-                        <b>{{i18n .Lang "Congratulations!"}}</b>
-                    </p>
-                    
-                    <p>
-                        {{i18n .Lang "We have sent a verify e-mail to your mail box, please veify that before you can continue."}}
-                    </p>
-                    {{else}}
     				<div class="col-md-4 auth-page">
     					<h3 class="title">
     						<i class="icon icon-user"></i> {{i18n .Lang "Sign Up"}}
@@ -65,7 +56,6 @@
         					</p>
 	        			</div>
     				</div>
-                    {{end}}
     			</div>
 			</div>
     	</div>

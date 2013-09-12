@@ -1,4 +1,4 @@
-// Copyright 2013 beebbs authors
+// Copyright 2013 wetalk authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -18,8 +18,8 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/validation"
 
-	"github.com/beego/beebbs/models"
-	"github.com/beego/beebbs/utils"
+	"github.com/beego/wetalk/models"
+	"github.com/beego/wetalk/utils"
 )
 
 // LoginRouter serves login page.
@@ -27,30 +27,61 @@ type LoginRouter struct {
 	baseRouter
 }
 
-// Get implemented Get method for LoginRouter.
+// Get implemented login page.
 func (this *LoginRouter) Get() {
+	if this.isLogin {
+		this.Redirect("/settings/profile", 302)
+		return
+	}
+
 	this.Data["IsLoginPage"] = true
 	this.TplNames = "auth/login.html"
 }
 
-// Post implemented Post method for LoginRouter.
-func (this *LoginRouter) Post() {
+// Login implemented user post login.
+func (this *LoginRouter) Login() {
+	if this.isLogin {
+		this.Redirect("/settings/profile", 302)
+		return
+	}
 
 }
 
-// RegisterRouter serves login page.
+// Logout implemented user logout page.
+func (this *LoginRouter) Logout() {
+	models.LogoutUser(this.CruSession)
+
+	// set flash message
+	flash := beego.NewFlash()
+	flash.Data["HasLogout"] = "true"
+	flash.Store(&this.Controller)
+
+	this.Redirect("/login", 302)
+}
+
+// RegisterRouter serves register page.
 type RegisterRouter struct {
 	baseRouter
 }
 
 // Get implemented Get method for RegisterRouter.
 func (this *RegisterRouter) Get() {
+	if this.isLogin {
+		this.Redirect("/settings/profile", 302)
+		return
+	}
+
 	this.Data["IsRegister"] = true
 	this.TplNames = "auth/register.html"
 }
 
-// Post implemented Post method for RegisterRouter.
-func (this *RegisterRouter) Post() {
+// Register implemented Post method for RegisterRouter.
+func (this *RegisterRouter) Register() {
+	if this.isLogin {
+		this.Redirect("/settings/profile", 302)
+		return
+	}
+
 	this.Data["IsRegister"] = true
 	this.TplNames = "auth/register.html"
 
@@ -90,7 +121,16 @@ func (this *RegisterRouter) Post() {
 		user := new(models.User)
 		if err := models.RegisterUser(form, user); err == nil {
 			models.SendRegisterMail(this.Locale, user)
-			this.Data["IsSuccess"] = true
+
+			// login user
+			models.LoginUser(this.CruSession, user)
+
+			// set flash message
+			flash := beego.NewFlash()
+			flash.Data["RegSuccess"] = "true"
+			flash.Store(&this.Controller)
+
+			this.Redirect("/settings/profile", 302)
 
 		} else {
 			beego.Error(err)
@@ -112,24 +152,34 @@ func (this *RegisterRouter) Post() {
 
 }
 
-// Success implemented Register Success Page.
-func (this *RegisterRouter) Success() {
-
-}
-
-// Resend implemented post resend active code.
-func (this *RegisterRouter) Resend() {
-
-}
-
 // Active implemented check Email actice code.
 func (this *RegisterRouter) Active() {
+	code := this.Ctx.Input.Params(":code")
 
-}
+	if this.user.IsActive {
+		this.Redirect("/settings/profile", 302)
+		return
+	}
 
-// ActiveSuccess implemented Email active success page .
-func (this *RegisterRouter) ActiveSuccess() {
+	var user models.User
 
+	beego.Info(models.VerifyUserActiveCode(&user, code))
+
+	if models.VerifyUserActiveCode(&user, code) {
+		user.IsActive = true
+		user.Rands = utils.GetRandomString(10)
+		if err := user.Update("IsActive", "Rands", "Updated"); err != nil {
+			beego.Error(err)
+		}
+		if this.isLogin {
+			this.user = user
+		}
+		this.Data["Success"] = true
+	} else {
+		this.Data["Success"] = false
+	}
+
+	this.TplNames = "auth/active.html"
 }
 
 // ForgotRouter serves login page.
@@ -150,4 +200,29 @@ type ResetRouter struct {
 // Get implemented Get method for ResetRouter.
 func (this *ResetRouter) Get() {
 	this.TplNames = "auth/reset.html"
+}
+
+// SettingsRouter serves user settings.
+type SettingsRouter struct {
+	baseRouter
+}
+
+// Active implemented user account email active.
+func (this *SettingsRouter) Active() {
+	this.TplNames = "settings/profile.html"
+}
+
+// Profile implemented user profile settings page.
+func (this *SettingsRouter) Profile() {
+	if !this.isLogin {
+		this.Redirect("/login", 302)
+		return
+	}
+
+	this.TplNames = "settings/profile.html"
+}
+
+// ProfileSave implemented save user profile.
+func (this *SettingsRouter) ProfileSave() {
+	this.TplNames = "settings/profile.html"
 }

@@ -233,8 +233,9 @@ input[type="password"]:-ms-input-placeholder {
 }
 
 .breadcrumb .divider {
-  font-size: 10px;
-  padding: 0 10px;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 0 5px;
 }
 
 /* login page */

@@ -1,4 +1,4 @@
-// Copyright 2013 beebbs authors
+// Copyright 2013 wetalk authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -16,15 +16,16 @@
 package main
 
 import (
+	"html/template"
 	"strings"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/beego/i18n"
 
-	"github.com/beego/beebbs/mailer"
-	"github.com/beego/beebbs/routers"
-	"github.com/beego/beebbs/utils"
+	"github.com/beego/wetalk/mailer"
+	"github.com/beego/wetalk/routers"
+	"github.com/beego/wetalk/utils"
 )
 
 const (
@@ -106,19 +107,25 @@ func main() {
 
 	// Register routers.
 	beego.Router("/", &routers.HomeRouter{})
-	beego.Router("/login", &routers.LoginRouter{})
 
-	beego.Router("/register", &routers.RegisterRouter{})
-	beego.Router("/register/success", &routers.RegisterRouter{}, "get:Success")
-	beego.Router("/active/success", &routers.RegisterRouter{}, "get:ActiveSuccess")
-	beego.Router("/active/:code([0-9a-zA-Z]+)", &routers.RegisterRouter{}, "get:Active")
-	beego.Router("/active/resend", &routers.RegisterRouter{}, "post:Resend")
+	login := &routers.LoginRouter{}
+	beego.Router("/login", login, "post:Login")
+	beego.Router("/logout", login, "get:Logout")
+
+	register := &routers.RegisterRouter{}
+	beego.Router("/register", register, "post:Register")
+	beego.Router("/active/:code([0-9a-zA-Z]+)", register, "get:Active")
+
+	settings := new(routers.SettingsRouter)
+	beego.Router("/settings/profile", settings, "get:Profile;post:ProfileSave")
 
 	beego.Router("/forgot", &routers.ForgotRouter{})
 	beego.Router("/reset", &routers.ResetRouter{})
 
 	// Register template functions.
-	beego.AddFuncMap("i18n", i18n.Tr)
+	beego.AddFuncMap("i18n", func(locale, format string, args ...interface{}) template.HTML {
+		return template.HTML(i18n.Tr(locale, format, args...))
+	})
 
 	// "robot.txt"
 	beego.Router("/robot.txt", &routers.RobotRouter{})

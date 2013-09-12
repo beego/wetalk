@@ -11,7 +11,7 @@
 		]
 	},
 	"bale": {
-		"import": "github.com/beego/beebbs/bale",
+		"import": "github.com/beego/wetalk/bale",
 		"dirs": [
 			"views", "static", "conf"
 		],

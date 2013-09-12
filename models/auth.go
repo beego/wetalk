@@ -1,4 +1,4 @@
-// Copyright 2013 beebbs authors
+// Copyright 2013 wetalk authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -15,11 +15,14 @@
 package models
 
 import (
+	"encoding/hex"
 	"fmt"
 	"strings"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/beego/beebbs/utils"
+	"github.com/astaxie/beego/session"
+
+	"github.com/beego/wetalk/utils"
 )
 
 // CanRegistered checks if the username or e-mail is available.
@@ -69,6 +72,28 @@ func RegisterUser(form RegisterForm, user *User) error {
 	return NewUser(user)
 }
 
+// login user
+func LoginUser(sess session.SessionStore, user *User) {
+	sess.Set("auth_user_id", user.Id)
+}
+
+// logout user
+func LogoutUser(sess session.SessionStore) {
+	sess.Delete("auth_user_id")
+}
+
+// get user if key exist in session
+func GetUserBySession(sess session.SessionStore, user *User) bool {
+	if id, ok := sess.Get("auth_user_id").(int); ok && id > 0 {
+		*user = User{Id: id}
+		if orm.NewOrm().Read(user) == nil {
+			return true
+		}
+	}
+
+	return false
+}
+
 // verify username/email and password
 func VerifyUser(username, password string, user *User) bool {
 	// search user by username or email
@@ -91,7 +116,7 @@ func VerifyUser(username, password string, user *User) bool {
 		encoded = user.Password[:11]
 	}
 
-	if VerifyPassword(password, salt, encoded) {
+	if verifyPassword(password, salt, encoded) {
 		// success
 		return true
 	}
@@ -99,34 +124,65 @@ func VerifyUser(username, password string, user *User) bool {
 }
 
 // compare raw password and encoded password
-func VerifyPassword(rawPwd, salt, encodedPwd string) bool {
+func verifyPassword(rawPwd, salt, encodedPwd string) bool {
 	return utils.EncodePassword(rawPwd, salt) == encodedPwd
+}
+
+// verify time limit code
+func verifyTimeLimitCode(user *User, code string, data string, days int) bool {
+	if len(code) <= utils.TimeLimitCodeLength {
+		return false
+	}
+
+	// time limit code
+	prefix := code[:utils.TimeLimitCodeLength]
+
+	// through tail hex username query user
+	hexStr := code[utils.TimeLimitCodeLength:]
+	if b, err := hex.DecodeString(hexStr); err == nil {
+		user.UserName = string(b)
+		if orm.NewOrm().Read(user, "UserName") != nil {
+			return false
+		}
+	} else {
+		return false
+	}
+
+	return utils.VerifyTimeLimitCode(data, days, prefix)
 }
 
 // verify active code when active account
 func VerifyUserActiveCode(user *User, code string) bool {
 	days := utils.ActiveCodeLives
 	data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands
-	return utils.VerifyTimeLimitCode(data, days, code)
+	return verifyTimeLimitCode(user, code, data, days)
 }
 
 // create a time limit code for user active
 func CreateUserActiveCode(user *User, startInf interface{}) string {
 	days := utils.ActiveCodeLives
 	data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands
-	return utils.CreateTimeLimitCode(data, days, startInf)
+	code := utils.CreateTimeLimitCode(data, days, startInf)
+
+	// add tail hex username
+	code += hex.EncodeToString([]byte(user.UserName))
+	return code
 }
 
 // verify code when reset password
 func VerifyUserResetPwdCode(user *User, code string) bool {
 	days := utils.ResetPwdCodeLives
 	data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands + user.Updated.String()
-	return utils.VerifyTimeLimitCode(data, days, code)
+	return verifyTimeLimitCode(user, code, data, days)
 }
 
 // create a time limit code for user reset password
 func CreateUserResetPwdCode(user *User, startInf interface{}) string {
 	days := utils.ResetPwdCodeLives
 	data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands + user.Updated.String()
-	return utils.CreateTimeLimitCode(data, days, startInf)
+	code := utils.CreateTimeLimitCode(data, days, startInf)
+
+	// add tail hex username
+	code += hex.EncodeToString([]byte(user.UserName))
+	return code
 }

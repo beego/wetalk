@@ -25,7 +25,8 @@
             <ul class="nav navbar-nav pull-right">
                 {{if .IsLogin}}
                 <li class="avatar">
-                    <img class="small" src="http://gravatar.qiniudn.com/avatar/50c6d70b642671bea1c8144e92f1ac6f?size=48">
+                    <img class="small" src="http://gravatar.qiniudn.com/avatar/{{.User.GrEmail}}?size=48">
+                <li><a href="/logout">{{i18n .Lang "Logout"}}</a></li>
                 </li>
                 {{else}}
                 <li {{if .IsLoginPage}}class="active"{{end}}><a href="/login">{{i18n .Lang "Login"}}</a></li>

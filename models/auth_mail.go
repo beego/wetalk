@@ -3,8 +3,8 @@ package models
 import (
 	"fmt"
 
-	"github.com/beego/beebbs/mailer"
-	"github.com/beego/beebbs/utils"
+	"github.com/beego/wetalk/mailer"
+	"github.com/beego/wetalk/utils"
 	"github.com/beego/i18n"
 )
 

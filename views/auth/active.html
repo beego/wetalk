@@ -1,0 +1,37 @@
+{{template "base/base.html" .}}
+{{define "head"}}<title>{{i18n .Lang "User Active"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-8 col-md-offset-2">
+    	<div class="box">
+    		<div class="cell first breadcrumb">
+    			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang .AppName}}</a>
+    		</div>
+
+    		<div class="cell last">
+    			<div class="container">
+    				<div class="col-md-7">
+                        {{if .Success}}
+                            <h3>{{i18n .Lang "Success Active !"}}</h3>
+                            <hr>
+                            <p>
+                                {{i18n .Lang "Your email account has verified."}}
+                                <br><br>
+                                <a class="btn btn-default" href="{{.AppUrl}}settings/profile">{{i18n .Lang "View my profile settings"}}</a>
+                            </p>
+                        {{else}}
+                            <h3>{{i18n .Lang "Failed Active !"}}</h3>
+                            <hr>
+                            <p>
+                                {{i18n .Lang "Your email account has not verified, may be you verify code expired or wrong."}}
+                                <br><br>
+                                <a class="btn btn-default btn-danger" href="{{.AppUrl}}settings/profile">{{i18n .Lang "Resend active email"}}</a>
+                            </p>
+                        {{end}}
+    				</div>
+    			</div>
+			</div>
+    	</div>
+	</div>
+</div>
+{{end}}

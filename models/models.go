@@ -1,4 +1,4 @@
-// Copyright 2013 beebbs authors
+// Copyright 2013 wetalk authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/beego/beebbs/utils"
+	"github.com/beego/wetalk/utils"
 )
 
 // global settings name -> value
@@ -52,6 +52,14 @@ type User struct {
 	Rands     string    `orm:"size(10)"`
 	Created   time.Time `orm:"auto_now_add"`
 	Updated   time.Time `orm:"auto_now"`
+}
+
+func (u *User) Update(fields ...string) error {
+	fields = append(fields, "Updated")
+	if _, err := orm.NewOrm().Update(u, fields...); err != nil {
+		return err
+	}
+	return nil
 }
 
 // NewUser saves 'User' into database.

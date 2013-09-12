@@ -1,4 +1,4 @@
-// Copyright 2013 beebbs authors
+// Copyright 2013 wetalk authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -24,8 +24,8 @@ import (
 	"github.com/astaxie/beego/context"
 	"github.com/beego/i18n"
 
-	"github.com/beego/beebbs/models"
-	"github.com/beego/beebbs/utils"
+	"github.com/beego/wetalk/models"
+	"github.com/beego/wetalk/utils"
 )
 
 var langTypes []*langType // Languages are supported.
@@ -39,7 +39,8 @@ type langType struct {
 type baseRouter struct {
 	beego.Controller
 	i18n.Locale
-	user models.User
+	user    models.User
+	isLogin bool
 }
 
 // Prepare implemented Prepare method for baseRouter.
@@ -82,6 +83,22 @@ func (this *baseRouter) Prepare() {
 		i := strings.Index(this.Ctx.Request.RequestURI, "?")
 		this.Redirect(this.Ctx.Request.RequestURI[:i], 302)
 	}
+
+	// read flash message
+	beego.ReadFromRequest(&this.Controller)
+
+	// start session
+	sess := this.StartSession()
+
+	// save logined user if exist in session
+	if models.GetUserBySession(sess, &this.user) {
+		this.isLogin = true
+		this.Data["User"] = this.user
+	} else {
+		this.isLogin = false
+	}
+
+	this.Data["IsLogin"] = this.isLogin
 }
 
 // setLangVer sets site language version.

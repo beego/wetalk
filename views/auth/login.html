@@ -13,6 +13,11 @@
     					<h3 class="title">
     						<i class="icon icon-user"></i> {{i18n .Lang "Login"}}
     					</h3>
+                        {{if .flash.HasLogout}}
+                        <div class="alert alert-success">
+                            <p>{{i18n .Lang "Logout success."}}</p>
+                        </div>
+                        {{end}}
     					<form method="POST">
     						<div class="form-group">
                             	<label for="login-username">{{i18n .Lang "Username"}} or {{i18n .Lang "Email"}}</label>
