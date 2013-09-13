@@ -29,21 +29,54 @@ type LoginRouter struct {
 
 // Get implemented login page.
 func (this *LoginRouter) Get() {
+	this.Data["IsLoginPage"] = true
+	this.TplNames = "auth/login.html"
+
 	if this.isLogin {
 		this.Redirect("/settings/profile", 302)
 		return
 	}
-
-	this.Data["IsLoginPage"] = true
-	this.TplNames = "auth/login.html"
 }
 
 // Login implemented user post login.
 func (this *LoginRouter) Login() {
+	this.Data["IsLoginPage"] = true
+	this.TplNames = "auth/login.html"
+
 	if this.isLogin {
 		this.Redirect("/settings/profile", 302)
 		return
 	}
+
+	// check xsrf token
+	this.CheckXsrfCookie()
+
+	username := this.GetString("username")
+
+	// Put data back in case users input invalid data for any section.
+	this.Data["username"] = username
+
+	// check form once
+	if this.FormOnceNotMatch() {
+		return
+	}
+
+	password := this.GetString("password")
+
+	if models.VerifyUser(username, password, &this.user) {
+		// should re-create session id
+		// this.DestroySession()
+		// this.StartSession()
+		// TODO
+
+		// login user
+		models.LoginUser(this.CruSession, &this.user)
+
+		this.Redirect("/", 302)
+		return
+	}
+
+	this.Data["Error"] = true
 
 }
 
@@ -51,10 +84,8 @@ func (this *LoginRouter) Login() {
 func (this *LoginRouter) Logout() {
 	models.LogoutUser(this.CruSession)
 
-	// set flash message
-	flash := beego.NewFlash()
-	flash.Data["HasLogout"] = "true"
-	flash.Store(&this.Controller)
+	// write flash message
+	this.FlashWrite("HasLogout", "true")
 
 	this.Redirect("/login", 302)
 }
@@ -71,25 +102,44 @@ func (this *RegisterRouter) Get() {
 		return
 	}
 
+	this.FormOnceCreate()
+
 	this.Data["IsRegister"] = true
 	this.TplNames = "auth/register.html"
 }
 
 // Register implemented Post method for RegisterRouter.
 func (this *RegisterRouter) Register() {
+	this.Data["IsRegister"] = true
+	this.TplNames = "auth/register.html"
+
+	flashKey := "RegSuccess"
+
+	// if register success, then continue redirect avoid re submit form.
+	if this.NeedFlashRedirect(flashKey) {
+		this.FlashWrite(flashKey, "true")
+		this.FlashRedirect(flashKey, "/settings/profile", 302)
+		return
+	}
+
 	if this.isLogin {
 		this.Redirect("/settings/profile", 302)
 		return
 	}
 
-	this.Data["IsRegister"] = true
-	this.TplNames = "auth/register.html"
+	// check xsrf token
+	this.CheckXsrfCookie()
 
 	// Get input form.
 	form := models.RegisterForm{}
 	this.ParseForm(&form)
 	// Put data back in case users input invalid data for any section.
 	this.Data["Form"] = form
+
+	// check form once
+	if this.FormOnceNotMatch() {
+		return
+	}
 
 	errs := make(map[string]validation.ValidationError)
 	this.Data["FormError"] = errs
@@ -125,12 +175,12 @@ func (this *RegisterRouter) Register() {
 			// login user
 			models.LoginUser(this.CruSession, user)
 
-			// set flash message
-			flash := beego.NewFlash()
-			flash.Data["RegSuccess"] = "true"
-			flash.Store(&this.Controller)
+			// write flash message
+			this.FlashWrite(flashKey, "true")
 
-			this.Redirect("/settings/profile", 302)
+			this.FlashRedirect(flashKey, "/settings/profile", 302)
+
+			return
 
 		} else {
 			beego.Error(err)
@@ -149,12 +199,11 @@ func (this *RegisterRouter) Register() {
 			}
 		}
 	}
-
 }
 
 // Active implemented check Email actice code.
 func (this *RegisterRouter) Active() {
-	code := this.Ctx.Input.Params(":code")
+	code := this.GetString(":code")
 
 	if this.user.IsActive {
 		this.Redirect("/settings/profile", 302)
@@ -162,8 +211,6 @@ func (this *RegisterRouter) Active() {
 	}
 
 	var user models.User
-
-	beego.Info(models.VerifyUserActiveCode(&user, code))
 
 	if models.VerifyUserActiveCode(&user, code) {
 		user.IsActive = true

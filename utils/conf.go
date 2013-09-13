@@ -20,6 +20,7 @@ import (
 
 	"github.com/Unknwon/com"
 	"github.com/Unknwon/goconfig"
+	"github.com/astaxie/beego/cache"
 )
 
 var (
@@ -40,7 +41,8 @@ var (
 )
 
 var (
-	Cfg *goconfig.ConfigFile
+	Cfg   *goconfig.ConfigFile
+	Cache cache.Cache
 )
 
 // LoadConfig loads configuration file.

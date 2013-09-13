@@ -15,6 +15,7 @@
     						<i class="icon icon-user"></i> {{i18n .Lang "Sign Up"}}
     					</h3>
     					<form method="POST" action="">
+                            {{.xsrf_html}}{{.once_html}}
     						<div class="form-group{{if .FormError.UserName}} has-error{{end}}">
                             	<label for="register-username">{{i18n .Lang "Username"}}</label>
                             	<input id="register-username" value="{{.Form.UserName}}" type="text" name="username" class="form-control" placeholder="{{i18n .Lang "Please enter your username"}}">

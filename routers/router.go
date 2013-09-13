@@ -16,6 +16,7 @@
 package routers
 
 import (
+	"html/template"
 	"net/url"
 	"strings"
 	"time"
@@ -91,14 +92,115 @@ func (this *baseRouter) Prepare() {
 	sess := this.StartSession()
 
 	// save logined user if exist in session
-	if models.GetUserBySession(sess, &this.user) {
+	if models.GetUserFromSession(sess, &this.user) {
 		this.isLogin = true
 		this.Data["User"] = this.user
+		this.Data["IsLogin"] = this.isLogin
 	} else {
 		this.isLogin = false
 	}
 
-	this.Data["IsLogin"] = this.isLogin
+	// pass xsrf helper to template context
+	xsrfToken := this.Controller.XsrfToken()
+	this.Data["xsrf_token"] = xsrfToken
+	this.Data["xsrf_html"] = template.HTML(this.Controller.XsrfFormHtml())
+
+	if this.NeedFlashRedirect(this.Ctx.Request.RequestURI) {
+		this.EndFlashRedirect()
+	}
+}
+
+// read beego flash message
+func (this *baseRouter) FlashRead(key string) (string, bool) {
+	if data, ok := this.Data["flash"].(map[string]string); ok {
+		value, ok := data[key]
+		return value, ok
+	}
+	return "", false
+}
+
+// write beego flash message
+func (this *baseRouter) FlashWrite(key string, value string) {
+	flash := beego.NewFlash()
+	flash.Data[key] = value
+	flash.Store(&this.Controller)
+}
+
+// check flash redirect
+func (this *baseRouter) NeedFlashRedirect(anys ...string) bool {
+	v := this.GetSession("on_redirect")
+	if s, ok := v.(string); ok {
+		parts := strings.Split(s, "\r\n")
+		flag := parts[0]
+		value := ""
+		if len(parts) > 1 {
+			value = parts[1]
+		}
+		// if match any then return true
+		for _, s := range anys {
+			if flag == s || value == s {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// set flash redirect
+func (this *baseRouter) FlashRedirect(flag string, uri string, code int) {
+	var value string
+	if uri != "" {
+		value = flag + "\r\n" + uri
+	} else {
+		value = flag
+	}
+	this.SetSession("on_redirect", value)
+	this.Redirect(uri, code)
+}
+
+// clear flash redirect
+func (this *baseRouter) EndFlashRedirect() {
+	this.DelSession("on_redirect")
+}
+
+// check form once, void re-submit
+func (this *baseRouter) FormOnceNotMatch() bool {
+	notMatch := false
+	recreat := false
+	// exist in request value
+	if value, ok := this.Input()["_once"]; ok && len(value) > 0 {
+		// exist in session
+		if v, ok := this.GetSession("form_once").(string); ok && v != "" {
+			// not match
+			if value[0] != v {
+				notMatch = true
+			} else {
+				// if matched then re-creat once
+				recreat = true
+			}
+		}
+	}
+	this.FormOnceCreate(recreat)
+	return notMatch
+}
+
+// create form once html
+func (this *baseRouter) FormOnceCreate(args ...bool) {
+	var value string
+	var creat bool
+	creat = len(args) > 0 && args[0]
+	if !creat {
+		if v, ok := this.GetSession("form_once").(string); ok && v != "" {
+			value = v
+		} else {
+			creat = true
+		}
+	}
+	if creat {
+		value = utils.GetRandomString(10)
+		this.SetSession("form_once", value)
+	}
+	this.Data["once_html"] = template.HTML(`<input type="hidden" name="_once" value="` + value + `">`)
 }
 
 // setLangVer sets site language version.

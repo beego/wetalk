@@ -83,7 +83,7 @@ func LogoutUser(sess session.SessionStore) {
 }
 
 // get user if key exist in session
-func GetUserBySession(sess session.SessionStore, user *User) bool {
+func GetUserFromSession(sess session.SessionStore, user *User) bool {
 	if id, ok := sess.Get("auth_user_id").(int); ok && id > 0 {
 		*user = User{Id: id}
 		if orm.NewOrm().Read(user) == nil {
@@ -96,14 +96,16 @@ func GetUserBySession(sess session.SessionStore, user *User) bool {
 
 // verify username/email and password
 func VerifyUser(username, password string, user *User) bool {
+	var err error
 	// search user by username or email
-	qs := orm.NewOrm().QueryTable("user")
+	qs := orm.NewOrm()
 	if strings.Index(username, "@") == -1 {
-		qs = qs.Filter("UserName", username)
+		user.UserName = username
+		err = qs.Read(user, "UserName")
 	} else {
-		qs = qs.Filter("Email", username)
+		user.Email = username
+		err = qs.Read(user, "Email")
 	}
-	err := qs.One(user)
 	if err != nil {
 		// user not found
 		return false
@@ -113,7 +115,7 @@ func VerifyUser(username, password string, user *User) bool {
 	var salt, encoded string
 	if len(user.Password) > 11 {
 		salt = user.Password[:10]
-		encoded = user.Password[:11]
+		encoded = user.Password[11:]
 	}
 
 	if verifyPassword(password, salt, encoded) {

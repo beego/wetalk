@@ -16,10 +16,10 @@
 package main
 
 import (
-	"html/template"
 	"strings"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/cache"
 	"github.com/astaxie/beego/orm"
 	"github.com/beego/i18n"
 
@@ -82,11 +82,17 @@ func initialize() {
 	dataSource, _ := utils.Cfg.GetValue("orm", "data_source")
 	maxIdle, _ := utils.Cfg.Int("orm", "max_idle_conn")
 
+	// cache system
+	utils.Cache, err = cache.NewCache("memory", `{"interval":360}`)
+
 	// session settings
 	beego.SessionOn = true
 	beego.SessionProvider = utils.Cfg.MustValue("app", "session_provider")
 	beego.SessionSavePath = utils.Cfg.MustValue("app", "session_path")
 	beego.SessionName = utils.Cfg.MustValue("app", "session_name")
+
+	// xsrf token expire time
+	beego.XSRFExpire = 86400 * 365
 
 	// set mailer connect args
 	mailer.MailHost = utils.Cfg.MustValue("mailer", "host")
@@ -96,8 +102,12 @@ func initialize() {
 	// set default database
 	orm.RegisterDataBase("default", driverName, dataSource, maxIdle)
 
-	orm.RunSyncdb("default", false, true)
 	orm.RunCommand()
+
+	err = orm.RunSyncdb("default", false, false)
+	if err != nil {
+		beego.Error(err)
+	}
 }
 
 func main() {
@@ -121,11 +131,6 @@ func main() {
 
 	beego.Router("/forgot", &routers.ForgotRouter{})
 	beego.Router("/reset", &routers.ResetRouter{})
-
-	// Register template functions.
-	beego.AddFuncMap("i18n", func(locale, format string, args ...interface{}) template.HTML {
-		return template.HTML(i18n.Tr(locale, format, args...))
-	})
 
 	// "robot.txt"
 	beego.Router("/robot.txt", &routers.RobotRouter{})
