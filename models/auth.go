@@ -143,7 +143,7 @@ func VerifyUser(user *User, username, password string) bool {
 		return false
 	}
 
-	if verifyPassword(password, user.Password) {
+	if VerifyPassword(password, user.Password) {
 		// success
 		return true
 	}
@@ -151,7 +151,7 @@ func VerifyUser(user *User, username, password string) bool {
 }
 
 // compare raw password and encoded password
-func verifyPassword(rawPwd, encodedPwd string) bool {
+func VerifyPassword(rawPwd, encodedPwd string) bool {
 
 	// split
 	var salt, encoded string

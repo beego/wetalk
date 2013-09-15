@@ -327,10 +327,7 @@ func (this *baseRouter) ValidForm(form interface{}, names ...string) bool {
 	}
 	this.Data[name] = form
 
-	errName := "FormError"
-	if len(names) > 1 {
-		errName = names[1]
-	}
+	errName := name + "Error"
 
 	// check form once
 	if this.FormOnceNotMatch() {
@@ -352,7 +349,7 @@ func (this *baseRouter) ValidForm(form interface{}, names ...string) bool {
 func (this *baseRouter) SetFormError(field string, err validation.ValidationError, names ...string) {
 	errName := "FormError"
 	if len(names) > 0 {
-		errName = names[0]
+		errName = names[0] + "Error"
 	}
 
 	var errs map[string]validation.ValidationError

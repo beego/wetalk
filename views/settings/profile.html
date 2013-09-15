@@ -70,9 +70,11 @@
                                         <button type="button" data-toggle="button" data-name="hideemail" class="btn btn-default btn-xs btn-checked{{if .Form.HideEmail}} active{{end}}"><i class="icon icon-ok"></i></button>{{i18n .Lang "Public your email"}}
                                     </label>
                                 </div>
+                                {{if .User.IsActive}}{{else}}
                                 <div class="form-group">
                                     <button id="verify-mail-send" type="button" data-loading-text="{{i18n .Lang "Sended !"}}" class="btn btn-warning btn-xs">{{i18n .Lang "Send verify email"}}</button>
                                 </div>
+                                {{end}}
                             </div>
 
                             <div class="col-md-6">
@@ -126,9 +128,15 @@
                         <div class="col-md-6">
                             <form method="POST" action="">
                                 {{.xsrf_html}}{{.once_html}}
+                                <div class="form-group{{if .PwdFormError.PasswordOld}} has-error{{end}}">
+                                    <label for="profile-passowrd">{{i18n .Lang "Old Password"}}</label>
+                                    <input id="profile-passowrd" type="password" name="passwordold" class="form-control" placeholder="{{i18n .Lang "Please enter your old password"}}">
+                                    <p class="error-block">{{if .PwdFormError.PasswordOld}}{{i18n .Lang .PwdFormError.PasswordOld.Tmpl .PwdFormError.PasswordOld.LimitValue}}{{end}}</p>
+                                </div>
+
                                 <div class="form-group{{if .PwdFormError.Password}} has-error{{end}}">
-                                    <label for="profile-passowrd">{{i18n .Lang "Password"}}</label>
-                                    <input id="profile-passowrd" type="password" name="password" class="form-control" placeholder="{{i18n .Lang "Please enter your password"}}">
+                                    <label for="profile-passowrd">{{i18n .Lang "New Password"}}</label>
+                                    <input id="profile-passowrd" type="password" name="password" class="form-control" placeholder="{{i18n .Lang "Please enter your new password"}}">
                                     <p class="error-block">{{if .PwdFormError.Password}}{{i18n .Lang .PwdFormError.Password.Tmpl .PwdFormError.Password.LimitValue}}{{end}}</p>
                                 </div>
 
