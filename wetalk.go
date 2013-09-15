@@ -60,6 +60,7 @@ func initialize() {
 	utils.AppKeywords = utils.Cfg.MustValue("app", "keywords")
 	utils.AppJsVer = utils.Cfg.MustValue("app", "js_ver")
 	utils.AppCssVer = utils.Cfg.MustValue("app", "css_ver")
+	utils.AvatarURL = utils.Cfg.MustValue("app", "avatar_url")
 
 	utils.MailUser = utils.Cfg.MustValue("app", "mail_user")
 	utils.MailFrom = utils.Cfg.MustValue("app", "mail_from")
@@ -91,6 +92,7 @@ func initialize() {
 	beego.SessionSavePath = utils.Cfg.MustValue("app", "session_path")
 	beego.SessionName = utils.Cfg.MustValue("app", "session_name")
 
+	beego.EnableXSRF = true
 	// xsrf token expire time
 	beego.XSRFExpire = 86400 * 365
 
@@ -124,13 +126,15 @@ func main() {
 
 	register := &routers.RegisterRouter{}
 	beego.Router("/register", register, "post:Register")
+	beego.Router("/active/success", register, "get:ActiveSuccess")
 	beego.Router("/active/:code([0-9a-zA-Z]+)", register, "get:Active")
 
 	settings := new(routers.SettingsRouter)
 	beego.Router("/settings/profile", settings, "get:Profile;post:ProfileSave")
 
-	beego.Router("/forgot", &routers.ForgotRouter{})
-	beego.Router("/reset", &routers.ResetRouter{})
+	fogot := &routers.ForgotRouter{}
+	beego.Router("/forgot", fogot)
+	beego.Router("/reset/:code([0-9a-zA-Z]+)", fogot, "get:Reset;post:ResetPost")
 
 	// "robot.txt"
 	beego.Router("/robot.txt", &routers.RobotRouter{})

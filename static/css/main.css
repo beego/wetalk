@@ -39,8 +39,29 @@ input[type="password"]:-ms-input-placeholder {
   margin: 9px 10px 0px 0;
 }
 
-#navbar .avatar {
-  padding-top: 4px;
+#navbar .navbar-menu li.has-icon > a {
+  width: 35px;
+  padding: 0;
+}
+
+#navbar .navbar-menu li.has-icon .icon {
+  font-size: 20px;
+  line-height: 50px;
+  height: 50px;
+  margin-left: 10px;
+}
+
+#navbar .navbar-menu .avatar {
+  padding-top: 9px;
+}
+
+#navbar .navbar-menu .avatar a {
+  padding: 0;
+}
+
+#navbar .navbar-menu .avatar img {
+  width: 35px;
+  height: 35px;
 }
 
 #main {
@@ -114,6 +135,11 @@ input[type="password"]:-ms-input-placeholder {
   -webkit-border-bottom-right-radius: 3px;
 }
 
+.cell.slim {
+  padding-right: 25px;
+  padding-left: 25px;
+}
+
 /* cat-list */
 .cat-list {
   padding: 5px 10px;  
@@ -164,9 +190,14 @@ input[type="password"]:-ms-input-placeholder {
   text-decoration: none;
 }
 
-.avatar img.small {
+.avatar img.middle {
   width: 32px;
   height: 32px;
+}
+
+.avatar img.small {
+  width: 16px;
+  height: 16px;
 }
 
 
@@ -257,6 +288,8 @@ input[type="password"]:-ms-input-placeholder {
 /* btn-checked */
 .btn-checked,
 .btn-checked:hover {
+  margin-top: -3px;
+  margin-right: 8px;
   color: #ccc;
 }
 
@@ -287,13 +320,12 @@ input[type="password"]:-ms-input-placeholder {
   display: none;
 }
 
-.form-group.has-error .error-block {
+.form-group.has-error .error-block,
+.form-group.has-warning .error-block {
   display: inline-block;
   padding: 3px 5px;
   font-size: 12px;
   margin: 0 5px;
-  background-color: #f2dede;
-  border: 1px solid #e0c0c0;
   color: #b94a48;
   border-bottom-left-radius: 3px;
   -moz-border-bottom-left-radius: 3px;
@@ -301,5 +333,42 @@ input[type="password"]:-ms-input-placeholder {
   border-bottom-right-radius: 3px;
   -moz-border-bottom-right-radius: 3px;
   -webkit-border-bottom-right-radius: 3px;
+  background-color: #f2dede;
+  border: 1px solid #e0c0c0;
 }
+
+.form-group.has-warning .error-block {
+  background-color: #EFC994;
+  border: 1px solid #eea236;
+}
+
+.error-block .btn {
+  margin-top: 2px;
+}
+
+h1.underline,
+h2.underline,
+h3.underline,
+h4.underline,
+h5.underline,
+h6.underline {
+  padding: 0 0 15px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* settings profile */
+.profile-avatar {
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: #eee;
+  border: 1px solid #eee;
+}
+
+.profile-avatar img {
+  vertical-align: bottom;
+  margin-right: 10px;
+}
+
+
 

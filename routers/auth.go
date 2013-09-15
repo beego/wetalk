@@ -19,7 +19,6 @@ import (
 	"github.com/astaxie/beego/validation"
 
 	"github.com/beego/wetalk/models"
-	"github.com/beego/wetalk/utils"
 )
 
 // LoginRouter serves login page.
@@ -32,57 +31,42 @@ func (this *LoginRouter) Get() {
 	this.Data["IsLoginPage"] = true
 	this.TplNames = "auth/login.html"
 
-	if this.isLogin {
-		this.Redirect("/settings/profile", 302)
+	// no need login
+	if this.CheckLoginRedirect(false) {
 		return
 	}
 }
 
-// Login implemented user post login.
+// Login implemented user login.
 func (this *LoginRouter) Login() {
 	this.Data["IsLoginPage"] = true
 	this.TplNames = "auth/login.html"
 
-	if this.isLogin {
-		this.Redirect("/settings/profile", 302)
+	// no need login
+	if this.CheckLoginRedirect(false) {
 		return
 	}
 
-	// check xsrf token
-	this.CheckXsrfCookie()
-
-	username := this.GetString("username")
-
-	// Put data back in case users input invalid data for any section.
-	this.Data["username"] = username
-
-	// check form once
-	if this.FormOnceNotMatch() {
+	form := models.LoginForm{}
+	// valid form and put errors to template context
+	if this.ValidForm(&form) == false {
 		return
 	}
 
-	password := this.GetString("password")
-
-	if models.VerifyUser(username, password, &this.user) {
-		// should re-create session id
-		// this.DestroySession()
-		// this.StartSession()
-		// TODO
-
+	if models.VerifyUser(&this.user, form.UserName, form.Password) {
 		// login user
-		models.LoginUser(this.CruSession, &this.user)
+		models.LoginUser(&this.user, &this.Controller)
 
 		this.Redirect("/", 302)
 		return
 	}
 
 	this.Data["Error"] = true
-
 }
 
 // Logout implemented user logout page.
 func (this *LoginRouter) Logout() {
-	models.LogoutUser(this.CruSession)
+	models.LogoutUser(&this.Controller)
 
 	// write flash message
 	this.FlashWrite("HasLogout", "true")
@@ -97,12 +81,10 @@ type RegisterRouter struct {
 
 // Get implemented Get method for RegisterRouter.
 func (this *RegisterRouter) Get() {
-	if this.isLogin {
-		this.Redirect("/settings/profile", 302)
+	// no need login
+	if this.CheckLoginRedirect(false) {
 		return
 	}
-
-	this.FormOnceCreate()
 
 	this.Data["IsRegister"] = true
 	this.TplNames = "auth/register.html"
@@ -115,118 +97,99 @@ func (this *RegisterRouter) Register() {
 
 	flashKey := "RegSuccess"
 
-	// if register success, then continue redirect avoid re submit form.
-	if this.NeedFlashRedirect(flashKey) {
-		this.FlashWrite(flashKey, "true")
-		this.FlashRedirect(flashKey, "/settings/profile", 302)
+	// no need login
+	if this.CheckLoginRedirect(false) {
 		return
 	}
 
-	if this.isLogin {
-		this.Redirect("/settings/profile", 302)
-		return
-	}
-
-	// check xsrf token
-	this.CheckXsrfCookie()
-
-	// Get input form.
 	form := models.RegisterForm{}
-	this.ParseForm(&form)
-	// Put data back in case users input invalid data for any section.
-	this.Data["Form"] = form
-
-	// check form once
-	if this.FormOnceNotMatch() {
-		return
-	}
-
-	errs := make(map[string]validation.ValidationError)
-	this.Data["FormError"] = errs
-
-	// Verify basic input.
-	valid := validation.Validation{}
-	if ok, _ := valid.Valid(&form); !ok {
-		utils.GetFirstValidErrors(valid.Errors, &errs)
+	// valid form and put errors to template context
+	if this.ValidForm(&form) == false {
 		return
 	}
 
 	// Check if passwords of two times are same.
 	if form.Password != form.PasswordRe {
-		errs["PasswordRe"] = validation.ValidationError{
+		this.SetFormError("PasswordRe", validation.ValidationError{
 			Tmpl: this.Locale.Tr("Password not match first input"),
-		}
+		})
 		return
 	}
 
 	// Process register.
 	e1, e2, err := models.CanRegistered(form.UserName, form.Email)
 	if err != nil {
-		beego.Error(err)
+		beego.Error("Register: CanRegistered", err)
 		return
 	}
 
 	if e1 && e2 {
 		// Create new user.
 		user := new(models.User)
-		if err := models.RegisterUser(form, user); err == nil {
+		if err := models.RegisterUser(user, form); err == nil {
 			models.SendRegisterMail(this.Locale, user)
 
 			// login user
-			models.LoginUser(this.CruSession, user)
+			models.LoginUser(user, &this.Controller)
 
-			// write flash message
-			this.FlashWrite(flashKey, "true")
-
-			this.FlashRedirect(flashKey, "/settings/profile", 302)
+			this.FlashRedirect("/settings/profile", 302, flashKey)
 
 			return
 
 		} else {
-			beego.Error(err)
+			beego.Error("Register: RegisterUser", err)
 		}
 
 	} else {
 		if !e1 {
-			errs["UserName"] = validation.ValidationError{
+			this.SetFormError("UserName", validation.ValidationError{
 				Tmpl: this.Locale.Tr("Username has been already taken"),
-			}
+			})
 		}
 
 		if !e2 {
-			errs["Email"] = validation.ValidationError{
+			this.SetFormError("Email", validation.ValidationError{
 				Tmpl: this.Locale.Tr("Email has been already taken"),
-			}
+			})
 		}
 	}
 }
 
 // Active implemented check Email actice code.
 func (this *RegisterRouter) Active() {
-	code := this.GetString(":code")
+	this.TplNames = "auth/active.html"
 
-	if this.user.IsActive {
-		this.Redirect("/settings/profile", 302)
+	// no need active
+	if this.CheckActiveRedirect(false) {
 		return
 	}
+
+	code := this.GetString(":code")
 
 	var user models.User
 
 	if models.VerifyUserActiveCode(&user, code) {
 		user.IsActive = true
-		user.Rands = utils.GetRandomString(10)
+		user.Rands = models.GetUserSalt()
 		if err := user.Update("IsActive", "Rands", "Updated"); err != nil {
-			beego.Error(err)
+			beego.Error("Active: user Update ", err)
 		}
 		if this.isLogin {
 			this.user = user
 		}
-		this.Data["Success"] = true
+
+		this.Redirect("/active/success", 302)
+
 	} else {
 		this.Data["Success"] = false
 	}
+}
 
+// ActiveSuccess implemented success page when email active code verified.
+func (this *RegisterRouter) ActiveSuccess() {
 	this.TplNames = "auth/active.html"
+
+	this.Data["Success"] = true
 }
 
 // ForgotRouter serves login page.
@@ -237,39 +200,95 @@ type ForgotRouter struct {
 // Get implemented Get method for ForgotRouter.
 func (this *ForgotRouter) Get() {
 	this.TplNames = "auth/forgot.html"
+
+	// no need login
+	if this.CheckLoginRedirect(false) {
+		return
+	}
 }
 
-// ResetRouter serves login page.
-type ResetRouter struct {
-	baseRouter
-}
+// Get implemented Post method for ForgotRouter.
+func (this *ForgotRouter) Post() {
+	this.TplNames = "auth/forgot.html"
 
-// Get implemented Get method for ResetRouter.
-func (this *ResetRouter) Get() {
-	this.TplNames = "auth/reset.html"
-}
-
-// SettingsRouter serves user settings.
-type SettingsRouter struct {
-	baseRouter
-}
-
-// Active implemented user account email active.
-func (this *SettingsRouter) Active() {
-	this.TplNames = "settings/profile.html"
-}
-
-// Profile implemented user profile settings page.
-func (this *SettingsRouter) Profile() {
-	if !this.isLogin {
-		this.Redirect("/login", 302)
+	// no need login
+	if this.CheckLoginRedirect(false) {
 		return
 	}
 
-	this.TplNames = "settings/profile.html"
+	flashKey := "SuccessSend"
+
+	form := models.FogotForm{}
+	// valid form and put errors to template context
+	if this.ValidForm(&form) == false {
+		return
+	}
+
+	var user models.User
+	if models.HasUser(&user, form.Email) {
+		models.SendResetPwdMail(this.Locale, &user)
+
+		this.FlashRedirect("/forgot", 302, flashKey)
+		return
+
+	} else {
+		this.SetFormError("Email", validation.ValidationError{
+			Tmpl: this.Locale.Tr("Wong email address, please check your input."),
+		})
+	}
 }
 
-// ProfileSave implemented save user profile.
-func (this *SettingsRouter) ProfileSave() {
-	this.TplNames = "settings/profile.html"
+// Reset implemented user password reset.
+func (this *ForgotRouter) Reset() {
+	this.TplNames = "auth/reset.html"
+
+	code := this.GetString(":code")
+
+	var user models.User
+
+	if models.VerifyUserResetPwdCode(&user, code) {
+		this.Data["Success"] = true
+	} else {
+		this.Data["Success"] = false
+	}
+}
+
+// Reset implemented user password reset.
+func (this *ForgotRouter) ResetPost() {
+	this.TplNames = "auth/reset.html"
+
+	code := this.GetString(":code")
+
+	var user models.User
+
+	if models.VerifyUserResetPwdCode(&user, code) {
+		this.Data["Success"] = true
+
+		form := models.RestPwdForm{}
+		if this.ValidForm(&form) == false {
+			return
+		}
+
+		// Check if passwords of two times are same.
+		if form.Password != form.PasswordRe {
+			this.SetFormError("PasswordRe", validation.ValidationError{
+				Tmpl: this.Locale.Tr("Password not match first input"),
+			})
+			return
+		}
+
+		user.IsActive = true
+		if err := models.SaveNewPassword(&user, form.Password); err != nil {
+			beego.Error("ResetPost Save New Password: ", err)
+		}
+
+		if this.isLogin {
+			models.LogoutUser(&this.Controller)
+		}
+
+		this.FlashRedirect("/login", 302, "ResetSuccess")
+
+	} else {
+		this.Data["Success"] = false
+	}
 }

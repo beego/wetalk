@@ -7,26 +7,37 @@
     		<div class="cell first breadcrumb">
     			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang .AppName}}</a>
     		</div>
-    		<div class="cell last">
-    			<div class="container">
-    				<div class="col-md-4 auth-page">
+    		<div class="cell last slim">
+    			<div class="row">
+                    {{if .flash.SuccessSend}}
+                    <div class="col-md-12">
+                        <h3>{{i18n .Lang "Success Send Mail !"}}</h3>
+                        <hr>
+                        <p>
+                            {{i18n .Lang "Please check your mailbox, and click the secure link to reset password."}}
+                        </p>
+                    </div>
+                    {{else}}
+    				<div class="col-md-6 auth-page">
     					<h3 class="title">
     						<i class="icon icon-user"></i> {{i18n .Lang "Forgot Password"}}
     					</h3>
-    					<form role="form">
-    						<div class="form-group">
-                            	<label for="the-username">{{i18n .Lang "Username"}} or {{i18n .Lang "Email"}}</label>
-                            	<input id="the-username" type="text" name="username" class="form-control" placeholder="{{i18n .Lang "Please enter your username or e-mail"}}">
+    					<form action="" method="POST">
+                            {{.xsrf_html}}{{.once_html}}
+    						<div class="form-group{{if .FormError}} has-error{{end}}">
+                            	<label for="the-email">{{i18n .Lang "Email"}}</label>
+                            	<input id="the-email" type="text" name="email" class="form-control" value="{{.Form.Email}}" placeholder="{{i18n .Lang "Please enter your e-mail"}}">
+                                <p class="error-block">{{if .FormError.Email}}{{i18n .Lang .FormError.Email.Tmpl .FormError.Email.LimitValue}}{{end}}</p>
 								<p class="help-block">{{i18n .Lang "This operaion lead to send your an e-mail with a reset secure link"}}</p>
     						</div>
                             <button class="btn btn-primary">{{i18n .Lang "Reset Password"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
     					</form>
     				</div>
 
-    				<div class="col-md-3 auth-page">
+    				<div class="col-md-6 auth-page">
         				<div class="auth-page">
         					<h3 class="title">
-        						<i class="icon icon-question"></i> {{i18n .Lang "Login"}}
+        						<i class="icon icon-question"></i> {{i18n .Lang "Help"}}
         					</h3>
         					<p class="well">
         						{{i18n .Lang "If you remember your password suddently, please Sign In."}}
@@ -36,6 +47,7 @@
         					</p>
 	        			</div>
     				</div>
+                    {{end}}
     			</div>
 			</div>
     	</div>

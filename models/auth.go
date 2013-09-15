@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/session"
 
@@ -54,14 +55,38 @@ func CanRegistered(userName string, email string) (bool, bool, error) {
 	return e1, e2, nil
 }
 
+// check if exist user by username or email
+func HasUser(user *User, username string) bool {
+	var err error
+	qs := orm.NewOrm()
+	if strings.IndexRune(username, '@') == -1 {
+		user.UserName = username
+		err = qs.Read(user, "UserName")
+	} else {
+		user.Email = username
+		err = qs.Read(user, "Email")
+	}
+	if err == nil {
+		return true
+	}
+	return false
+}
+
+// return a user salt token
+func GetUserSalt() string {
+	return utils.GetRandomString(10)
+}
+
 // register create user
-func RegisterUser(form RegisterForm, user *User) error {
+func RegisterUser(user *User, form RegisterForm) error {
 	// use random salt encode password
-	salt := utils.GetRandomString(10)
+	salt := GetUserSalt()
 	pwd := utils.EncodePassword(form.Password, salt)
 
 	user.UserName = form.UserName
 	user.Email = form.Email
+	user.NickName = form.UserName
+	user.HideEmail = true
 
 	// save salt and encode password, use $ as split char
 	user.Password = fmt.Sprintf("%s$%s", salt, pwd)
@@ -72,21 +97,38 @@ func RegisterUser(form RegisterForm, user *User) error {
 	return NewUser(user)
 }
 
+// set a new password to user
+func SaveNewPassword(user *User, password string) error {
+	salt := GetUserSalt()
+	user.Password = fmt.Sprintf("%s$%s", salt, utils.EncodePassword(password, salt))
+	user.Rands = GetUserSalt()
+	return user.Update("Password", "Rands")
+}
+
 // login user
-func LoginUser(sess session.SessionStore, user *User) {
+func LoginUser(user *User, c *beego.Controller) {
+	// should re-create session id
+	sess := c.StartSession()
+
+	// sess.SessionRelease()
+	// c.DestroySession()
+	// sess = c.StartSession()
+
 	sess.Set("auth_user_id", user.Id)
 }
 
 // logout user
-func LogoutUser(sess session.SessionStore) {
+func LogoutUser(c *beego.Controller) {
+	sess := c.StartSession()
 	sess.Delete("auth_user_id")
+	c.DestroySession()
 }
 
 // get user if key exist in session
-func GetUserFromSession(sess session.SessionStore, user *User) bool {
+func GetUserFromSession(user *User, sess session.SessionStore) bool {
 	if id, ok := sess.Get("auth_user_id").(int); ok && id > 0 {
 		*user = User{Id: id}
-		if orm.NewOrm().Read(user) == nil {
+		if user.Read() == nil {
 			return true
 		}
 	}
@@ -95,30 +137,13 @@ func GetUserFromSession(sess session.SessionStore, user *User) bool {
 }
 
 // verify username/email and password
-func VerifyUser(username, password string, user *User) bool {
-	var err error
+func VerifyUser(user *User, username, password string) bool {
 	// search user by username or email
-	qs := orm.NewOrm()
-	if strings.Index(username, "@") == -1 {
-		user.UserName = username
-		err = qs.Read(user, "UserName")
-	} else {
-		user.Email = username
-		err = qs.Read(user, "Email")
-	}
-	if err != nil {
-		// user not found
+	if HasUser(user, username) == false {
 		return false
 	}
 
-	// split
-	var salt, encoded string
-	if len(user.Password) > 11 {
-		salt = user.Password[:10]
-		encoded = user.Password[11:]
-	}
-
-	if verifyPassword(password, salt, encoded) {
+	if VerifyPassword(password, user.Password) {
 		// success
 		return true
 	}
@@ -126,38 +151,49 @@ func VerifyUser(username, password string, user *User) bool {
 }
 
 // compare raw password and encoded password
-func verifyPassword(rawPwd, salt, encodedPwd string) bool {
-	return utils.EncodePassword(rawPwd, salt) == encodedPwd
+func VerifyPassword(rawPwd, encodedPwd string) bool {
+
+	// split
+	var salt, encoded string
+	if len(encodedPwd) > 11 {
+		salt = encodedPwd[:10]
+		encoded = encodedPwd[11:]
+	}
+
+	return utils.EncodePassword(rawPwd, salt) == encoded
 }
 
-// verify time limit code
-func verifyTimeLimitCode(user *User, code string, data string, days int) bool {
+// get user by erify code
+func getVerifyUser(user *User, code string) bool {
 	if len(code) <= utils.TimeLimitCodeLength {
 		return false
 	}
 
-	// time limit code
-	prefix := code[:utils.TimeLimitCodeLength]
-
-	// through tail hex username query user
+	// use tail hex username query user
 	hexStr := code[utils.TimeLimitCodeLength:]
 	if b, err := hex.DecodeString(hexStr); err == nil {
 		user.UserName = string(b)
-		if orm.NewOrm().Read(user, "UserName") != nil {
-			return false
+		if user.Read("UserName") == nil {
+			return true
 		}
-	} else {
-		return false
 	}
 
-	return utils.VerifyTimeLimitCode(data, days, prefix)
+	return false
 }
 
 // verify active code when active account
 func VerifyUserActiveCode(user *User, code string) bool {
 	days := utils.ActiveCodeLives
-	data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands
-	return verifyTimeLimitCode(user, code, data, days)
+
+	if getVerifyUser(user, code) {
+		// time limit code
+		prefix := code[:utils.TimeLimitCodeLength]
+		data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands
+
+		return utils.VerifyTimeLimitCode(data, days, prefix)
+	}
+
+	return false
 }
 
 // create a time limit code for user active
@@ -174,8 +210,16 @@ func CreateUserActiveCode(user *User, startInf interface{}) string {
 // verify code when reset password
 func VerifyUserResetPwdCode(user *User, code string) bool {
 	days := utils.ResetPwdCodeLives
-	data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands + user.Updated.String()
-	return verifyTimeLimitCode(user, code, data, days)
+
+	if getVerifyUser(user, code) {
+		// time limit code
+		prefix := code[:utils.TimeLimitCodeLength]
+		data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands + user.Updated.String()
+
+		return utils.VerifyTimeLimitCode(data, days, prefix)
+	}
+
+	return false
 }
 
 // create a time limit code for user reset password

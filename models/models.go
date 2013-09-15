@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/beego/wetalk/utils"
 )
 
 // global settings name -> value
@@ -41,7 +40,7 @@ type User struct {
 	Password  string `orm:"size(128)"`
 	Url       string `orm:"size(100)"`
 	Email     string `orm:"size(80);unique"`
-	GrEmail   string `orm:"size(80)"`
+	GrEmail   string `orm:"size(32)"`
 	Info      string
 	HideEmail bool
 	Followers int
@@ -54,6 +53,13 @@ type User struct {
 	Updated   time.Time `orm:"auto_now"`
 }
 
+func (u *User) Read(fields ...string) error {
+	if err := orm.NewOrm().Read(u, fields...); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (u *User) Update(fields ...string) error {
 	fields = append(fields, "Updated")
 	if _, err := orm.NewOrm().Update(u, fields...); err != nil {
@@ -64,7 +70,7 @@ func (u *User) Update(fields ...string) error {
 
 // NewUser saves 'User' into database.
 func NewUser(u *User) error {
-	u.Rands = utils.GetRandomString(10)
+	u.Rands = GetUserSalt()
 	_, err := orm.NewOrm().Insert(u)
 	if err != nil {
 		return err
