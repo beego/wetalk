@@ -16,18 +16,134 @@
         <div class="col-md-9">
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}"> <i class="ahead icon-home"></i> </a> <i class="divider icon-angle-right"></i> {{i18n .Lang "User Profile"}}
+                    <a href="{{.AppUrl}}"> <i class="ahead icon-home"></i> </a> <i class="divider icon-angle-right"></i> <a href="">{{i18n .Lang "User Profile"}}</a>
                 </div>
-                <div class="cell last">
-                        {{if .flash.RegSuccess}}
-                        <div class="alert alert-success">
-                            <h4>{{i18n .Lang "Congratulations!"}}</h4>
-                            {{i18n .Lang "We have sent a verify e-mail to your mail box, please veify that before you can continue."}}
+                <div class="cell last slim">
+                    {{if .flash.RegSuccess}}
+                    <div class="alert alert-success">
+                        <h4>{{i18n .Lang "Congratulations!"}}</h4>
+                        {{i18n .Lang "We have sent a verify e-mail to your mail box, please veify that before you can continue."}}
+                    </div>
+                    {{end}}
+                    {{if .flash.ProfileSave}}
+                    <div class="alert alert-success">
+                        {{i18n .Lang "Profile success saved."}}
+                    </div>
+                    {{end}}
+                    {{if .flash.PasswordSave}}
+                    <div class="alert alert-success">
+                        {{i18n .Lang "Password success changed."}}
+                    </div>
+                    {{end}}
+                    <h3 class="underline">Base Profile</h3>
+                    <form method="POST" action="">
+                        {{.xsrf_html}}{{.once_html}}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="profile-username">{{i18n .Lang "Username"}}</label>
+                                    <input id="profile-username" value="{{.User.UserName}}" type="text" class="form-control" disabled>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group{{if .FormError.NickName}} has-error{{end}}">
+                                    <label for="profile-nickname">{{i18n .Lang "Nickname"}}</label>
+                                    <input id="profile-nickname" value="{{.Form.NickName}}" type="text" name="nickname" class="form-control" placeholder="{{i18n .Lang "Please enter your nickname"}}">
+                                    <p class="error-block">{{if .FormError.NickName}}{{i18n .Lang .FormError.NickName.Tmpl .FormError.NickName.LimitValue}}{{end}}</p>
+                                </div>
+                            </div>
                         </div>
-                        {{end}}
-                    <div class="col-md-8">
-                        <form method="POST">
-                        </form>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group{{if .FormError.Email}} has-error{{else}}{{if .User.IsActive}}{{else}} has-warning{{end}}{{end}}">
+                                    <label for="profile-email">{{i18n .Lang "Email"}}</label>
+                                    <input id="profile-email" value="{{.Form.Email}}" type="text" name="email" class="form-control" placeholder="{{i18n .Lang "Please enter your e-mail address"}}">
+                                    <p class="error-block">
+                                        {{if .FormError.Email}}{{i18n .Lang .FormError.Email.Tmpl .FormError.Email.LimitValue}}{{else}}{{if .User.IsActive}}{{else}}{{i18n .Lang "Please verify your e-mail address."}}{{end}}{{end}}
+                                    </p>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <input type="hidden" name="hideemail" value="{{.Form.HideEmail}}">
+                                        <button type="button" data-toggle="button" data-name="hideemail" class="btn btn-default btn-xs btn-checked{{if .Form.HideEmail}} active{{end}}"><i class="icon icon-ok"></i></button>{{i18n .Lang "Public your email"}}
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <button id="verify-mail-send" type="button" data-loading-text="{{i18n .Lang "Sended !"}}" class="btn btn-warning btn-xs">{{i18n .Lang "Send verify email"}}</button>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group{{if .FormError.Url}} has-error{{end}}">
+                                    <label for="profile-url">{{i18n .Lang "Website"}}</label>
+                                    <input id="profile-url" value="{{.Form.Url}}" type="text" name="url" class="form-control" placeholder="{{i18n .Lang "Please enter your site url"}}">
+                                    <p class="error-block">{{if .FormError.Url}}{{i18n .Lang .FormError.Url.Tmpl .FormError.Url.LimitValue}}{{end}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group{{if .FormError.GrEmail}} has-error{{end}}">
+                                    <label for="profile-gremail">{{i18n .Lang "Gravatar Token"}}</label>
+                                    <div class="profile-avatar avatar" data-url="{{.AvatarURL}}">
+                                        <img src="{{.AvatarURL}}{{.Form.GrEmail}}">
+                                        <img src="{{.AvatarURL}}{{.Form.GrEmail}}" class="middle">
+                                        <img src="{{.AvatarURL}}{{.Form.GrEmail}}" class="small">
+                                    </div>
+                                    <input id="profile-gremail" value="{{.Form.GrEmail}}" type="text" name="gremail" class="form-control" placeholder="{{i18n .Lang "You can enter an another gravatar token"}}">
+                                    <p class="error-block">{{if .FormError.GrEmail}}{{i18n .Lang .FormError.GrEmail.Tmpl .FormError.GrEmail.LimitValue}}{{end}}</p>
+                                    <p class="help-block">
+                                        {{i18n .Lang "Enter an email will convert to token, direct input token is supported."}}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group{{if .FormError.Info}} has-error{{end}}">
+                                    <label for="profile-info">{{i18n .Lang "Info"}}</label>
+                                    <textarea id="profile-info" type="text" name="info" class="form-control" placeholder="{{i18n .Lang "Please introduce yourself"}}" rows="5">{{.Form.Info}}</textarea>
+                                    <p class="error-block">{{if .FormError.Info}}{{i18n .Lang .FormError.Info.Tmpl .FormError.Info.LimitValue}}{{end}}</p>
+                                    <p class="help-block">{{i18n .Lang "Max-length is %d" 255}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="hidden" name="action" value="save-profile">
+                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "Save Profile"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <h3 class="underline">Reset Password</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form method="POST" action="">
+                                {{.xsrf_html}}{{.once_html}}
+                                <div class="form-group{{if .PwdFormError.Password}} has-error{{end}}">
+                                    <label for="profile-passowrd">{{i18n .Lang "Password"}}</label>
+                                    <input id="profile-passowrd" type="password" name="password" class="form-control" placeholder="{{i18n .Lang "Please enter your password"}}">
+                                    <p class="error-block">{{if .PwdFormError.Password}}{{i18n .Lang .PwdFormError.Password.Tmpl .PwdFormError.Password.LimitValue}}{{end}}</p>
+                                </div>
+
+                                <div class="form-group{{if .PwdFormError.PasswordRe}} has-error{{end}}">
+                                    <label for="profile-repeat-passowrd">{{i18n .Lang "Retype Password"}}</label>
+                                    <input id="profile-repeat-passowrd" type="password" name="passwordre" class="form-control" placeholder="{{i18n .Lang "Please reenter your password"}}">
+                                    <p class="error-block">{{if .PwdFormError.PasswordRe}}{{i18n .Lang .PwdFormError.PasswordRe.Tmpl .PwdFormError.PasswordRe.LimitValue}}{{end}}</p>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="hidden" name="action" value="change-password">
+                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "Change password"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -35,4 +151,14 @@
         </div>
 	</div>
 </div>
+<script type="text/javascript">
+    (function($){
+        $(document).on("click", "#verify-mail-send", function(){
+            var $btn = $(this);
+            $btn.button("loading");
+            $.post("", {action:"send-verify-email"}, function(data){
+            });
+        });
+    })(jQuery);
+</script>
 {{end}}

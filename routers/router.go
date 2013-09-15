@@ -23,6 +23,7 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
+	"github.com/astaxie/beego/validation"
 	"github.com/beego/i18n"
 
 	"github.com/beego/wetalk/models"
@@ -46,6 +47,13 @@ type baseRouter struct {
 
 // Prepare implemented Prepare method for baseRouter.
 func (this *baseRouter) Prepare() {
+	// check flash redirect, if match url then end, else for redirect return
+	if match, redir := this.CheckFlashRedirect(this.Ctx.Request.RequestURI); redir {
+		return
+	} else if match {
+		this.EndFlashRedirect()
+	}
+
 	if utils.IsProMode {
 	} else {
 		utils.AppJsVer = beego.Date(time.Now(), "YmdHis")
@@ -60,6 +68,7 @@ func (this *baseRouter) Prepare() {
 	this.Data["AppUrl"] = utils.AppUrl
 	this.Data["AppJsVer"] = utils.AppJsVer
 	this.Data["AppCssVer"] = utils.AppCssVer
+	this.Data["AvatarURL"] = utils.AvatarURL
 	this.Data["IsProMode"] = utils.IsProMode
 	this.Data["IsBeta"] = utils.IsBeta
 
@@ -92,7 +101,7 @@ func (this *baseRouter) Prepare() {
 	sess := this.StartSession()
 
 	// save logined user if exist in session
-	if models.GetUserFromSession(sess, &this.user) {
+	if models.GetUserFromSession(&this.user, sess) {
 		this.isLogin = true
 		this.Data["User"] = this.user
 		this.Data["IsLogin"] = this.isLogin
@@ -105,9 +114,78 @@ func (this *baseRouter) Prepare() {
 	this.Data["xsrf_token"] = xsrfToken
 	this.Data["xsrf_html"] = template.HTML(this.Controller.XsrfFormHtml())
 
-	if this.NeedFlashRedirect(this.Ctx.Request.RequestURI) {
-		this.EndFlashRedirect()
+	// if method is GET then auto create a form once token
+	if this.Ctx.Request.Method == "GET" {
+		this.FormOnceCreate()
 	}
+}
+
+// check if user not active then redirect
+func (this *baseRouter) CheckActiveRedirect(args ...interface{}) bool {
+	var url string
+	needActive := true
+	for _, arg := range args {
+		switch v := arg.(type) {
+		case bool:
+			needActive = v
+		case string:
+			// custom redirect url
+			url = v
+		}
+	}
+	if needActive {
+		// if need active and no login then redirect to login
+		if this.CheckLoginRedirect() {
+			return true
+		}
+		// redirect to active page
+		if !this.user.IsActive {
+			this.FlashRedirect("/settings/profile", 302, "NeedActive")
+			return true
+		}
+	} else {
+		// no need active
+		if this.user.IsActive {
+			if url == "" {
+				url = "/"
+			}
+			this.Redirect(url, 302)
+			return true
+		}
+	}
+	return false
+
+}
+
+// check if not login then redirect
+func (this *baseRouter) CheckLoginRedirect(args ...interface{}) bool {
+	var url string
+	needLogin := true
+	for _, arg := range args {
+		switch v := arg.(type) {
+		case bool:
+			needLogin = v
+		case string:
+			// custom redirect url
+			url = v
+		}
+	}
+
+	// if need login then redirect to /login
+	if needLogin && !this.isLogin {
+		this.Redirect("/login", 302)
+		return true
+	}
+
+	// if not need login then redirect to /
+	if !needLogin && this.isLogin {
+		if url == "" {
+			url = "/"
+		}
+		this.Redirect(url, 302)
+		return true
+	}
+	return false
 }
 
 // read beego flash message
@@ -126,35 +204,69 @@ func (this *baseRouter) FlashWrite(key string, value string) {
 	flash.Store(&this.Controller)
 }
 
-// check flash redirect
-func (this *baseRouter) NeedFlashRedirect(anys ...string) bool {
+// check flash redirect, ensure browser redirect to uri and display flash message.
+func (this *baseRouter) CheckFlashRedirect(value string) (match bool, redirect bool) {
 	v := this.GetSession("on_redirect")
-	if s, ok := v.(string); ok {
-		parts := strings.Split(s, "\r\n")
-		flag := parts[0]
-		value := ""
-		if len(parts) > 1 {
-			value = parts[1]
+	if params, ok := v.([]interface{}); ok {
+		if len(params) != 5 {
+			this.EndFlashRedirect()
+			goto end
 		}
-		// if match any then return true
-		for _, s := range anys {
-			if flag == s || value == s {
-				return true
+		uri := utils.ToStr(params[0])
+		code := 302
+		if c, ok := params[1].(int); ok {
+			if c/100 == 3 {
+				code = c
 			}
 		}
+		flag := utils.ToStr(params[2])
+		flagVal := utils.ToStr(params[3])
+		times := 0
+		if v, ok := params[4].(int); ok {
+			times = v
+		}
+
+		times += 1
+		if times > 3 {
+			// if max retry times reached then end
+			this.EndFlashRedirect()
+			goto end
+		}
+
+		// match uri or flash flag
+		if uri == value || flag == value {
+			match = true
+		} else {
+			// if no match then continue redirect
+			this.FlashRedirect(uri, code, flag, flagVal, times)
+			redirect = true
+		}
 	}
-	return false
+end:
+	return match, redirect
 }
 
 // set flash redirect
-func (this *baseRouter) FlashRedirect(flag string, uri string, code int) {
-	var value string
-	if uri != "" {
-		value = flag + "\r\n" + uri
-	} else {
-		value = flag
+func (this *baseRouter) FlashRedirect(uri string, code int, flag string, args ...interface{}) {
+	flagVal := "true"
+	times := 0
+	for _, arg := range args {
+		switch v := arg.(type) {
+		case string:
+			flagVal = v
+		case int:
+			times = v
+		}
 	}
-	this.SetSession("on_redirect", value)
+
+	if len(uri) == 0 || uri[0] != '/' {
+		panic("flash reirect only support same host redirect")
+	}
+
+	params := []interface{}{uri, code, flag, flagVal, times}
+	this.SetSession("on_redirect", params)
+
+	this.FlashWrite(flag, flagVal)
 	this.Redirect(uri, code)
 }
 
@@ -201,6 +313,80 @@ func (this *baseRouter) FormOnceCreate(args ...bool) {
 		this.SetSession("form_once", value)
 	}
 	this.Data["once_html"] = template.HTML(`<input type="hidden" name="_once" value="` + value + `">`)
+}
+
+// valid form and put errors to tempalte context
+func (this *baseRouter) ValidForm(form interface{}, names ...string) bool {
+	// parse request params to form ptr struct
+	this.ParseForm(form)
+
+	// Put data back in case users input invalid data for any section.
+	name := "Form"
+	if len(names) > 0 {
+		name = names[0]
+	}
+	this.Data[name] = form
+
+	errName := "FormError"
+	if len(names) > 1 {
+		errName = names[1]
+	}
+
+	// check form once
+	if this.FormOnceNotMatch() {
+		return false
+	}
+
+	// Verify basic input.
+	valid := validation.Validation{}
+	if ok, _ := valid.Valid(form); !ok {
+		errs := make(map[string]validation.ValidationError)
+		utils.GetFirstValidErrors(valid.Errors, &errs)
+		this.Data[errName] = errs
+		return false
+	}
+	return true
+}
+
+// add valid error to FormError
+func (this *baseRouter) SetFormError(field string, err validation.ValidationError, names ...string) {
+	errName := "FormError"
+	if len(names) > 0 {
+		errName = names[0]
+	}
+
+	var errs map[string]validation.ValidationError
+	if er, ok := this.Data[errName].(map[string]validation.ValidationError); ok {
+		errs = er
+	} else {
+		errs = make(map[string]validation.ValidationError)
+		this.Data[errName] = errs
+	}
+	errs[field] = err
+}
+
+// check xsrf and show a friendly page
+func (this *baseRouter) CheckXsrfCookie() {
+	token := this.GetString("_xsrf")
+	if token == "" {
+		token = this.Ctx.Request.Header.Get("X-Xsrftoken")
+	}
+	if token == "" {
+		token = this.Ctx.Request.Header.Get("X-Csrftoken")
+	}
+	if token == "" {
+		this.Ctx.Abort(403, "'_xsrf' argument missing from POST")
+	} else if this.XsrfToken() != token {
+		this.Ctx.Abort(403, "XSRF cookie does not match POST argument")
+	}
+}
+
+func (this *baseRouter) SystemException() {
+
+}
+
+func (this *baseRouter) IsAjax() bool {
+	return this.Ctx.Input.Header("X-Requested-With") == "XMLHttpRequest"
 }
 
 // setLangVer sets site language version.

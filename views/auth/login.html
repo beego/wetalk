@@ -7,12 +7,17 @@
     		<div class="cell first breadcrumb">
     			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang .AppName}}</a>
     		</div>
-    		<div class="cell last">
-    			<div class="container">
-    				<div class="col-md-4 auth-page">
+    		<div class="cell last slim">
+                <div class="row">
+    				<div class="col-md-6 auth-page">
     					<h3 class="title">
     						<i class="icon icon-user"></i> {{i18n .Lang "Login"}}
     					</h3>
+                        {{if .flash.ResetSuccess}}
+                        <div class="alert alert-success">
+                            <p>{{i18n .Lang "Password reset success. please login."}}</p>
+                        </div>
+                        {{end}}
                         {{if .flash.HasLogout}}
                         <div class="alert alert-success">
                             <p>{{i18n .Lang "Logout success."}}</p>
@@ -23,28 +28,30 @@
                                 <p>{{i18n .Lang "User not exist or Password was Wrong, please check it!"}}</p>
                             </div>
                         {{end}}
-    					<form method="POST">
+    					<form method="POST" action=""{{if .Error}} class="has-error"{{end}}>
                             {{.xsrf_html}}{{.once_html}}
-    						<div class="form-group{{if .Error}} has-error{{end}}">
+    						<div class="form-group{{if .FormError.UserName}} has-error{{end}}">
                             	<label for="login-username">{{i18n .Lang "Username"}} or {{i18n .Lang "Email"}}</label>
-                            	<input id="login-username" type="text" name="username" value="{{.username}}" class="form-control">
+                            	<input id="login-username" type="text" name="username" value="{{.Form.UserName}}" class="form-control">
+                                <p class="error-block">{{if .FormError.UserName}}{{i18n .Lang .FormError.UserName.Tmpl .FormError.UserName.LimitValue}}{{end}}</p>
                         	</div>
 
-    						<div class="form-group{{if .Error}} has-error{{end}}">
+    						<div class="form-group{{if .FormError.Password}} has-error{{end}}">
                             	<label for="login-passowrd">{{i18n .Lang "Password"}}</label>
                             	<a href="/forgot" class="pull-right"><i class="icon-question-sign"></i> {{i18n .Lang "Forgot Password"}}</a>
                             	<input id="login-passowrd" type="password" name="password" class="form-control">
+                                <p class="error-block">{{if .FormError.Password}}{{i18n .Lang .FormError.Password.Tmpl .FormError.Password.LimitValue}}{{end}}</p>
                         	</div>
 
     						<div class="form-group">
                                 <label>
-                                    <button type="button" data-toggle="button" name="remember" value="1" class="btn btn-default btn-xs active btn-checked"><i class="icon icon-ok"></i></button>&nbsp;&nbsp;{{i18n .Lang "Remember Me"}}
+                                    <button type="button" data-toggle="button" name="remember" value="0" class="btn btn-default btn-xs btn-checked"><i class="icon icon-ok"></i></button>{{i18n .Lang "Remember Me"}}
                                 </label>
                         	</div>
 				      		<button type="submit" class="btn btn-primary">{{i18n .Lang "Sign In"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
     					</form>
     				</div>
-    				<div class="col-md-3 auth-page">
+    				<div class="col-md-6 auth-page">
         				<div class="auth-page">
         					<h3 class="title">
         						<i class="icon icon-question"></i> {{i18n .Lang "Help"}}
@@ -57,7 +64,7 @@
         					</p>
 	        			</div>
     				</div>
-    			</div>
+                </div>
 			</div>
     	</div>
 	</div>

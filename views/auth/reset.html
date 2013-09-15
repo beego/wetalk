@@ -7,33 +7,56 @@
     		<div class="cell first breadcrumb">
     			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang .AppName}}</a>
     		</div>
-    		<div class="cell last">
-    			<div class="container">
-    				<div class="col-md-4 auth-page">
-    					<h3 class="title">
-    						<i class="icon icon-user"></i> {{i18n .Lang "Reset Password"}}
-    					</h3>
-    					<form role="form">
-    						<div class="form-group">
-                            	<label for="reset-passowrd">{{i18n .Lang "Password"}}</label>
-                            	<input id="reset-passowrd" type="password" name="password" class="form-control" placeholder="{{i18n .Lang "Please enter your password"}}">
-                        	</div>
-    						<div class="form-group">
-                            	<label for="reset-repeat-passowrd">{{i18n .Lang "Retype Password"}}</label>
-                            	<input id="reset-repeat-passowrd" type="password" name="password-re" class="form-control" placeholder="{{i18n .Lang "Please enter your password again"}}">
+    		<div class="cell last slim">
+    			<div class="row">
+                    {{if .Success}}
+                        <div class="col-md-6 auth-page">
+                            <h3 class="title">
+                                <i class="icon icon-user"></i> {{i18n .Lang "Reset Password"}}
+                            </h3>
+                            <form action="" method="POST">
+                                {{.xsrf_html}}{{.once_html}}
+
+                                <div class="form-group{{if .FormError.Password}} has-error{{end}}">
+                                    <label for="reset-passowrd">{{i18n .Lang "Password"}}</label>
+                                    <input id="reset-passowrd" value="{{.Form.Password}}" type="password" name="password" class="form-control" placeholder="{{i18n .Lang "Please enter your password"}}">
+                                    <p class="error-block">{{if .FormError.Password}}{{i18n .Lang .FormError.Password.Tmpl .FormError.Password.LimitValue}}{{end}}</p>
+                                </div>
+
+                                <div class="form-group{{if .FormError.PasswordRe}} has-error{{end}}">
+                                    <label for="reset-repeat-passowrd">{{i18n .Lang "Retype Password"}}</label>
+                                    <input id="reset-repeat-passowrd" value="{{.Form.PasswordRe}}" type="password" name="passwordre" class="form-control" placeholder="{{i18n .Lang "Please reenter your password"}}">
+                                    <p class="error-block">{{if .FormError.PasswordRe}}{{i18n .Lang .FormError.PasswordRe.Tmpl .FormError.PasswordRe.LimitValue}}{{end}}</p>
+                                </div>
+
+                                <button class="btn btn-primary">{{i18n .Lang "Save"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                            </form>
+                        </div>
+
+                        <div class="col-md-6 auth-page">
+                            <div class="auth-page">
+                                <h3 class="title">
+                                    <i class="icon icon-question"></i> {{i18n .Lang "Help"}}
+                                </h3>
+                                <p class="well">
+                                    {{i18n .Lang "If you remember your password suddently, please Sign In."}}
+                                </p>
+                                <p>
+                                    <a href="/login" class="btn btn-default">{{i18n .Lang "Login Now"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a>
+                                </p>
                             </div>
-                            <button class="btn btn-primary">{{i18n .Lang "Save"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
-    					</form>
-    				</div>
-    				<div class="col-md-3 auth-page">
-        				<div class="auth-page">
-        					<h3 class="title">
-        						<i class="icon icon-question"></i> {{i18n .Lang "Help"}}
-        					</h3>
-        					<p class="well">
-        					</p>
-	        			</div>
-    				</div>
+                        </div>
+                    {{else}}
+                        <div class="col-md-12">
+                            <h3>{{i18n .Lang "Failed Verify !"}}</h3>
+                            <hr>
+                            <p>
+                                {{i18n .Lang "Your verify code not verified, may be it expired or already used."}}
+                                <br><br>
+                                <a class="btn btn-default btn-danger" href="{{.AppUrl}}forgot">{{i18n .Lang "Resend verify email"}}</a>
+                            </p>
+                        </div>
+                    {{end}}
     			</div>
 			</div>
     	</div>

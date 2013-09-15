@@ -31,6 +31,7 @@ var (
 	AppUrl            string
 	AppJsVer          string
 	AppCssVer         string
+	AvatarURL         string
 	SecretKey         string
 	IsProMode         bool
 	IsBeta            bool

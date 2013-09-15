@@ -8,9 +8,9 @@
     			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang .AppName}}</a>
     		</div>
 
-    		<div class="cell last">
-    			<div class="container">
-    				<div class="col-md-7">
+    		<div class="cell last slim">
+    			<div class="row">
+    				<div class="col-md-12">
                         {{if .Success}}
                             <h3>{{i18n .Lang "Success Active !"}}</h3>
                             <hr>
@@ -23,7 +23,7 @@
                             <h3>{{i18n .Lang "Failed Active !"}}</h3>
                             <hr>
                             <p>
-                                {{i18n .Lang "Your email account has not verified, may be you verify code expired or wrong."}}
+                                {{i18n .Lang "Your email account not verified, may be your verify code expired or already used."}}
                                 <br><br>
                                 <a class="btn btn-default btn-danger" href="{{.AppUrl}}settings/profile">{{i18n .Lang "Resend active email"}}</a>
                             </p>
