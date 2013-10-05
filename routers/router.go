@@ -18,6 +18,7 @@ package routers
 import (
 	"html/template"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
 
@@ -37,6 +38,10 @@ type langType struct {
 	Lang, Name string
 }
 
+type NestPreparer interface {
+	NestPrepare()
+}
+
 // baseRouter implemented global settings for all other routers.
 type baseRouter struct {
 	beego.Controller
@@ -47,11 +52,31 @@ type baseRouter struct {
 
 // Prepare implemented Prepare method for baseRouter.
 func (this *baseRouter) Prepare() {
+	// start session
+	this.StartSession()
+
 	// check flash redirect, if match url then end, else for redirect return
 	if match, redir := this.CheckFlashRedirect(this.Ctx.Request.RequestURI); redir {
 		return
 	} else if match {
 		this.EndFlashRedirect()
+	}
+
+	// save logined user if exist in session
+	if models.GetUserFromSession(&this.user, this.CruSession) {
+		this.isLogin = true
+		this.Data["User"] = this.user
+		this.Data["IsLogin"] = this.isLogin
+
+		// if user forbided then do logout
+		if this.user.IsForbid {
+			models.LogoutUser(&this.Controller)
+			this.FlashRedirect("/login", 302, "UserForbid")
+			return
+		}
+
+	} else {
+		this.isLogin = false
 	}
 
 	if utils.IsProMode {
@@ -66,11 +91,14 @@ func (this *baseRouter) Prepare() {
 	this.Data["AppName"] = utils.AppName
 	this.Data["AppVer"] = utils.AppVer
 	this.Data["AppUrl"] = utils.AppUrl
+	this.Data["AppLogo"] = utils.AppLogo
 	this.Data["AppJsVer"] = utils.AppJsVer
 	this.Data["AppCssVer"] = utils.AppCssVer
 	this.Data["AvatarURL"] = utils.AvatarURL
 	this.Data["IsProMode"] = utils.IsProMode
 	this.Data["IsBeta"] = utils.IsBeta
+	this.Data["DateFormat"] = utils.DateFormat
+	this.Data["DateTimeFormat"] = utils.DateTimeFormat
 
 	// Setting language version.
 	if len(langTypes) == 0 {
@@ -87,36 +115,29 @@ func (this *baseRouter) Prepare() {
 	}
 
 	isNeedRedir, langVer := setLangVer(this.Ctx, this.Input(), this.Data)
-	this.Locale.CurrentLocale = langVer
+	this.CurrentLocale = langVer
 	// Redirect to make URL clean.
 	if isNeedRedir {
 		i := strings.Index(this.Ctx.Request.RequestURI, "?")
 		this.Redirect(this.Ctx.Request.RequestURI[:i], 302)
+		return
 	}
 
 	// read flash message
 	beego.ReadFromRequest(&this.Controller)
 
-	// start session
-	sess := this.StartSession()
-
-	// save logined user if exist in session
-	if models.GetUserFromSession(&this.user, sess) {
-		this.isLogin = true
-		this.Data["User"] = this.user
-		this.Data["IsLogin"] = this.isLogin
-	} else {
-		this.isLogin = false
-	}
-
 	// pass xsrf helper to template context
-	xsrfToken := this.Controller.XsrfToken()
+	xsrfToken := this.XsrfToken()
 	this.Data["xsrf_token"] = xsrfToken
-	this.Data["xsrf_html"] = template.HTML(this.Controller.XsrfFormHtml())
+	this.Data["xsrf_html"] = template.HTML(this.XsrfFormHtml())
 
 	// if method is GET then auto create a form once token
 	if this.Ctx.Request.Method == "GET" {
 		this.FormOnceCreate()
+	}
+
+	if app, ok := this.AppController.(NestPreparer); ok {
+		app.NestPrepare()
 	}
 }
 
@@ -312,16 +333,16 @@ func (this *baseRouter) FormOnceCreate(args ...bool) {
 		value = utils.GetRandomString(10)
 		this.SetSession("form_once", value)
 	}
+	this.Data["once_token"] = value
 	this.Data["once_html"] = template.HTML(`<input type="hidden" name="_once" value="` + value + `">`)
 }
 
-// valid form and put errors to tempalte context
-func (this *baseRouter) ValidForm(form interface{}, names ...string) bool {
+func (this *baseRouter) validForm(form interface{}, names ...string) (bool, map[string]*validation.ValidationError) {
 	// parse request params to form ptr struct
-	this.ParseForm(form)
+	utils.ParseForm(form, this.Input())
 
 	// Put data back in case users input invalid data for any section.
-	name := "Form"
+	name := reflect.ValueOf(form).Elem().Type().Name()
 	if len(names) > 0 {
 		name = names[0]
 	}
@@ -331,51 +352,69 @@ func (this *baseRouter) ValidForm(form interface{}, names ...string) bool {
 
 	// check form once
 	if this.FormOnceNotMatch() {
-		return false
+		return false, nil
 	}
 
 	// Verify basic input.
 	valid := validation.Validation{}
 	if ok, _ := valid.Valid(form); !ok {
-		errs := make(map[string]validation.ValidationError)
-		utils.GetFirstValidErrors(valid.Errors, &errs)
-		this.Data[errName] = errs
-		return false
+		errs := valid.ErrorMap()
+		this.Data[errName] = &valid
+		return false, errs
 	}
-	return true
+	return true, nil
+}
+
+// valid form and put errors to tempalte context
+func (this *baseRouter) ValidForm(form interface{}, names ...string) bool {
+	valid, _ := this.validForm(form, names...)
+	return valid
+}
+
+// valid form and put errors to tempalte context
+func (this *baseRouter) ValidFormSets(form interface{}, names ...string) bool {
+	valid, errs := this.validForm(form, names...)
+	this.setFormSets(form, errs, names...)
+	return valid
+}
+
+func (this *baseRouter) SetFormSets(form interface{}, names ...string) *utils.FormSets {
+	return this.setFormSets(form, nil, names...)
+}
+
+func (this *baseRouter) setFormSets(form interface{}, errs map[string]*validation.ValidationError, names ...string) *utils.FormSets {
+	formSets := utils.NewFormSets(form, errs, this.Locale)
+	name := reflect.ValueOf(form).Elem().Type().Name()
+	if len(names) > 0 {
+		name = names[0]
+	}
+	name += "Sets"
+	this.Data[name] = formSets
+
+	return formSets
 }
 
 // add valid error to FormError
-func (this *baseRouter) SetFormError(field string, err validation.ValidationError, names ...string) {
-	errName := "FormError"
+func (this *baseRouter) SetFormError(form interface{}, fieldName, errMsg string, names ...string) {
+	name := reflect.ValueOf(form).Elem().Type().Name()
 	if len(names) > 0 {
-		errName = names[0] + "Error"
+		name = names[0]
+	}
+	errName := name + "Error"
+	setsName := name + "Sets"
+
+	if valid, ok := this.Data[errName].(*validation.Validation); ok {
+		valid.SetError(fieldName, this.Tr(errMsg))
 	}
 
-	var errs map[string]validation.ValidationError
-	if er, ok := this.Data[errName].(map[string]validation.ValidationError); ok {
-		errs = er
-	} else {
-		errs = make(map[string]validation.ValidationError)
-		this.Data[errName] = errs
+	if fSets, ok := this.Data[setsName].(*utils.FormSets); ok {
+		fSets.SetError(fieldName, errMsg)
 	}
-	errs[field] = err
 }
 
 // check xsrf and show a friendly page
-func (this *baseRouter) CheckXsrfCookie() {
-	token := this.GetString("_xsrf")
-	if token == "" {
-		token = this.Ctx.Request.Header.Get("X-Xsrftoken")
-	}
-	if token == "" {
-		token = this.Ctx.Request.Header.Get("X-Csrftoken")
-	}
-	if token == "" {
-		this.Ctx.Abort(403, "'_xsrf' argument missing from POST")
-	} else if this.XsrfToken() != token {
-		this.Ctx.Abort(403, "XSRF cookie does not match POST argument")
-	}
+func (this *baseRouter) CheckXsrfCookie() bool {
+	return this.Controller.CheckXsrfCookie()
 }
 
 func (this *baseRouter) SystemException() {
@@ -384,6 +423,12 @@ func (this *baseRouter) SystemException() {
 
 func (this *baseRouter) IsAjax() bool {
 	return this.Ctx.Input.Header("X-Requested-With") == "XMLHttpRequest"
+}
+
+func (this *baseRouter) SetPaginator(per int, nums int64) *utils.Paginator {
+	p := utils.NewPaginator(this.Ctx.Request, per, nums)
+	this.Data["paginator"] = p
+	return p
 }
 
 // setLangVer sets site language version.

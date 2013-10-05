@@ -16,7 +16,6 @@ package routers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/validation"
 
 	"github.com/beego/wetalk/models"
 )
@@ -35,6 +34,9 @@ func (this *LoginRouter) Get() {
 	if this.CheckLoginRedirect(false) {
 		return
 	}
+
+	form := models.LoginForm{}
+	this.SetFormSets(&form)
 }
 
 // Login implemented user login.
@@ -47,21 +49,47 @@ func (this *LoginRouter) Login() {
 		return
 	}
 
+	var user models.User
+
 	form := models.LoginForm{}
 	// valid form and put errors to template context
-	if this.ValidForm(&form) == false {
+	if this.ValidFormSets(&form) == false {
+		if this.IsAjax() {
+			goto ajaxError
+		}
 		return
 	}
 
-	if models.VerifyUser(&this.user, form.UserName, form.Password) {
+	if models.VerifyUser(&user, form.UserName, form.Password) {
 		// login user
-		models.LoginUser(&this.user, &this.Controller)
+		models.LoginUser(&user, &this.Controller, form.Remember)
+
+		if this.IsAjax() {
+			this.Data["json"] = map[string]interface{}{
+				"success": true,
+				"message": this.Tr("Success! Reloading page, plz wait."),
+			}
+			this.ServeJson()
+			return
+		}
 
 		this.Redirect("/", 302)
 		return
+	} else {
+		if this.IsAjax() {
+			goto ajaxError
+		}
 	}
-
 	this.Data["Error"] = true
+	return
+
+ajaxError:
+	this.Data["json"] = map[string]interface{}{
+		"success": false,
+		"message": this.Tr("User not exist or Password was Wrong."),
+		"once":    this.Data["once_token"],
+	}
+	this.ServeJson()
 }
 
 // Logout implemented user logout page.
@@ -88,6 +116,9 @@ func (this *RegisterRouter) Get() {
 
 	this.Data["IsRegister"] = true
 	this.TplNames = "auth/register.html"
+
+	form := models.RegisterForm{Locale: this.Locale}
+	this.SetFormSets(&form)
 }
 
 // Register implemented Post method for RegisterRouter.
@@ -95,63 +126,31 @@ func (this *RegisterRouter) Register() {
 	this.Data["IsRegister"] = true
 	this.TplNames = "auth/register.html"
 
-	flashKey := "RegSuccess"
-
 	// no need login
 	if this.CheckLoginRedirect(false) {
 		return
 	}
 
-	form := models.RegisterForm{}
+	form := models.RegisterForm{Locale: this.Locale}
 	// valid form and put errors to template context
-	if this.ValidForm(&form) == false {
+	if this.ValidFormSets(&form) == false {
 		return
 	}
 
-	// Check if passwords of two times are same.
-	if form.Password != form.PasswordRe {
-		this.SetFormError("PasswordRe", validation.ValidationError{
-			Tmpl: this.Locale.Tr("Password not match first input"),
-		})
+	// Create new user.
+	user := new(models.User)
+	if err := models.RegisterUser(user, form); err == nil {
+		models.SendRegisterMail(this.Locale, user)
+
+		// login user
+		models.LoginUser(user, &this.Controller, false)
+
+		this.FlashRedirect("/settings/profile", 302, "RegSuccess")
+
 		return
-	}
-
-	// Process register.
-	e1, e2, err := models.CanRegistered(form.UserName, form.Email)
-	if err != nil {
-		beego.Error("Register: CanRegistered", err)
-		return
-	}
-
-	if e1 && e2 {
-		// Create new user.
-		user := new(models.User)
-		if err := models.RegisterUser(user, form); err == nil {
-			models.SendRegisterMail(this.Locale, user)
-
-			// login user
-			models.LoginUser(user, &this.Controller)
-
-			this.FlashRedirect("/settings/profile", 302, flashKey)
-
-			return
-
-		} else {
-			beego.Error("Register: RegisterUser", err)
-		}
 
 	} else {
-		if !e1 {
-			this.SetFormError("UserName", validation.ValidationError{
-				Tmpl: this.Locale.Tr("Username has been already taken"),
-			})
-		}
-
-		if !e2 {
-			this.SetFormError("Email", validation.ValidationError{
-				Tmpl: this.Locale.Tr("Email has been already taken"),
-			})
-		}
+		beego.Error("Register: Failed ", err)
 	}
 }
 
@@ -205,6 +204,9 @@ func (this *ForgotRouter) Get() {
 	if this.CheckLoginRedirect(false) {
 		return
 	}
+
+	form := models.ForgotForm{}
+	this.SetFormSets(&form)
 }
 
 // Get implemented Post method for ForgotRouter.
@@ -216,26 +218,17 @@ func (this *ForgotRouter) Post() {
 		return
 	}
 
-	flashKey := "SuccessSend"
-
-	form := models.FogotForm{}
-	// valid form and put errors to template context
-	if this.ValidForm(&form) == false {
-		return
-	}
-
 	var user models.User
-	if models.HasUser(&user, form.Email) {
-		models.SendResetPwdMail(this.Locale, &user)
-
-		this.FlashRedirect("/forgot", 302, flashKey)
+	form := models.ForgotForm{User: &user}
+	// valid form and put errors to template context
+	if this.ValidFormSets(&form) == false {
 		return
-
-	} else {
-		this.SetFormError("Email", validation.ValidationError{
-			Tmpl: this.Locale.Tr("Wong email address, please check your input."),
-		})
 	}
+
+	// send reset password email
+	models.SendResetPwdMail(this.Locale, &user)
+
+	this.FlashRedirect("/forgot", 302, "SuccessSend")
 }
 
 // Reset implemented user password reset.
@@ -243,11 +236,14 @@ func (this *ForgotRouter) Reset() {
 	this.TplNames = "auth/reset.html"
 
 	code := this.GetString(":code")
+	this.Data["Code"] = code
 
 	var user models.User
 
 	if models.VerifyUserResetPwdCode(&user, code) {
 		this.Data["Success"] = true
+		form := models.ResetPwdForm{}
+		this.SetFormSets(&form)
 	} else {
 		this.Data["Success"] = false
 	}
@@ -258,22 +254,15 @@ func (this *ForgotRouter) ResetPost() {
 	this.TplNames = "auth/reset.html"
 
 	code := this.GetString(":code")
+	this.Data["Code"] = code
 
 	var user models.User
 
 	if models.VerifyUserResetPwdCode(&user, code) {
 		this.Data["Success"] = true
 
-		form := models.RestPwdForm{}
-		if this.ValidForm(&form) == false {
-			return
-		}
-
-		// Check if passwords of two times are same.
-		if form.Password != form.PasswordRe {
-			this.SetFormError("PasswordRe", validation.ValidationError{
-				Tmpl: this.Locale.Tr("Password not match first input"),
-			})
+		form := models.ResetPwdForm{}
+		if this.ValidFormSets(&form) == false {
 			return
 		}
 

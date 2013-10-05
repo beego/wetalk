@@ -1,0 +1,66 @@
+{{template "admin/base/base.html" .}}
+{{template "admin/base/base_common.html" .}}
+{{define "head"}}<title>{{i18n .Lang "Users Admin"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content">
+        <div class="col-md-2">
+            {{template "admin/sidenav.html" .}}
+        </div>
+        <div class="col-md-10">
+            {{if .Error}}
+            <div class="alert alert-danger">
+                {{.Error}}
+            </div>
+            {{end}}
+            <div class="box">
+                <div class="cell first breadcrumb">
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user">{{i18n .Lang "Users Admin"}}</a>
+                </div>
+                <div class="cell last slim">
+                    {{if .flash.DeleteSuccess}}
+                    <div class="alert alert-info">
+                        {{i18n .Lang "Success delete!"}}
+                    </div>
+                    {{end}}
+                    <p>
+                        <a href="/admin/user/new" class="btn btn-default">{{i18n .Lang "New User"}}</a>
+                    </p>
+                    <table class="table table-hover table-condensed color-link">
+                        <thead>
+                            <tr>
+                                <th>{{i18n .Lang "Id"}}</th>
+                                <th>{{i18n .Lang "Username"}}</th>
+                                <th>{{i18n .Lang "Nickname"}}</th>
+                                <th>{{i18n .Lang "Email"}}</th>
+                                <th>{{i18n .Lang "Admin"}}</th>
+                                <th>{{i18n .Lang "Active"}}</th>
+                                <th>{{i18n .Lang "Forbid"}}</th>
+                                <th>{{i18n .Lang "Created"}}</th>
+                                <th>{{i18n .Lang "Updated"}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range $user := .Objects}}
+                            <tr>
+                                <td><a href="{{$.AppUrl}}admin/user/{{$user.Id}}">{{$user.Id}}</a></td>
+                                <td><a href="{{$.AppUrl}}admin/user/{{$user.Id}}">{{$user.UserName}}</a></td>
+                                <td>{{$user.NickName}}</td>
+                                <td>{{$user.Email}}</td>
+                                <td>{{$user.IsAdmin|boolicon}}</td>
+                                <td>{{$user.IsActive|boolicon}}</td>
+                                <td>{{$user.IsForbid|boolicon}}</td>
+                                <td>{{$user.Created|datetime}}</td>
+                                <td>{{$user.Updated|datetime}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                    {{template "base/paginator.html" .}}
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

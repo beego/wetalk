@@ -29,6 +29,7 @@ var (
 	AppKeywords       string
 	AppVer            string
 	AppUrl            string
+	AppLogo           string
 	AppJsVer          string
 	AppCssVer         string
 	AvatarURL         string
@@ -39,6 +40,9 @@ var (
 	MailFrom          string
 	ActiveCodeLives   int
 	ResetPwdCodeLives int
+	LoginRememberDays int
+	DateFormat        string
+	DateTimeFormat    string
 )
 
 var (

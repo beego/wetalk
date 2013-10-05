@@ -1,4 +1,5 @@
 {{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
 {{define "head"}}<title>{{i18n .Lang "Forgot Password"}} - {{i18n .Lang .AppName}}</title>{{end}}
 {{define "body"}}
 <div class="row">
@@ -22,14 +23,11 @@
     					<h3 class="title">
     						<i class="icon icon-user"></i> {{i18n .Lang "Forgot Password"}}
     					</h3>
-    					<form action="" method="POST">
+    					<form action="{{.AppUrl}}forgot" method="POST">
                             {{.xsrf_html}}{{.once_html}}
-    						<div class="form-group{{if .FormError}} has-error{{end}}">
-                            	<label for="the-email">{{i18n .Lang "Email"}}</label>
-                            	<input id="the-email" type="text" name="email" class="form-control" value="{{.Form.Email}}" placeholder="{{i18n .Lang "Please enter your e-mail"}}">
-                                <p class="error-block">{{if .FormError.Email}}{{i18n .Lang .FormError.Email.Tmpl .FormError.Email.LimitValue}}{{end}}</p>
-								<p class="help-block">{{i18n .Lang "This operaion lead to send your an e-mail with a reset secure link"}}</p>
-    						</div>
+
+                            {{template "base/form/field_group.html" .ForgotFormSets.Fields.Email}}
+
                             <button class="btn btn-primary">{{i18n .Lang "Reset Password"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
     					</form>
     				</div>

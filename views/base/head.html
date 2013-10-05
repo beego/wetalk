@@ -5,6 +5,7 @@
 	<meta name="description" content="{{.AppDescription}}" />
 	<meta name="keywords" content="{{.AppKeywords}}">
 	{{end}}
+	<meta content="{{.xsrf_token}}" name="_xsrf" />
 
 	<!-- Stylesheets -->
 	<link href="/static/css/bootstrap.min.css?{{.AppCssVer}}" rel="stylesheet" />

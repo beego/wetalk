@@ -1,0 +1,38 @@
+{{template "admin/base/base.html" .}}
+{{template "admin/base/base_common.html" .}}
+{{define "head"}}<title>{{i18n .Lang "Create New User"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content">
+        <div class="col-md-2">
+            {{template "admin/sidenav.html" .}}
+        </div>
+        <div class="col-md-10">
+            {{if .Error}}
+            <div class="alert alert-danger">
+                {{.Error}}
+            </div>
+            {{end}}
+            <div class="box">
+                <div class="cell first breadcrumb">
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user">{{i18n .Lang "Users Admin"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user/new">{{i18n .Lang "New User"}}</a>
+                </div>
+                <div class="cell last slim">
+                    <form action="{{.AppUrl}}admin/user/new" method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{.xsrf_html}}{{.once_html}}
+                                {{template "base/form/fields.html" .UserAdminFormSets}}
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "Save"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

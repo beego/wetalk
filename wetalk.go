@@ -16,6 +16,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/astaxie/beego"
@@ -56,11 +57,14 @@ func initialize() {
 
 	utils.AppName = beego.AppName
 	utils.AppUrl = utils.Cfg.MustValue("app", "app_url")
+	utils.AppLogo = utils.Cfg.MustValue("app", "app_logo")
 	utils.AppDescription = utils.Cfg.MustValue("app", "description")
 	utils.AppKeywords = utils.Cfg.MustValue("app", "keywords")
 	utils.AppJsVer = utils.Cfg.MustValue("app", "js_ver")
 	utils.AppCssVer = utils.Cfg.MustValue("app", "css_ver")
 	utils.AvatarURL = utils.Cfg.MustValue("app", "avatar_url")
+	utils.DateFormat = utils.Cfg.MustValue("app", "date_format")
+	utils.DateTimeFormat = utils.Cfg.MustValue("app", "datetime_format")
 
 	utils.MailUser = utils.Cfg.MustValue("app", "mail_user")
 	utils.MailFrom = utils.Cfg.MustValue("app", "mail_from")
@@ -68,6 +72,7 @@ func initialize() {
 	utils.SecretKey = utils.Cfg.MustValue("app", "secret_key")
 	utils.ActiveCodeLives = utils.Cfg.MustInt("app", "acitve_code_live_days")
 	utils.ResetPwdCodeLives = utils.Cfg.MustInt("app", "resetpwd_code_live_days")
+	utils.LoginRememberDays = utils.Cfg.MustInt("app", "login_remember_days")
 
 	utils.IsBeta = utils.Cfg.MustBool("server", "beta")
 	utils.IsProMode = beego.RunMode == "pro"
@@ -120,11 +125,11 @@ func main() {
 	// Register routers.
 	beego.Router("/", &routers.HomeRouter{})
 
-	login := &routers.LoginRouter{}
+	login := new(routers.LoginRouter)
 	beego.Router("/login", login, "post:Login")
 	beego.Router("/logout", login, "get:Logout")
 
-	register := &routers.RegisterRouter{}
+	register := new(routers.RegisterRouter)
 	beego.Router("/register", register, "post:Register")
 	beego.Router("/active/success", register, "get:ActiveSuccess")
 	beego.Router("/active/:code([0-9a-zA-Z]+)", register, "get:Active")
@@ -132,9 +137,26 @@ func main() {
 	settings := new(routers.SettingsRouter)
 	beego.Router("/settings/profile", settings, "get:Profile;post:ProfileSave")
 
-	fogot := &routers.ForgotRouter{}
+	fogot := new(routers.ForgotRouter)
 	beego.Router("/forgot", fogot)
 	beego.Router("/reset/:code([0-9a-zA-Z]+)", fogot, "get:Reset;post:ResetPost")
+
+	adminDashboard := new(routers.AdminDashboardRouter)
+	beego.Router("/admin", adminDashboard)
+
+	routes := map[string]beego.ControllerInterface{
+		"user":     new(routers.UserAdminRouter),
+		"post":     new(routers.PostAdminRouter),
+		"comment":  new(routers.CommentAdminRouter),
+		"topic":    new(routers.TopicAdminRouter),
+		"topicCat": new(routers.TopicCatAdminRouter),
+	}
+	for name, router := range routes {
+		beego.Router(fmt.Sprintf("/admin/:model(%s)", name), router, "get:List")
+		beego.Router(fmt.Sprintf("/admin/:model(%s)/:id(new)", name), router, "get:Create;post:Save")
+		beego.Router(fmt.Sprintf("/admin/:model(%s)/:id([0-9]+)", name), router, "get:Edit;post:Update")
+		beego.Router(fmt.Sprintf("/admin/:model(%s)/:id([0-9]+)/:action(delete)", name), router, "get:Confirm;post:Delete")
+	}
 
 	// "robot.txt"
 	beego.Router("/robot.txt", &routers.RobotRouter{})

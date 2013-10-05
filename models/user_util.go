@@ -18,6 +18,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"strings"
+	// "time"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -94,7 +95,7 @@ func RegisterUser(user *User, form RegisterForm) error {
 	// save md5 email value for gravatar
 	user.GrEmail = utils.EncodeMd5(form.Email)
 
-	return NewUser(user)
+	return user.Insert()
 }
 
 // set a new password to user
@@ -106,13 +107,18 @@ func SaveNewPassword(user *User, password string) error {
 }
 
 // login user
-func LoginUser(user *User, c *beego.Controller) {
+func LoginUser(user *User, c *beego.Controller, remember bool) {
+	// var maxAge time.Duration
+	// if remember {
+	// set session expire time
+	// maxAge = time.Hour * 24 * time.Duration(utils.LoginRememberDays)
+	// }
+
 	// should re-create session id
+	// sess := c.StartNewSession(maxAge)
 	sess := c.StartSession()
 
-	// sess.SessionRelease()
-	// c.DestroySession()
-	// sess = c.StartSession()
+	beego.GlobalSessions.SessionRegenerateId(c.Ctx.ResponseWriter, c.Ctx.Request)
 
 	sess.Set("auth_user_id", user.Id)
 }
