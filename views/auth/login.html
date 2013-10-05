@@ -1,4 +1,5 @@
 {{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
 {{define "head"}}<title>{{i18n .Lang "Login"}} - {{i18n .Lang .AppName}}</title>{{end}}
 {{define "body"}}
 <div class="row">
@@ -23,31 +24,38 @@
                             <p>{{i18n .Lang "Logout success."}}</p>
                         </div>
                         {{end}}
+                        {{if .flash.NotPermit}}
+                        <div class="alert alert-danger">
+                            <p>{{i18n .Lang "No permit access page, please re-login."}}</p>
+                        </div>
+                        {{end}}
+                        {{if .flash.UserForbid}}
+                        <div class="alert alert-danger">
+                            <p>{{i18n .Lang "Your account was forbided by admin."}}</p>
+                        </div>
+                        {{end}}
                         {{if .Error}}
                             <div class="alert alert-danger">
                                 <p>{{i18n .Lang "User not exist or Password was Wrong, please check it!"}}</p>
                             </div>
                         {{end}}
-    					<form method="POST" action=""{{if .Error}} class="has-error"{{end}}>
+    					<form method="POST" action="{{.AppUrl}}login"{{if .Error}} class="has-error"{{end}}>
                             {{.xsrf_html}}{{.once_html}}
-    						<div class="form-group{{if .FormError.UserName}} has-error{{end}}">
-                            	<label for="login-username">{{i18n .Lang "Username"}} or {{i18n .Lang "Email"}}</label>
-                            	<input id="login-username" type="text" name="username" value="{{.Form.UserName}}" class="form-control">
-                                <p class="error-block">{{if .FormError.UserName}}{{i18n .Lang .FormError.UserName.Tmpl .FormError.UserName.LimitValue}}{{end}}</p>
-                        	</div>
 
-    						<div class="form-group{{if .FormError.Password}} has-error{{end}}">
-                            	<label for="login-passowrd">{{i18n .Lang "Password"}}</label>
-                            	<a href="/forgot" class="pull-right"><i class="icon-question-sign"></i> {{i18n .Lang "Forgot Password"}}</a>
-                            	<input id="login-passowrd" type="password" name="password" class="form-control">
-                                <p class="error-block">{{if .FormError.Password}}{{i18n .Lang .FormError.Password.Tmpl .FormError.Password.LimitValue}}{{end}}</p>
-                        	</div>
+                            {{template "base/form/field_group.html" .LoginFormSets.Fields.UserName}}
 
-    						<div class="form-group">
-                                <label>
-                                    <button type="button" data-toggle="button" name="remember" value="0" class="btn btn-default btn-xs btn-checked"><i class="icon icon-ok"></i></button>{{i18n .Lang "Remember Me"}}
-                                </label>
-                        	</div>
+                            {{with .LoginFormSets.Fields.Password}}
+                            <div class="form-group{{if .Error}} has-error{{end}} {{.Class}}">
+                                {{.Label}}
+                                <a href="{{$.AppUrl}}forgot" class="pull-right"><i class="icon-question-sign"></i> {{i18n $.Lang "Forgot Password"}}</a>
+                                {{.Field}}
+                                {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                                {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                            </div>
+                            {{end}}
+
+                            {{template "base/form/field_group.html" .LoginFormSets.Fields.Remember}}
+
 				      		<button type="submit" class="btn btn-primary">{{i18n .Lang "Sign In"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
     					</form>
     				</div>

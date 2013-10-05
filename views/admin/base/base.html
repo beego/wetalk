@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{{template "base/head.html" .}}
+	{{template "admin/base/head.html" .}}
+	{{template "head" .}}
+</head>
+<body>
+	<div id="wrapper">
+		{{template "header" .}}
+		<div id="main" class="container">
+			{{template "body" .}}
+	    </div>
+	    <div class="wrapper-push"></div>
+	</div>
+	{{template "footer" .}}
+</body>
+</html>

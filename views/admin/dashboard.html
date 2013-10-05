@@ -1,0 +1,22 @@
+{{template "admin/base/base.html" .}}
+{{template "admin/base/base_common.html" .}}
+{{define "head"}}<title>{{i18n .Lang "Admin Dashboard"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content">
+        <div class="col-md-2">
+            {{template "admin/sidenav.html" .}}
+        </div>
+        <div class="col-md-10">
+            <div class="box">
+                <div class="cell first breadcrumb">
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="">{{i18n .Lang "Console"}}</a>
+                </div>
+                <div class="cell last slim">
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

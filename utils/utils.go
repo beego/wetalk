@@ -22,22 +22,12 @@ import (
 	"encoding/hex"
 	"fmt"
 	"hash"
+	"reflect"
 	"strconv"
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/validation"
 )
-
-// Return first error in per ValidationError
-func GetFirstValidErrors(errs []*validation.ValidationError, errors *map[string]validation.ValidationError) {
-	errmaps := *errors
-	for _, err := range errs {
-		if _, ok := errmaps[err.Field]; !ok {
-			errmaps[err.Field] = *err
-		}
-	}
-}
 
 // Random generate string
 func GetRandomString(n int) string {
@@ -161,6 +151,7 @@ func EncodePassword(rawPwd string, salt string) string {
 }
 
 // convert string to specify type
+
 type StrTo string
 
 func (f *StrTo) Set(v string) {
@@ -180,6 +171,9 @@ func (f StrTo) Exist() bool {
 }
 
 func (f StrTo) Bool() (bool, error) {
+	if f == "on" {
+		return true, nil
+	}
 	return strconv.ParseBool(f.String())
 }
 
@@ -286,6 +280,20 @@ func ToStr(value interface{}, args ...int) (s string) {
 		s = fmt.Sprintf("%v", v)
 	}
 	return s
+}
+
+// convert any numeric value to int64
+func ToInt64(value interface{}) (d int64, err error) {
+	val := reflect.ValueOf(value)
+	switch value.(type) {
+	case int, int8, int16, int32, int64:
+		d = val.Int()
+	case uint, uint8, uint16, uint32, uint64:
+		d = int64(val.Uint())
+	default:
+		err = fmt.Errorf("ToInt64 need numeric not `%T`", value)
+	}
+	return
 }
 
 type argString []string

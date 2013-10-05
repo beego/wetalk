@@ -1,4 +1,5 @@
 {{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
 {{define "head"}}<title>{{i18n .Lang "Reset Password"}} - {{i18n .Lang .AppName}}</title>{{end}}
 {{define "body"}}
 <div class="row">
@@ -14,20 +15,10 @@
                             <h3 class="title">
                                 <i class="icon icon-user"></i> {{i18n .Lang "Reset Password"}}
                             </h3>
-                            <form action="" method="POST">
+                            <form action="{{.AppUrl}}reset/{{.Code}}" method="POST">
                                 {{.xsrf_html}}{{.once_html}}
 
-                                <div class="form-group{{if .FormError.Password}} has-error{{end}}">
-                                    <label for="reset-passowrd">{{i18n .Lang "Password"}}</label>
-                                    <input id="reset-passowrd" value="{{.Form.Password}}" type="password" name="password" class="form-control" placeholder="{{i18n .Lang "Please enter your password"}}">
-                                    <p class="error-block">{{if .FormError.Password}}{{i18n .Lang .FormError.Password.Tmpl .FormError.Password.LimitValue}}{{end}}</p>
-                                </div>
-
-                                <div class="form-group{{if .FormError.PasswordRe}} has-error{{end}}">
-                                    <label for="reset-repeat-passowrd">{{i18n .Lang "Retype Password"}}</label>
-                                    <input id="reset-repeat-passowrd" value="{{.Form.PasswordRe}}" type="password" name="passwordre" class="form-control" placeholder="{{i18n .Lang "Please reenter your password"}}">
-                                    <p class="error-block">{{if .FormError.PasswordRe}}{{i18n .Lang .FormError.PasswordRe.Tmpl .FormError.PasswordRe.LimitValue}}{{end}}</p>
-                                </div>
+                                {{template "base/form/fields.html" .ResetPwdFormSets}}
 
                                 <button class="btn btn-primary">{{i18n .Lang "Save"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
                             </form>

@@ -4,14 +4,14 @@
 	{{template "base/head.html" .}}
 	{{template "head" .}}
 </head>
-<body>
+<body id="front">
 	<div id="wrapper">
-		{{template "base/navbar.html" .}}
+		{{template "header" .}}
 		<div id="main" class="container">
 			{{template "body" .}}
 	    </div>
 	    <div class="wrapper-push"></div>
 	</div>
-	{{template "base/footer.html" .}}
+	{{template "footer" .}}
 </body>
 </html>

@@ -1,8 +1,21 @@
+// Copyright 2013 wetalk authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License"): you may
+// not use this file except in compliance with the License. You may obtain
+// a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+// License for the specific language governing permissions and limitations
+// under the License.
+
 package routers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/validation"
 
 	"github.com/beego/wetalk/models"
 )
@@ -10,10 +23,6 @@ import (
 // SettingsRouter serves user settings.
 type SettingsRouter struct {
 	baseRouter
-}
-
-func (this *SettingsRouter) getProfileForm() {
-
 }
 
 // Profile implemented user profile settings page.
@@ -25,10 +34,12 @@ func (this *SettingsRouter) Profile() {
 		return
 	}
 
-	form := models.ProfileForm{}
+	form := models.ProfileForm{Locale: this.Locale}
 	form.SetFromUser(&this.user)
+	this.SetFormSets(&form)
 
-	this.Data["Form"] = form
+	formPwd := models.PasswordForm{}
+	this.SetFormSets(&formPwd)
 }
 
 // ProfileSave implemented save user profile.
@@ -45,24 +56,30 @@ func (this *SettingsRouter) ProfileSave() {
 	if this.IsAjax() {
 		switch action {
 		case "send-verify-email":
-			models.SendActiveMail(this.Locale, &this.user)
+			if this.user.IsActive {
+				this.Data["json"] = false
+			} else {
+				models.SendActiveMail(this.Locale, &this.user)
+				this.Data["json"] = true
+			}
 
-			this.Data["json"] = true
 			this.ServeJson()
 			return
 		}
 		return
 	}
 
-	form := models.ProfileForm{}
-	form.SetFromUser(&this.user)
+	profileForm := models.ProfileForm{Locale: this.Locale}
+	profileForm.SetFromUser(&this.user)
 
-	this.Data["Form"] = form
+	pwdForm := models.PasswordForm{}
+
+	this.Data["Form"] = profileForm
 
 	switch action {
 	case "save-profile":
-		if this.ValidForm(&form) {
-			if err := form.SaveUserProfile(&this.user); err != nil {
+		if this.ValidFormSets(&profileForm) {
+			if err := profileForm.SaveUserProfile(&this.user); err != nil {
 				beego.Error("ProfileSave: save-profile", err)
 			}
 			this.FlashRedirect("/settings/profile", 302, "ProfileSave")
@@ -70,30 +87,29 @@ func (this *SettingsRouter) ProfileSave() {
 		}
 
 	case "change-password":
-		form := models.PasswordForm{}
-		if this.ValidForm(&form, "PwdForm") {
-			if models.VerifyPassword(form.PasswordOld, this.user.Password) == false {
-				this.SetFormError("PasswordOld", validation.ValidationError{
-					Tmpl: this.Locale.Tr("Your old password not correct."),
-				}, "PwdForm")
-				return
+		if this.ValidFormSets(&pwdForm) {
+			if models.VerifyPassword(pwdForm.PasswordOld, this.user.Password) {
+				// verify success and save new password
+				if err := models.SaveNewPassword(&this.user, pwdForm.Password); err == nil {
+					this.FlashRedirect("/settings/profile", 302, "PasswordSave")
+					return
+				} else {
+					beego.Error("ProfileSave: change-password", err)
+				}
+			} else {
+				this.SetFormError(&pwdForm, "PasswordOld", "Your old password not correct")
 			}
-
-			if form.Password != form.PasswordRe {
-				this.SetFormError("PasswordRe", validation.ValidationError{
-					Tmpl: this.Locale.Tr("Password not match first input"),
-				}, "PwdForm")
-				return
-			}
-
-			if err := models.SaveNewPassword(&this.user, form.Password); err != nil {
-				beego.Error("ProfileSave: change-password", err)
-			}
-			this.FlashRedirect("/settings/profile", 302, "PasswordSave")
 		}
 
 	default:
 		this.Redirect("/settings/profile", 302)
+		return
 	}
 
+	if action != "save-profile" {
+		this.SetFormSets(&profileForm)
+	}
+	if action != "change-password" {
+		this.SetFormSets(&pwdForm)
+	}
 }
