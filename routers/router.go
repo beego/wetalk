@@ -16,6 +16,7 @@
 package routers
 
 import (
+	"fmt"
 	"html/template"
 	"net/url"
 	"reflect"
@@ -52,6 +53,12 @@ type baseRouter struct {
 
 // Prepare implemented Prepare method for baseRouter.
 func (this *baseRouter) Prepare() {
+	// if the host not matching app settings then redirect to AppUrl
+	if this.Ctx.Request.Host != utils.AppHost {
+		this.Redirect(utils.AppUrl, 302)
+		return
+	}
+
 	// start session
 	this.StartSession()
 
@@ -143,7 +150,8 @@ func (this *baseRouter) Prepare() {
 
 // check if user not active then redirect
 func (this *baseRouter) CheckActiveRedirect(args ...interface{}) bool {
-	var url string
+	var redirect_to string
+	code := 302
 	needActive := true
 	for _, arg := range args {
 		switch v := arg.(type) {
@@ -151,26 +159,24 @@ func (this *baseRouter) CheckActiveRedirect(args ...interface{}) bool {
 			needActive = v
 		case string:
 			// custom redirect url
-			url = v
+			redirect_to = v
+		case int:
+			code = v
 		}
 	}
 	if needActive {
-		// if need active and no login then redirect to login
-		if this.CheckLoginRedirect() {
-			return true
-		}
 		// redirect to active page
 		if !this.user.IsActive {
-			this.FlashRedirect("/settings/profile", 302, "NeedActive")
+			this.FlashRedirect("/settings/profile", code, "NeedActive")
 			return true
 		}
 	} else {
 		// no need active
 		if this.user.IsActive {
-			if url == "" {
-				url = "/"
+			if redirect_to == "" {
+				redirect_to = "/"
 			}
-			this.Redirect(url, 302)
+			this.Redirect(redirect_to, code)
 			return true
 		}
 	}
@@ -180,7 +186,8 @@ func (this *baseRouter) CheckActiveRedirect(args ...interface{}) bool {
 
 // check if not login then redirect
 func (this *baseRouter) CheckLoginRedirect(args ...interface{}) bool {
-	var url string
+	var redirect_to string
+	code := 302
 	needLogin := true
 	for _, arg := range args {
 		switch v := arg.(type) {
@@ -188,22 +195,34 @@ func (this *baseRouter) CheckLoginRedirect(args ...interface{}) bool {
 			needLogin = v
 		case string:
 			// custom redirect url
-			url = v
+			redirect_to = v
+		case int:
+			// custom redirect url
+			code = v
 		}
 	}
 
-	// if need login then redirect to /login
+	// if need login then redirect
 	if needLogin && !this.isLogin {
-		this.Redirect("/login", 302)
+		if len(redirect_to) == 0 {
+			req := this.Ctx.Request
+			scheme := "http"
+			if req.TLS != nil {
+				scheme += "s"
+			}
+			redirect_to = fmt.Sprintf("%s://%s%s", scheme, req.Host, req.RequestURI)
+		}
+		redirect_to = "/login?to=" + url.QueryEscape(redirect_to)
+		this.Redirect(redirect_to, code)
 		return true
 	}
 
-	// if not need login then redirect to /
+	// if not need login then redirect
 	if !needLogin && this.isLogin {
-		if url == "" {
-			url = "/"
+		if len(redirect_to) == 0 {
+			redirect_to = "/"
 		}
-		this.Redirect(url, 302)
+		this.Redirect(redirect_to, code)
 		return true
 	}
 	return false

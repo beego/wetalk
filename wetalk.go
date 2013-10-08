@@ -56,6 +56,7 @@ func initialize() {
 	beego.HttpPort = utils.Cfg.MustInt("beego", "http_port_"+beego.RunMode)
 
 	utils.AppName = beego.AppName
+	utils.AppHost = utils.Cfg.MustValue("app", "app_host")
 	utils.AppUrl = utils.Cfg.MustValue("app", "app_url")
 	utils.AppLogo = utils.Cfg.MustValue("app", "app_logo")
 	utils.AppDescription = utils.Cfg.MustValue("app", "description")

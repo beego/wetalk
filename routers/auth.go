@@ -16,6 +16,8 @@ package routers
 
 import (
 	"github.com/astaxie/beego"
+	"github.com/beego/wetalk/utils"
+	"strings"
 
 	"github.com/beego/wetalk/models"
 )
@@ -30,9 +32,18 @@ func (this *LoginRouter) Get() {
 	this.Data["IsLoginPage"] = true
 	this.TplNames = "auth/login.html"
 
+	loginRedirect := strings.TrimSpace(this.GetString("to"))
+	if utils.IsMatchHost(loginRedirect) == false {
+		loginRedirect = "/"
+	}
+
 	// no need login
-	if this.CheckLoginRedirect(false) {
+	if this.CheckLoginRedirect(false, loginRedirect) {
 		return
+	}
+
+	if len(loginRedirect) > 0 {
+		this.Ctx.SetCookie("login_to", loginRedirect, 0, "/")
 	}
 
 	form := models.LoginForm{}
@@ -61,19 +72,27 @@ func (this *LoginRouter) Login() {
 	}
 
 	if models.VerifyUser(&user, form.UserName, form.Password) {
+		loginRedirect := strings.TrimSpace(this.Ctx.GetCookie("login_to"))
+		if utils.IsMatchHost(loginRedirect) == false {
+			loginRedirect = "/"
+		} else {
+			this.Ctx.SetCookie("login_to", "", -1, "/")
+		}
+
 		// login user
 		models.LoginUser(&user, &this.Controller, form.Remember)
 
 		if this.IsAjax() {
 			this.Data["json"] = map[string]interface{}{
-				"success": true,
-				"message": this.Tr("Success! Reloading page, plz wait."),
+				"success":  true,
+				"message":  this.Tr("Success! Reloading page, plz wait."),
+				"redirect": loginRedirect,
 			}
 			this.ServeJson()
 			return
 		}
 
-		this.Redirect("/", 302)
+		this.Redirect(loginRedirect, 302)
 		return
 	} else {
 		if this.IsAjax() {

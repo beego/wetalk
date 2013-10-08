@@ -16,6 +16,7 @@
 package utils
 
 import (
+	"net/url"
 	"os"
 
 	"github.com/Unknwon/com"
@@ -28,6 +29,7 @@ var (
 	AppDescription    string
 	AppKeywords       string
 	AppVer            string
+	AppHost           string
 	AppUrl            string
 	AppLogo           string
 	AppJsVer          string
@@ -57,4 +59,21 @@ func LoadConfig(cfgPath string) (*goconfig.ConfigFile, error) {
 	}
 
 	return goconfig.LoadConfigFile(cfgPath)
+}
+
+func IsMatchHost(uri string) bool {
+	if len(uri) == 0 {
+		return false
+	}
+
+	u, err := url.ParseRequestURI(uri)
+	if err != nil {
+		return false
+	}
+
+	if u.Host != AppHost {
+		return false
+	}
+
+	return true
 }
