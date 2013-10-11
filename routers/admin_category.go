@@ -24,46 +24,46 @@ import (
 	"github.com/beego/wetalk/utils"
 )
 
-type TopicCatAdminRouter struct {
+type CategoryAdminRouter struct {
 	ModelAdminRouter
-	object models.TopicCat
+	object models.Category
 }
 
-func (this *TopicCatAdminRouter) Object() interface{} {
+func (this *CategoryAdminRouter) Object() interface{} {
 	return &this.object
 }
 
-func (this *TopicCatAdminRouter) ObjectQs() orm.QuerySeter {
-	return models.TopicCats().RelatedSel()
+func (this *CategoryAdminRouter) ObjectQs() orm.QuerySeter {
+	return models.Categories().RelatedSel()
 }
 
 // view for list model data
-func (this *TopicCatAdminRouter) List() {
-	var topicCats []models.TopicCat
-	qs := models.TopicCats().RelatedSel()
-	if err := this.SetObjects(qs, &topicCats); err != nil {
+func (this *CategoryAdminRouter) List() {
+	var cats []models.Category
+	qs := models.Categories().RelatedSel()
+	if err := this.SetObjects(qs, &cats); err != nil {
 		this.Data["Error"] = err
 		beego.Error(err)
 	}
 }
 
 // view for create object
-func (this *TopicCatAdminRouter) Create() {
-	form := models.TopicCatAdminForm{Create: true}
+func (this *CategoryAdminRouter) Create() {
+	form := models.CategoryAdminForm{Create: true}
 	this.SetFormSets(&form)
 }
 
 // view for new object save
-func (this *TopicCatAdminRouter) Save() {
-	form := models.TopicCatAdminForm{Create: true}
+func (this *CategoryAdminRouter) Save() {
+	form := models.CategoryAdminForm{Create: true}
 	if this.ValidFormSets(&form) == false {
 		return
 	}
 
-	var topicCat models.TopicCat
-	form.SetToTopicCat(&topicCat)
-	if err := topicCat.Insert(); err == nil {
-		this.FlashRedirect(fmt.Sprintf("/admin/topicCat/%d", topicCat.Id), 302, "CreateSuccess")
+	var cat models.Category
+	form.SetToCategory(&cat)
+	if err := cat.Insert(); err == nil {
+		this.FlashRedirect(fmt.Sprintf("/admin/category/%d", cat.Id), 302, "CreateSuccess")
 		return
 	} else {
 		beego.Error(err)
@@ -72,15 +72,15 @@ func (this *TopicCatAdminRouter) Save() {
 }
 
 // view for edit object
-func (this *TopicCatAdminRouter) Edit() {
-	form := models.TopicCatAdminForm{}
-	form.SetFromTopicCat(&this.object)
+func (this *CategoryAdminRouter) Edit() {
+	form := models.CategoryAdminForm{}
+	form.SetFromCategory(&this.object)
 	this.SetFormSets(&form)
 }
 
 // view for update object
-func (this *TopicCatAdminRouter) Update() {
-	form := models.TopicCatAdminForm{Id: this.object.Id}
+func (this *CategoryAdminRouter) Update() {
+	form := models.CategoryAdminForm{Id: this.object.Id}
 	if this.ValidFormSets(&form) == false {
 		return
 	}
@@ -88,11 +88,11 @@ func (this *TopicCatAdminRouter) Update() {
 	// get changed field names
 	changes := utils.FormChanges(&this.object, &form)
 
-	url := fmt.Sprintf("/admin/topicCat/%d", this.object.Id)
+	url := fmt.Sprintf("/admin/category/%d", this.object.Id)
 
 	// update changed fields only
 	if len(changes) > 0 {
-		form.SetToTopicCat(&this.object)
+		form.SetToCategory(&this.object)
 		if err := this.object.Update(changes...); err == nil {
 			this.FlashRedirect(url, 302, "UpdateSuccess")
 			return
@@ -106,18 +106,18 @@ func (this *TopicCatAdminRouter) Update() {
 }
 
 // view for confirm delete object
-func (this *TopicCatAdminRouter) Confirm() {
+func (this *CategoryAdminRouter) Confirm() {
 }
 
 // view for delete object
-func (this *TopicCatAdminRouter) Delete() {
+func (this *CategoryAdminRouter) Delete() {
 	if this.FormOnceNotMatch() {
 		return
 	}
 
 	// delete object
 	if err := this.object.Delete(); err == nil {
-		this.FlashRedirect("/admin/topicCat", 302, "DeleteSuccess")
+		this.FlashRedirect("/admin/category", 302, "DeleteSuccess")
 		return
 	} else {
 		beego.Error(err)

@@ -29,6 +29,9 @@ type PostAdminForm struct {
 	Replys    int    ``
 	Favorites int    ``
 	LastReply int    `valid:"Required"`
+	Topic     int    `valid:"Required"`
+	Category  int    `valid:"Required"`
+	IsBest    bool
 }
 
 func (form *PostAdminForm) Valid(v *validation.Validation) {
@@ -41,6 +44,16 @@ func (form *PostAdminForm) Valid(v *validation.Validation) {
 	if user.Read() != nil {
 		v.SetError("LastReply", "Not found by this id")
 	}
+
+	topic := Topic{Id: form.Topic}
+	if topic.Read() != nil {
+		v.SetError("Topic", "Not found by this id")
+	}
+
+	cat := Category{Id: form.Category}
+	if cat.Read() != nil {
+		v.SetError("Category", "Not found by this id")
+	}
 }
 
 func (form *PostAdminForm) SetFromPost(post *Post) {
@@ -52,6 +65,14 @@ func (form *PostAdminForm) SetFromPost(post *Post) {
 
 	if post.LastReply != nil {
 		form.LastReply = post.LastReply.Id
+	}
+
+	if post.Topic != nil {
+		form.Topic = post.Topic.Id
+	}
+
+	if post.Category != nil {
+		form.Category = post.Category.Id
 	}
 }
 
@@ -67,6 +88,16 @@ func (form *PostAdminForm) SetToPost(post *Post) {
 		post.LastReply = &User{}
 	}
 	post.LastReply.Id = form.LastReply
+
+	if post.Topic == nil {
+		post.Topic = &Topic{}
+	}
+	post.Topic.Id = form.Topic
+
+	if post.Category == nil {
+		post.Category = &Category{}
+	}
+	post.Category.Id = form.Category
 
 	// TODO make ContentCache
 }

@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "head"}}<title>{{i18n .Lang "Posts Admin"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "Posts Admin"}} - {{i18n .Lang .AppName}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -32,9 +32,12 @@
                                 <th>{{i18n .Lang "Id"}}</th>
                                 <th>{{i18n .Lang "Title"}}</th>
                                 <th>{{i18n .Lang "User"}}</th>
+                                <th>{{i18n .Lang "Topic"}}</th>
+                                <th>{{i18n .Lang "Category"}}</th>
                                 <th>{{i18n .Lang "Browsers"}}</th>
                                 <th>{{i18n .Lang "Replys"}}</th>
                                 <th>{{i18n .Lang "Favorites"}}</th>
+                                <th>{{i18n .Lang "Best"}}</th>
                                 <th>{{i18n .Lang "Created"}}</th>
                                 <th>{{i18n .Lang "Updated"}}</th>
                             </tr>
@@ -44,10 +47,13 @@
                             <tr>
                                 <td><a href="{{$.AppUrl}}admin/post/{{$post.Id}}">{{$post.Id}}</a></td>
                                 <td><a href="{{$.AppUrl}}admin/post/{{$post.Id}}">{{$post.Title}}</a></td>
-                                <td>{{if $post.User}}<a href="{{$.AppUrl}}admin/user/{{$post.User.Id}}">{{$post.User.UserName}}</a>{{end}}</td>
+                                <td><a href="{{$.AppUrl}}admin/user/{{$post.User.Id}}">{{$post.User.UserName}}</a></td>
+                                <td><a href="{{$.AppUrl}}admin/topic/{{$post.Topic.Id}}">{{$post.Topic.Name}}</a></td>
+                                <td><a href="{{$.AppUrl}}admin/category/{{$post.Category.Id}}">{{$post.Category.Name}}</a></td>
                                 <td>{{$post.Browsers}}</td>
                                 <td>{{$post.Replys}}</td>
                                 <td>{{$post.Favorites}}</td>
+                                <td>{{$post.IsBest}}</td>
                                 <td>{{$post.Created|datetime}}</td>
                                 <td>{{$post.Updated|datetime}}</td>
                             </tr>

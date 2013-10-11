@@ -15,24 +15,25 @@
 package models
 
 import (
-	"github.com/beego/wetalk/utils"
+	"fmt"
 	"time"
 
 	"github.com/astaxie/beego/orm"
+
+	"github.com/beego/wetalk/utils"
 )
 
 // post topic
 type Topic struct {
-	Id         int
-	Name       string `orm:"size(30);unique"`
-	Intro      string `orm:"type(text)"`
-	IntroCache string `orm:"type(text)"`
-	Slug       string `orm:"size(100);unique"`
-	Followers  int
-	Cat        *TopicCat `orm:"rel(one)"`
-	Order      int
-	Created    time.Time `orm:"auto_now_add"`
-	Updated    time.Time `orm:"auto_now;index"`
+	Id        int
+	Name      string `orm:"size(30);unique"`
+	Image     *Image `orm:"rel(one);null"`
+	Intro     string `orm:"type(text)"`
+	Slug      string `orm:"size(100);unique"`
+	Followers int
+	Order     int       `orm:"index"`
+	Created   time.Time `orm:"auto_now_add"`
+	Updated   time.Time `orm:"auto_now;index"`
 }
 
 func (m *Topic) Insert() error {
@@ -64,8 +65,21 @@ func (m *Topic) Delete() error {
 	return nil
 }
 
+func (m *Topic) RefreshFollowers() int {
+	cnt, err := FollowTopics().Filter("Topic", m.Id).Count()
+	if err == nil {
+		m.Followers = int(cnt)
+		m.Update("Followers")
+	}
+	return m.Followers
+}
+
 func (m *Topic) String() string {
 	return utils.ToStr(m.Id)
+}
+
+func (m *Topic) Link() string {
+	return fmt.Sprintf("%stopic/%s", utils.AppUrl, m.Slug)
 }
 
 func Topics() orm.QuerySeter {
@@ -73,47 +87,51 @@ func Topics() orm.QuerySeter {
 }
 
 // topic category
-type TopicCat struct {
+type Category struct {
 	Id    int
 	Name  string `orm:"size(30);unique"`
 	Slug  string `orm:"size(100);unique"`
-	Order int
+	Order int    `orm:"index"`
 }
 
-func (m *TopicCat) Insert() error {
+func (m *Category) Insert() error {
 	if _, err := orm.NewOrm().Insert(m); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *TopicCat) Read(fields ...string) error {
+func (m *Category) Read(fields ...string) error {
 	if err := orm.NewOrm().Read(m, fields...); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *TopicCat) Update(fields ...string) error {
+func (m *Category) Update(fields ...string) error {
 	if _, err := orm.NewOrm().Update(m, fields...); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *TopicCat) Delete() error {
+func (m *Category) Delete() error {
 	if _, err := orm.NewOrm().Delete(m); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *TopicCat) String() string {
+func (m *Category) String() string {
 	return utils.ToStr(m.Id)
 }
 
-func TopicCats() orm.QuerySeter {
-	return orm.NewOrm().QueryTable("topic_cat").OrderBy("-Id")
+func (m *Category) Link() string {
+	return fmt.Sprintf("%scategory/%s", utils.AppUrl, m.Slug)
+}
+
+func Categories() orm.QuerySeter {
+	return orm.NewOrm().QueryTable("category").OrderBy("-Id")
 }
 
 // user follow topics
@@ -130,6 +148,42 @@ func (*FollowTopic) TableUnique() [][]string {
 	}
 }
 
+func (m *FollowTopic) Insert() error {
+	if _, err := orm.NewOrm().Insert(m); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *FollowTopic) Read(fields ...string) error {
+	if err := orm.NewOrm().Read(m, fields...); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *FollowTopic) Update(fields ...string) error {
+	if _, err := orm.NewOrm().Update(m, fields...); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *FollowTopic) Delete() error {
+	if _, err := orm.NewOrm().Delete(m); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *FollowTopic) String() string {
+	return utils.ToStr(m.Id)
+}
+
+func FollowTopics() orm.QuerySeter {
+	return orm.NewOrm().QueryTable("follow_topic").OrderBy("-Id")
+}
+
 func init() {
-	orm.RegisterModel(new(Topic), new(TopicCat), new(FollowTopic))
+	orm.RegisterModel(new(Topic), new(Category), new(FollowTopic))
 }

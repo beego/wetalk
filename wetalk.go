@@ -43,7 +43,7 @@ func initialize() {
 	if err != nil {
 		panic("Fail to load configuration file: " + err.Error())
 	}
-	err = i18n.SetMessage("conf/message.ini")
+	err = i18n.SetMessage("zh-CN", "conf/locale_zh-CN.ini")
 	if err != nil {
 		panic("Fail to set message file: " + err.Error())
 	}
@@ -84,6 +84,7 @@ func initialize() {
 	}
 
 	orm.Debug, _ = utils.Cfg.Bool("orm", "debug_log")
+	orm.Debug = true
 
 	driverName, _ := utils.Cfg.GetValue("orm", "driver_name")
 	dataSource, _ := utils.Cfg.GetValue("orm", "data_source")
@@ -124,7 +125,16 @@ func main() {
 	beego.Info(beego.AppName, APP_VER)
 
 	// Register routers.
-	beego.Router("/", &routers.HomeRouter{})
+
+	posts := new(routers.PostRouter)
+	beego.Router("/", posts, "get:Home")
+	beego.Router("/recent", posts, "get:Recent")
+	beego.Router("/:slug(best|cold|favs|follow)", posts, "get:Navs")
+	beego.Router("/category/:slug", posts, "get:Category")
+	beego.Router("/topic/:slug", posts, "get:Topic;post:TopicPost")
+
+	user := new(routers.UserRouter)
+	beego.Router("/u/:username", user, "get:Home")
 
 	login := new(routers.LoginRouter)
 	beego.Router("/login", login, "post:Login")
@@ -150,7 +160,7 @@ func main() {
 		"post":     new(routers.PostAdminRouter),
 		"comment":  new(routers.CommentAdminRouter),
 		"topic":    new(routers.TopicAdminRouter),
-		"topicCat": new(routers.TopicCatAdminRouter),
+		"category": new(routers.CategoryAdminRouter),
 	}
 	for name, router := range routes {
 		beego.Router(fmt.Sprintf("/admin/:model(%s)", name), router, "get:List")

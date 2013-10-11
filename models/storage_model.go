@@ -12,17 +12,23 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
-package routers
+package models
 
-import ()
+import (
+	"time"
 
-// HomeRouter serves home page.
-type HomeRouter struct {
-	baseRouter
+	"github.com/astaxie/beego/orm"
+)
+
+type Image struct {
+	Id      int
+	Name    string `orm:"size(100)"`
+	Path    string `orm:"size(100)"`
+	Width   int
+	Height  int
+	Updated time.Time `orm:"auto_now"`
 }
 
-// Get implemented Get method for HomeRouter.
-func (this *HomeRouter) Get() {
-	this.Data["IsHome"] = true
-	this.TplNames = "home.html"
+func init() {
+	orm.RegisterModel(new(Image))
 }

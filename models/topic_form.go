@@ -27,16 +27,10 @@ type TopicAdminForm struct {
 	Intro     string `form:"type(textarea)" valid:"Required"`
 	Slug      string `valid:"Required;MaxSize(100)"`
 	Followers int    ``
-	Cat       int    `valid:"Required"`
 	Order     int    ``
 }
 
 func (form *TopicAdminForm) Valid(v *validation.Validation) {
-	cat := TopicCat{Id: form.Cat}
-	if cat.Read() != nil {
-		v.SetError("User", "Not found by this id")
-	}
-
 	qs := Topics()
 
 	if CheckIsExist(qs, "Name", form.Name, form.Id) {
@@ -50,22 +44,13 @@ func (form *TopicAdminForm) Valid(v *validation.Validation) {
 
 func (form *TopicAdminForm) SetFromTopic(topic *Topic) {
 	utils.SetFormValues(topic, form)
-
-	if topic.Cat != nil {
-		form.Cat = topic.Cat.Id
-	}
 }
 
 func (form *TopicAdminForm) SetToTopic(topic *Topic) {
 	utils.SetFormValues(form, topic, "Id")
-
-	if topic.Cat == nil {
-		topic.Cat = &TopicCat{}
-	}
-	topic.Cat.Id = form.Cat
 }
 
-type TopicCatAdminForm struct {
+type CategoryAdminForm struct {
 	Create bool   `form:"-"`
 	Id     int    `form:"-"`
 	Name   string `valid:"Required;MaxSize(30)"`
@@ -73,8 +58,8 @@ type TopicCatAdminForm struct {
 	Order  int    ``
 }
 
-func (form *TopicCatAdminForm) Valid(v *validation.Validation) {
-	qs := TopicCats()
+func (form *CategoryAdminForm) Valid(v *validation.Validation) {
+	qs := Categories()
 
 	if CheckIsExist(qs, "Name", form.Name, form.Id) {
 		v.SetError("Name", "Field value need unique")
@@ -85,10 +70,10 @@ func (form *TopicCatAdminForm) Valid(v *validation.Validation) {
 	}
 }
 
-func (form *TopicCatAdminForm) SetFromTopicCat(cat *TopicCat) {
+func (form *CategoryAdminForm) SetFromCategory(cat *Category) {
 	utils.SetFormValues(cat, form)
 }
 
-func (form *TopicCatAdminForm) SetToTopicCat(cat *TopicCat) {
+func (form *CategoryAdminForm) SetToCategory(cat *Category) {
 	utils.SetFormValues(form, cat, "Id")
 }

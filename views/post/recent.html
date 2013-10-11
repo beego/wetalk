@@ -1,0 +1,24 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}<title>{{i18n .Lang "Recent Posts"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-8">
+    	<div class="box">
+            <div class="cell breadcrumb first">
+                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}recent">{{i18n .Lang "Recent Posts"}}</a>
+                <span class="pull-right"><i class="icon-rss-sign color-oragne"></i> <a href="{{.AppUrl}}feed">{{i18n .Lang "Atom Feed Subscribe"}}</a></span>
+            </div>
+            <div class="post-list">
+                {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
+            </div>
+    		<div class="cell last">
+                {{template "base/paginator_pn.html" .}}
+    		</div>
+    	</div>
+	</div>
+    <div id="sidebar" class="col-md-4">
+        {{template "post/component/sidebar.html" .}}
+    </div>
+</div>
+{{end}}

@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "head"}}<title>{{i18n .Lang "Topics Admin"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "Topics Admin"}} - {{i18n .Lang .AppName}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -32,7 +32,6 @@
                                 <th>{{i18n .Lang "Id"}}</th>
                                 <th>{{i18n .Lang "Name"}}</th>
                                 <th>{{i18n .Lang "Slug"}}</th>
-                                <th>{{i18n .Lang "Cat"}}</th>
                                 <th>{{i18n .Lang "Order"}}</th>
                                 <th>{{i18n .Lang "Created"}}</th>
                                 <th>{{i18n .Lang "Updated"}}</th>
@@ -43,7 +42,6 @@
                                 <td><a href="{{$.AppUrl}}admin/topic/{{$topic.Id}}">{{$topic.Id}}</a></td>
                                 <td><a href="{{$.AppUrl}}admin/topic/{{$topic.Id}}">{{$topic.Name}}</a></td>
                                 <td>{{$topic.Slug}}</td>
-                                <td>{{if $topic.Cat}}<a href="{{$.AppUrl}}admin/topicCat/{{$topic.Cat.Id}}">{{$topic.Cat.Name}}</a>{{end}}</td>
                                 <td>{{$topic.Order}}</td>
                                 <td>{{$topic.Created|datetime}}</td>
                                 <td>{{$topic.Updated|datetime}}</td>

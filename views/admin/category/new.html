@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "head"}}<title>{{i18n .Lang "Create New TopicCat"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "Create New Category"}} - {{i18n .Lang .AppName}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -15,14 +15,14 @@
             {{end}}
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/topicCat">{{i18n .Lang "TopicCats Admin"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/topicCat/new">{{i18n .Lang "New TopicCat"}}</a>
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/category">{{i18n .Lang "Categories Admin"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/category/new">{{i18n .Lang "New Category"}}</a>
                 </div>
                 <div class="cell last slim">
-                    <form action="{{.AppUrl}}admin/topicCat/new" method="POST">
+                    <form action="{{.AppUrl}}admin/category/new" method="POST">
                         <div class="row">
                             <div class="col-md-6">
                                 {{.xsrf_html}}{{.once_html}}
-                                {{template "base/form/fields.html" .TopicCatAdminFormSets}}
+                                {{template "base/form/fields.html" .CategoryAdminFormSets}}
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-primary">{{i18n .Lang "Save"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
                                 </div>

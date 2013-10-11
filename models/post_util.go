@@ -12,9 +12,14 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
-package routers
+package models
 
-// TopicRouter serves login page.
-type TopicRouter struct {
-	baseRouter
+import ()
+
+func ListPostsOfCategory(cat *Category, posts *[]Post) (int64, error) {
+	return Posts().Filter("Category", cat).RelatedSel().OrderBy("-Updated").All(posts)
+}
+
+func ListPostsOfTopic(topic *Topic, posts *[]Post) (int64, error) {
+	return Posts().Filter("Topic", topic).RelatedSel().OrderBy("-Updated").All(posts)
 }

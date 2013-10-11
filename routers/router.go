@@ -59,6 +59,9 @@ func (this *baseRouter) Prepare() {
 		return
 	}
 
+	// page start time
+	this.Data["PageStartTime"] = time.Now()
+
 	// start session
 	this.StartSession()
 
@@ -72,7 +75,7 @@ func (this *baseRouter) Prepare() {
 	// save logined user if exist in session
 	if models.GetUserFromSession(&this.user, this.CruSession) {
 		this.isLogin = true
-		this.Data["User"] = this.user
+		this.Data["User"] = &this.user
 		this.Data["IsLogin"] = this.isLogin
 
 		// if user forbided then do logout
@@ -122,7 +125,7 @@ func (this *baseRouter) Prepare() {
 	}
 
 	isNeedRedir, langVer := setLangVer(this.Ctx, this.Input(), this.Data)
-	this.CurrentLocale = langVer
+	this.Lang = langVer
 	// Redirect to make URL clean.
 	if isNeedRedir {
 		i := strings.Index(this.Ctx.Request.RequestURI, "?")

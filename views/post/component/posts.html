@@ -1,0 +1,18 @@
+{{range .Posts}}
+<div class="post cell">
+	<div class="avatar">
+		<a href="{{.User.Link}}" title="{{.User.NickName}}">
+			<img src="{{.User.AvatarLink}}?size=48">
+		</a>
+	</div>
+	<h3 class="title">
+		<a href="{{.Link}}">{{.Title}}</a>
+	</h3>
+	<div class="meta">
+		{{if not $.root.IsTopic}}<a class="tag" href="{{.Topic.Link}}">{{.Topic.Name}}</a> • {{end}}<span class="time">{{timesince $.root.Lang .Created}}</span>{{if .Replys}} • <span class="last-reply">{{i18n $.root.Lang "last reply from"}} <a href="{{.User.Link}}">{{.User.NickName}}</a></span>{{end}}
+		<div class="data hidden-xs pull-right">
+			 {{if .Replys}}<i class="icon-comment"> {{.Replys}}</i>{{end}}{{if .Favorites}}<i class="icon-heart"> {{.Favorites}}</i>{{end}}
+		</div>
+	</div>
+</div>
+{{end}}
