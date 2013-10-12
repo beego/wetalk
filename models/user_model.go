@@ -15,6 +15,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -46,6 +47,7 @@ type User struct {
 	HideEmail bool
 	Followers int
 	Following int
+	FavTopics int
 	IsAdmin   bool      `orm:"index"`
 	IsActive  bool      `orm:"index"`
 	IsForbid  bool      `orm:"index"`
@@ -84,8 +86,25 @@ func (m *User) Delete() error {
 	return nil
 }
 
+func (m *User) RefreshFavTopics() int {
+	cnt, err := FollowTopics().Filter("User", m.Id).Count()
+	if err == nil {
+		m.FavTopics = int(cnt)
+		m.Update("FavTopics")
+	}
+	return m.FavTopics
+}
+
 func (m *User) String() string {
 	return utils.ToStr(m.Id)
+}
+
+func (m *User) Link() string {
+	return fmt.Sprintf("%su/%s", utils.AppUrl, m.UserName)
+}
+
+func (m *User) AvatarLink() string {
+	return fmt.Sprintf("%s%s", utils.AvatarURL, m.GrEmail)
 }
 
 func Users() orm.QuerySeter {
@@ -105,6 +124,38 @@ func (*Follow) TableUnique() [][]string {
 	return [][]string{
 		[]string{"User", "FollowUser"},
 	}
+}
+
+func (m *Follow) Insert() error {
+	if _, err := orm.NewOrm().Insert(m); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Follow) Read(fields ...string) error {
+	if err := orm.NewOrm().Read(m, fields...); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Follow) Update(fields ...string) error {
+	if _, err := orm.NewOrm().Update(m, fields...); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Follow) Delete() error {
+	if _, err := orm.NewOrm().Delete(m); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Follows() orm.QuerySeter {
+	return orm.NewOrm().QueryTable("follow").OrderBy("-Id")
 }
 
 func init() {

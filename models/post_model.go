@@ -15,6 +15,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -32,8 +33,10 @@ type Post struct {
 	Browsers     int
 	Replys       int
 	Favorites    int
-	LastReply    *User     `orm:"rel(fk)"`
-	Topic        *Topic    `orm:"rel(fk)"`
+	LastReply    *User  `orm:"rel(fk)"`
+	Topic        *Topic `orm:"rel(fk)"`
+	IsBest       bool
+	Category     *Category `orm:"rel(fk)"`
 	Created      time.Time `orm:"auto_now_add"`
 	Updated      time.Time `orm:"auto_now;index"`
 }
@@ -69,6 +72,10 @@ func (m *Post) Delete() error {
 
 func (m *Post) String() string {
 	return utils.ToStr(m.Id)
+}
+
+func (m *Post) Link() string {
+	return fmt.Sprintf("%sp/%d", utils.AppUrl, m.Id)
 }
 
 func Posts() orm.QuerySeter {

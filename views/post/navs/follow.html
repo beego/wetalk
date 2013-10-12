@@ -1,0 +1,40 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}<title>{{i18n .Lang "Posts of your followed users"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-8">
+        <div class="box">
+            <div class="cell nav-cats breadcrumb first{{if not .FollowUsers}} last{{end}}">
+                {{template "post/component/nav-list.html" .}}
+            </div>
+            {{if .FollowUsers}}
+            <div class="cell nav-users last">
+                {{template "post/component/nav-users.html" dict "root" . "Users" .FollowUsers}}
+                <span class="pull-right"><a target="_blank" href="{{.User.Link}}/follow">{{i18n .Lang "More"}} <i class="icon-double-angle-right"></i></a></span>
+            </div>
+            {{end}}
+        </div>
+        <div class="box">
+            <div class="cell first breadcrumb">
+                <i class="divider icon-angle-down"></i><a href="{{.AppUrl}}follow">{{i18n .Lang "Posts of your followed users"}}</a>
+            </div>
+            {{if .paginator.HasPages}}
+                <div class="post-list">
+                    {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
+                </div>
+        		<div class="cell last">
+                    {{template "base/paginator_pn.html" .}}
+                </div>
+            {{else}}
+                <div class="cell last">
+                    <div class="text-center">{{i18n .Lang "No posts found here"}}</div>
+                </div>
+            {{end}}
+    	</div>
+	</div>
+    <div id="sidebar" class="col-md-4">
+        {{template "post/component/sidebar.html" .}}
+    </div>
+</div>
+{{end}}

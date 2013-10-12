@@ -1,0 +1,72 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}
+    <title>{{i18ns .Lang "topic" .Topic.Name}} - {{i18n .Lang .AppName}}</title>
+    <meta name="description" content="{{i18ns .Lang "topic" .Topic.Intro}}" />
+{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-8">
+    	<div class="box">
+            <div class="cell breadcrumb first">
+                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.Topic.Link}}">{{i18ns .Lang "topic" .Topic.Name}}</a>
+                <span class="pull-right">
+                </span>
+            </div>
+            <div class="cell topic-info">
+                <div class="topic-img pull-left">
+                    <img src="http://gravatar.qiniudn.com/avatar/50c6d70b642671bea1c8144e92f1ac6f?size=48">
+                </div>
+                <div class="topic-intro">
+                    {{i18ns .Lang "topic" .Topic.Intro}}
+                </div>
+                <div class="topic-meta">
+                    <div class="pull-left">
+                        {{if .Topic.Followers}}
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-btn">
+                        {{end}}
+                        {{if .HasFavorite}}
+                            <button rel="do-favorite" class="btn btn-default btn-sm active"><i class="icon-minus"></i> {{i18n .Lang "Remove Favorite"}}</button>
+                        {{else}}
+                            <button rel="do-favorite" class="btn btn-default btn-sm"><i class="icon-heart"></i> {{i18n .Lang "Add Favorite"}}</button>
+                        {{end}}
+                        {{if .Topic.Followers}} </span><span class="input-group-addon">{{.Topic.Followers}} {{i18n .Lang "Favorited"}}</span></div>{{end}}
+                    </div>
+                    <div class="pull-right">
+                        <button class="btn btn-primary btn-sm"><i class="icon-chevron-sign-up"></i> {{i18n .Lang "New Post"}}</button>
+                    </div>
+                </div>
+                <span class="clearfix"></span>
+            </div>
+            {{if .paginator.HasPages}}
+                <div class="post-list">
+                    {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
+                </div>
+        		<div class="cell last">
+                    {{template "base/paginator_pn.html" .}}
+                </div>
+            {{else}}
+                <div class="cell last">
+                    <div class="text-center">{{i18n .Lang "No posts found here"}}</div>
+                </div>
+            {{end}}
+    	</div>
+	</div>
+    <div id="sidebar" class="col-md-4">
+        {{template "post/component/sidebar.html" .}}
+    </div>
+</div>
+<script type="text/javascript">
+    (function($){
+        $(document).on("click", "[rel=do-favorite]", function(){
+            var $btn = $(this);
+            $btn.button("loading");
+            $.post("{{.Topic.Link}}", {action: "favorite"}, function(data){
+            }).complete(function(){
+                window.location.reload();
+            });
+        });
+    })(jQuery);
+</script>
+{{end}}

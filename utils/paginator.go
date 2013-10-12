@@ -48,6 +48,10 @@ func (p *Paginator) Nums() int64 {
 	return p.nums
 }
 
+func (p *Paginator) SetNums(nums interface{}) {
+	p.nums, _ = ToInt64(nums)
+}
+
 func (p *Paginator) Page() int {
 	if p.page != 0 {
 		return p.page
@@ -55,7 +59,7 @@ func (p *Paginator) Page() int {
 	if p.Request.Form == nil {
 		p.Request.ParseForm()
 	}
-	p.page, _ = strconv.Atoi(p.Request.Form.Get("page"))
+	p.page, _ = strconv.Atoi(p.Request.Form.Get("p"))
 	if p.page > p.PageNums() {
 		p.page = p.PageNums()
 	}
@@ -98,9 +102,9 @@ func (p *Paginator) PageLink(page int) string {
 	link, _ := url.ParseRequestURI(p.Request.RequestURI)
 	values := link.Query()
 	if page == 1 {
-		values.Del("page")
+		values.Del("p")
 	} else {
-		values.Set("page", strconv.Itoa(page))
+		values.Set("p", strconv.Itoa(page))
 	}
 	link.RawQuery = values.Encode()
 	return link.String()
@@ -155,6 +159,6 @@ func NewPaginator(req *http.Request, per int, nums interface{}) *Paginator {
 		per = 10
 	}
 	p.PerPageNums = per
-	p.nums, _ = ToInt64(nums)
+	p.SetNums(nums)
 	return &p
 }

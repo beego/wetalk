@@ -108,18 +108,11 @@ func SaveNewPassword(user *User, password string) error {
 
 // login user
 func LoginUser(user *User, c *beego.Controller, remember bool) {
-	// var maxAge time.Duration
-	// if remember {
-	// set session expire time
-	// maxAge = time.Hour * 24 * time.Duration(utils.LoginRememberDays)
-	// }
+	// werid way of beego session regenerate id...
+	c.CruSession = beego.GlobalSessions.SessionRegenerateId(c.Ctx.ResponseWriter, c.Ctx.Request)
+	c.Ctx.Input.CruSession = c.CruSession
 
-	// should re-create session id
-	// sess := c.StartNewSession(maxAge)
 	sess := c.StartSession()
-
-	beego.GlobalSessions.SessionRegenerateId(c.Ctx.ResponseWriter, c.Ctx.Request)
-
 	sess.Set("auth_user_id", user.Id)
 }
 

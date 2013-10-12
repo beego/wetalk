@@ -1,0 +1,5 @@
+<span class="cat"><a{{if eq $.CategorySlug "hot"}} class="active"{{end}} href="{{$.AppUrl}}"><i class="icon icon-home"></i></a></span>
+<span class="cat"><a{{if eq $.CategorySlug "best"}} class="active"{{end}} href="{{$.AppUrl}}best">{{i18ns $.Lang "category" "Best"}}</a></span>
+<span class="cat"><a{{if eq $.CategorySlug "cold"}} class="active"{{end}} href="{{$.AppUrl}}cold">{{i18ns $.Lang "category" "Cold"}}</a></span>
+<span class="cat"><a{{if eq $.CategorySlug "favs"}} class="active"{{end}} href="{{$.AppUrl}}favs">{{i18ns $.Lang "category" "Favs"}}</a></span>
+<span class="cat"><a{{if eq $.CategorySlug "follow"}} class="active"{{end}} href="{{$.AppUrl}}follow">{{i18ns $.Lang "category" "Follow"}}</a></span>

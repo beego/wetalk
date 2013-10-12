@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "head"}}<title>{{i18n .Lang "Edit TopicCat"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "Edit Category"}} - {{i18n .Lang .AppName}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -15,27 +15,27 @@
             {{end}}
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/topicCat">{{i18n .Lang "TopicCats Admin"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/topicCat/{{.Object.Id}}">{{i18n .Lang "Edit TopicCat"}} {{.Object.Name}}</a>
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/category">{{i18n .Lang "Categories Admin"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/category/{{.Object.Id}}">{{i18n .Lang "Edit Category"}} {{.Object.Name}}</a>
                 </div>
                 <div class="cell last slim">
                     {{if .flash.CreateSuccess}}
                     <div class="alert alert-info">
-                        {{i18n .Lang "Success create %s %s." "TopicCat" .Object.Name}}
+                        {{i18n .Lang "Success create %s %s." "Category" .Object.Name}}
                     </div>
                     {{end}}
                     {{if .flash.UpdateSuccess}}
                     <div class="alert alert-info">
-                        {{i18n .Lang "Success update %s %s." "TopicCat" .Object.Name}}
+                        {{i18n .Lang "Success update %s %s." "Category" .Object.Name}}
                     </div>
                     {{end}}
-                    <form action="{{.AppUrl}}admin/topicCat/{{.Object.Id}}" method="POST">
+                    <form action="{{.AppUrl}}admin/category/{{.Object.Id}}" method="POST">
                         <div class="row">
                             <div class="col-md-6">
                                 {{.xsrf_html}}{{.once_html}}
-                                {{template "base/form/fields.html" .TopicCatAdminFormSets}}
+                                {{template "base/form/fields.html" .CategoryAdminFormSets}}
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-primary">{{i18n .Lang "Update"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
-                                    <a type="submit" href="{{.AppUrl}}admin/topicCat/{{.Object.Id}}/delete" class="btn btn-danger pull-right">{{i18n .Lang "Delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></a>
+                                    <a type="submit" href="{{.AppUrl}}admin/category/{{.Object.Id}}/delete" class="btn btn-danger pull-right">{{i18n .Lang "Delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></a>
                                 </div>
                             </div>
                         </div>

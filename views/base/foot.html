@@ -15,8 +15,9 @@
 			<p class="desc">
 				{{i18n .Lang "As an open source project, contribute is welcome!"}}
 				<br>
-				{{i18n .Lang "Based on"}} <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>. {{i18n .Lang "Icons from"}} <a target="_blank" href="http://fortawesome.github.io/Font-Awesome/">Font Awesome</a>.
+				Ver.{{.AppVer}} - {{.PageStartTime|loadtimes}}ms. {{i18n .Lang "Powered by"}} <a target="_blank" href="http://beego.me">Beego</a>. {{i18n .Lang "Based on"}} <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>. {{i18n .Lang "Icons from"}} <a target="_blank" href="http://fortawesome.github.io/Font-Awesome/">Font Awesome</a>.
 			</p>
+
 			<strong>{{i18n .Lang "Language"}}: </strong>
 		    <div class="btn-group dropup">
 			    <button type="button" class="btn btn-default btn-md dropdown-toggle" data-toggle="dropdown">{{.CurLang}} <i class="caret"></i></button>

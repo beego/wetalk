@@ -1,0 +1,36 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}
+    <title>{{i18n .Lang .AppName}} - {{i18n .Lang "an open source project for Gopher community"}}</title>
+    <meta name="description" content="{{.AppDescription}}" />
+    <meta name="keywords" content="{{.AppKeywords}}">
+{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-8">
+    	<div class="box">
+            <div class="cell breadcrumb nav-cats first">
+                {{template "post/component/nav-list.html" .}}
+            </div>
+            <div class="cell nav-cats last">
+                {{template "post/component/nav-cats.html" .}}
+            </div>
+        </div>
+        <div class="box">
+            <div class="cell breadcrumb first">
+                <a href="{{.AppUrl}}"><i class="icon-level-up"></i> {{i18n .Lang "Hot Posts"}}</a>
+            </div>
+            <div class="post-list">
+                {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
+            </div>
+            <div class="cell last">
+                <i class="icon-rss-sign color-oragne"></i> <a href="{{.AppUrl}}feed">{{i18n .Lang "Atom Feed Subscribe"}}</a>
+                <span class="pull-right"><a href="{{.AppUrl}}recent"><i class="icon-caret-right"></i> {{i18n .Lang "Recent Posts"}}</a></span>
+            </div>
+    	</div>
+	</div>
+    <div id="sidebar" class="col-md-4">
+        {{template "post/component/sidebar.html" .}}
+    </div>
+</div>
+{{end}}
