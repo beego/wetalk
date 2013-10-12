@@ -20,6 +20,12 @@ import (
 	"github.com/beego/wetalk/utils"
 )
 
+type PostForm struct {
+	Topic   string `valid:"Required"`
+	Title   string `valid:"Required;MaxSize(100)"`
+	Content string `form:"type(textarea)" valid:"Required;MinSize(50)"`
+}
+
 type PostAdminForm struct {
 	Create    bool   `form:"-"`
 	User      int    `valid:"Required"`

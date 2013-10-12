@@ -202,7 +202,6 @@ func (this *PostRouter) Topic() {
 
 		var topics []models.Topic
 		models.Topics().All(&topics)
-
 		this.Data["Topics"] = topics
 	default: // View topic.
 		this.TplNames = "post/topic.html"
@@ -239,31 +238,49 @@ func (this *PostRouter) Topic() {
 // Get implemented Get method for HomeRouter.
 func (this *PostRouter) TopicPost() {
 	slug := this.GetString(":slug")
-	topic := models.Topic{Slug: slug}
-	if err := topic.Read("Slug"); err != nil {
-		this.Abort("404")
-		return
-	}
 
-	action := this.GetString("action")
-	switch action {
-	case "favorite":
-		result := map[string]interface{}{
-			"success": false,
+	switch slug {
+	case "new":
+		if this.CheckLoginRedirect() {
+			return
 		}
-		if this.isLogin {
-			qs := models.FollowTopics().Filter("User", &this.user).Filter("Topic", &topic)
-			if qs.Exist() {
-				qs.Delete()
-			} else {
-				fav := models.FollowTopic{User: &this.user, Topic: &topic}
-				fav.Insert()
+		this.TplNames = "post/new.html"
+
+		form := models.PostForm{}
+		if !this.ValidFormSets(&form) {
+			var topics []models.Topic
+			models.Topics().All(&topics)
+			this.Data["Topics"] = topics
+			return
+		}
+
+	default:
+		topic := models.Topic{Slug: slug}
+		if err := topic.Read("Slug"); err != nil {
+			this.Abort("404")
+			return
+		}
+
+		action := this.GetString("action")
+		switch action {
+		case "favorite":
+			result := map[string]interface{}{
+				"success": false,
 			}
-			topic.RefreshFollowers()
-			this.user.RefreshFavTopics()
-			result["success"] = true
+			if this.isLogin {
+				qs := models.FollowTopics().Filter("User", &this.user).Filter("Topic", &topic)
+				if qs.Exist() {
+					qs.Delete()
+				} else {
+					fav := models.FollowTopic{User: &this.user, Topic: &topic}
+					fav.Insert()
+				}
+				topic.RefreshFollowers()
+				this.user.RefreshFavTopics()
+				result["success"] = true
+			}
+			this.Data["json"] = result
+			this.ServeJson()
 		}
-		this.Data["json"] = result
-		this.ServeJson()
 	}
 }

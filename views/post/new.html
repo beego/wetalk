@@ -10,6 +10,8 @@
             </div>
             <div class="cell nav-topics last">
                 <form method="post" action="/topic/new" id="post-form" class="form-horizontal">
+                    {{.xsrf_html}}{{.once_html}}
+                    
                     <div class="form-group">
                         <label class="col-md-2 control-label"><abbr title="required">*</abbr>{{i18n .Lang "Title"}}</label>
                         <div class="col-md-3" style="padding-left: 0px;">
@@ -19,32 +21,45 @@
                                 {{end}}
                             </select>
                         </div>
-                        
-                        <div class="col-md-7" style="padding-left: 0px;">
-                            <input type="text" class="form-control" size="30" name="title">
+
+                        <div class="col-md-7{{if .PostFormSets.Fields.Title.Error}} has-error{{end}}" style="padding-left: 0px;">
+                            <input type="text" class="form-control" size="30" name="title" value="{{.PostFormSets.Fields.Title.Field}}">
                         </div>
+                        {{with .PostFormSets.Fields.Title}}
+                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                        {{end}}
                     </div>
                     
                     <div class="form-group">
                         <label class="col-md-2 control-label"><abbr title="required">*</abbr>{{i18n .Lang "Content"}}</label>
-                        <div class="col-md-10" style="padding-left: 0px;">
+                        <div class="col-md-10{{if .PostFormSets.Fields.Content.Error}} has-error{{end}}" style="padding-left: 0px;">
                             <textarea name="content" cols="30" rows="20" class="form-control post-content"></textarea>
                         </div>
+                        {{with .PostFormSets.Fields.Content}}
+                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                        {{end}}
                     </div>
                     
                     <div class="form-group">
                         <label class="col-md-2 control-label">{{i18n .Lang "Preview"}}</label>
-                        <div class="col-md-10 markdown" style="width: 81.5%;">
-                        fsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsd
-                        </div>
+                        <div class="col-md-10 markdown" style="width: 81.5%;"></div>
                     </div>
                     
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
                             <button type="submit" class="btn btn-info">{{i18n .Lang "Create post"}}</button>
-                            <button class="btn btn-danger">{{i18n .Lang "Discard"}}</button>
+                            <button class="btn btn-danger" onclick="return backToHome();">{{i18n .Lang "Discard"}}</button>
                         </div>
                     </div>
+                    
+                    <script type="text/javascript">
+                        function backToHome() {
+				      		window.location.href = "/";
+				      		return false;
+				      	}
+                    </script>
                 </form>
             </div>
         </div>

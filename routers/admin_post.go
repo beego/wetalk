@@ -56,7 +56,7 @@ func (this *PostAdminRouter) Create() {
 // view for new object save
 func (this *PostAdminRouter) Save() {
 	form := models.PostAdminForm{Create: true}
-	if this.ValidFormSets(&form) == false {
+	if !this.ValidFormSets(&form) {
 		return
 	}
 

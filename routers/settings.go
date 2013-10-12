@@ -46,7 +46,6 @@ func (this *SettingsRouter) Profile() {
 func (this *SettingsRouter) ProfileSave() {
 	this.TplNames = "settings/profile.html"
 
-	// need login
 	if this.CheckLoginRedirect() {
 		return
 	}
