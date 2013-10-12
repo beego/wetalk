@@ -86,6 +86,7 @@
 		} else {
 			$i.val('false');
 		}
+		$e.blur();;
 	});
 
 	// change locale and reload page

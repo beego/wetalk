@@ -313,7 +313,8 @@ input[type="password"]:-ms-input-placeholder {
 
 /* btn-checked */
 .btn-checked,
-.btn-checked:hover {
+.btn-checked:hover,
+.btn-checked:focus {
   margin-top: -3px;
   margin-right: 8px;
   color: #ccc;
