@@ -459,3 +459,19 @@ h6.underline {
 .topic-info .topic-meta .input-group-btn {
   width: auto;
 }
+
+.markdown {
+    padding: 15px;
+    border: 1px solid #d9d9d9;
+    background-color:#fafafa;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px; 
+    word-wrap: break-word;
+}
+
+.post-content {
+    max-width: 593px;
+    min-width: 593px;
+    min-height: 300px;
+}

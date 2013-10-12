@@ -1,0 +1,63 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}<title>{{i18n .Lang "New post"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-9">
+        <div class="box">
+            <div class="cell first breadcrumb">
+                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i>{{i18n .Lang "New post"}}
+            </div>
+            <div class="cell nav-topics last">
+                <form method="post" action="/topic/new" id="post-form" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label"><abbr title="required">*</abbr>{{i18n .Lang "Title"}}</label>
+                        <div class="col-md-3" style="padding-left: 0px;">
+                            <select id="node" name="topic" class="form-control">
+                                {{range .Topics}}
+                                <option value="{{.Name}}">{{.Name}}</option>
+                                {{end}}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-7" style="padding-left: 0px;">
+                            <input type="text" class="form-control" size="30" name="title">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="col-md-2 control-label"><abbr title="required">*</abbr>{{i18n .Lang "Content"}}</label>
+                        <div class="col-md-10" style="padding-left: 0px;">
+                            <textarea name="content" cols="30" rows="20" class="form-control post-content"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">{{i18n .Lang "Preview"}}</label>
+                        <div class="col-md-10 markdown" style="width: 81.5%;">
+                        fsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsdfsdfsfsdfsd
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-info">{{i18n .Lang "Create post"}}</button>
+                            <button class="btn btn-danger">{{i18n .Lang "Discard"}}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+	</div>
+    <div id="sidebar" class="col-md-3">
+        <div class="box">
+            <div class="cell first">{{i18n .Lang "Help"}}</div>
+            <div class="cell last">
+                <ul>
+                    <li><a href="">{{i18n .Lang "Markdown Syntax"}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

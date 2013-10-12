@@ -191,36 +191,49 @@ func (this *PostRouter) Navs() {
 
 // Get implemented Get method for HomeRouter.
 func (this *PostRouter) Topic() {
-	this.TplNames = "post/topic.html"
-
 	slug := this.GetString(":slug")
-	topic := models.Topic{Slug: slug}
-	if err := topic.Read("Slug"); err != nil {
-		this.Abort("404")
-		return
+
+	switch slug {
+	case "new": // Create new topic.
+		if this.CheckLoginRedirect() {
+			return
+		}
+		this.TplNames = "post/new.html"
+
+		var topics []models.Topic
+		models.Topics().All(&topics)
+
+		this.Data["Topics"] = topics
+	default: // View topic.
+		this.TplNames = "post/topic.html"
+		topic := models.Topic{Slug: slug}
+		if err := topic.Read("Slug"); err != nil {
+			this.Abort("404")
+			return
+		}
+
+		pers := 25
+
+		qs := models.Posts().Filter("Topic", &topic)
+
+		cnt, _ := models.CountObjects(qs)
+		pager := this.SetPaginator(pers, cnt)
+
+		qs = qs.OrderBy("-Created").Limit(pers, pager.Offset()).RelatedSel()
+
+		var posts []models.Post
+		models.ListObjects(qs, &posts)
+
+		this.Data["Posts"] = posts
+		this.Data["Topic"] = &topic
+		this.Data["IsTopic"] = true
+
+		HasFavorite := false
+		if this.isLogin {
+			HasFavorite = models.FollowTopics().Filter("User", &this.user).Filter("Topic", &topic).Exist()
+		}
+		this.Data["HasFavorite"] = HasFavorite
 	}
-
-	pers := 25
-
-	qs := models.Posts().Filter("Topic", &topic)
-
-	cnt, _ := models.CountObjects(qs)
-	pager := this.SetPaginator(pers, cnt)
-
-	qs = qs.OrderBy("-Created").Limit(pers, pager.Offset()).RelatedSel()
-
-	var posts []models.Post
-	models.ListObjects(qs, &posts)
-
-	this.Data["Posts"] = posts
-	this.Data["Topic"] = &topic
-	this.Data["IsTopic"] = true
-
-	HasFavorite := false
-	if this.isLogin {
-		HasFavorite = models.FollowTopics().Filter("User", &this.user).Filter("Topic", &topic).Exist()
-	}
-	this.Data["HasFavorite"] = HasFavorite
 }
 
 // Get implemented Get method for HomeRouter.
