@@ -19,8 +19,6 @@ import (
 	"fmt"
 
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/cache"
-	"github.com/astaxie/beego/orm"
 
 	"github.com/beego/wetalk/routers"
 	"github.com/beego/wetalk/utils"
@@ -30,43 +28,22 @@ import (
 // because we use `bee bale` to pack static resources
 // and we cannot make sure that which init() execute first.
 func initialize() {
-	cfg := utils.LoadConfig()
-
-	var err error
-
-	// cache system
-	utils.Cache, err = cache.NewCache("memory", `{"interval":360}`)
-
-	// session settings
-	beego.SessionOn = true
-	beego.SessionProvider = cfg.MustValue("app", "session_provider")
-	beego.SessionSavePath = cfg.MustValue("app", "session_path")
-	beego.SessionName = cfg.MustValue("app", "session_name")
-
-	beego.EnableXSRF = true
-	// xsrf token expire time
-	beego.XSRFExpire = 86400 * 365
-
-	driverName := cfg.MustValue("orm", "driver_name")
-	dataSource := cfg.MustValue("orm", "data_source")
-	maxIdle := cfg.MustInt("orm", "max_idle_conn")
-	maxOpen := cfg.MustInt("orm", "max_open_conn")
-
-	// set default database
-	orm.RegisterDataBase("default", driverName, dataSource, maxIdle, maxOpen)
-
-	orm.RunCommand()
-
-	err = orm.RunSyncdb("default", false, false)
-	if err != nil {
-		beego.Error(err)
-	}
+	utils.LoadConfig()
 }
 
 func main() {
 	initialize()
 
-	beego.Info(beego.AppName, utils.APP_VER)
+	if utils.IsProMode {
+		beego.Info("Product mode enabled")
+	} else {
+		beego.Info("Develment mode enabled")
+	}
+	beego.Info(beego.AppName, utils.APP_VER, utils.AppUrl)
+
+	if !utils.IsProMode {
+		beego.SetStaticPath("/static_source", "static_source")
+	}
 
 	// Register routers.
 

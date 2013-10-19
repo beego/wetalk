@@ -21,7 +21,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/Unknwon/goconfig"
 	"github.com/howeyc/fsnotify"
@@ -29,6 +28,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
 	"github.com/astaxie/beego/orm"
+	"github.com/beego/compress"
 	"github.com/beego/i18n"
 
 	"github.com/beego/wetalk/mailer"
@@ -46,8 +46,6 @@ var (
 	AppHost           string
 	AppUrl            string
 	AppLogo           string
-	AppJsVer          string
-	AppCssVer         string
 	AvatarURL         string
 	SecretKey         string
 	IsProMode         bool
@@ -59,6 +57,7 @@ var (
 	DateFormat        string
 	DateTimeFormat    string
 	RealtimeRenderMD  bool
+	CompressSettings  *compress.Settings
 )
 
 var (
@@ -66,54 +65,73 @@ var (
 	Cache cache.Cache
 )
 
+var (
+	AppConfPath      = "conf/app.ini"
+	CompressConfPath = "conf/compress.json"
+)
+
 // LoadConfig loads configuration file.
 func LoadConfig() *goconfig.ConfigFile {
 	var err error
 
-	cfgPath := "conf/app.ini"
-
-	if fh, _ := os.OpenFile(cfgPath, os.O_RDONLY|os.O_CREATE, 0600); fh != nil {
+	if fh, _ := os.OpenFile(AppConfPath, os.O_RDONLY|os.O_CREATE, 0600); fh != nil {
 		fh.Close()
 	}
 
 	// Load configuration, set app version and log level.
-	Cfg, err = goconfig.LoadConfigFile(cfgPath)
+	Cfg, err = goconfig.LoadConfigFile(AppConfPath)
 	Cfg.BlockMode = false
 	if err != nil {
 		panic("Fail to load configuration file: " + err.Error())
-	}
-
-	dirs, _ := ioutil.ReadDir("conf")
-	for _, info := range dirs {
-		if !info.IsDir() {
-			name := info.Name()
-			if filepath.HasPrefix(name, "locale_") {
-				if filepath.Ext(name) == ".ini" {
-					lang := name[7 : len(name)-4]
-					if len(lang) > 0 {
-						if err := i18n.SetMessage(lang, "conf/"+name); err != nil {
-							panic("Fail to set message file: " + err.Error())
-						}
-						continue
-					}
-				}
-				beego.Error("locale ", name, " not loaded")
-			}
-		}
 	}
 
 	// Trim 4th part.
 	AppVer = strings.Join(strings.Split(APP_VER, ".")[:3], ".")
 
 	beego.RunMode = Cfg.MustValue("beego", "run_mode")
+
+	beego.RunMode = Cfg.MustValue("beego", "run_mode")
 	beego.HttpPort = Cfg.MustInt("beego", "http_port_"+beego.RunMode)
 
-	ver := ToStr(time.Now().Unix())
-	AppJsVer = ver
-	AppCssVer = ver
+	IsProMode = beego.RunMode == "pro"
+	if IsProMode {
+		beego.SetLevel(beego.LevelInfo)
+	} else {
+		beego.SetLevel(beego.LevelDebug)
+	}
 
-	spawnWatcher()
+	// cache system
+	Cache, err = cache.NewCache("memory", `{"interval":360}`)
+
+	// session settings
+	beego.SessionOn = true
+	beego.SessionProvider = Cfg.MustValue("app", "session_provider")
+	beego.SessionSavePath = Cfg.MustValue("app", "session_path")
+	beego.SessionName = Cfg.MustValue("app", "session_name")
+
+	beego.EnableXSRF = true
+	// xsrf token expire time
+	beego.XSRFExpire = 86400 * 365
+
+	driverName := Cfg.MustValue("orm", "driver_name")
+	dataSource := Cfg.MustValue("orm", "data_source")
+	maxIdle := Cfg.MustInt("orm", "max_idle_conn")
+	maxOpen := Cfg.MustInt("orm", "max_open_conn")
+
+	// set default database
+	orm.RegisterDataBase("default", driverName, dataSource, maxIdle, maxOpen)
+	orm.RunCommand()
+
+	err = orm.RunSyncdb("default", false, false)
+	if err != nil {
+		beego.Error(err)
+	}
+
+	configWatcher()
 	reloadConfig()
+
+	settingLocales()
+	settingCompress()
 
 	return Cfg
 }
@@ -145,17 +163,51 @@ func reloadConfig() {
 	mailer.AuthUser = Cfg.MustValue("mailer", "user")
 	mailer.AuthPass = Cfg.MustValue("mailer", "pass")
 
-	IsProMode = beego.RunMode == "pro"
-	if IsProMode {
-		beego.SetLevel(beego.LevelInfo)
-		beego.Info("Product mode enabled")
-		beego.Info(beego.AppName, APP_VER)
-	}
-
-	orm.Debug, _ = Cfg.Bool("orm", "debug_log")
+	orm.Debug = Cfg.MustBool("orm", "debug_log")
 }
 
-func spawnWatcher() {
+func settingLocales() {
+	// autoload locales with locale_LANG.ini files
+	dirs, _ := ioutil.ReadDir("conf")
+	for _, info := range dirs {
+		if !info.IsDir() {
+			name := info.Name()
+			if filepath.HasPrefix(name, "locale_") {
+				if filepath.Ext(name) == ".ini" {
+					lang := name[7 : len(name)-4]
+					if len(lang) > 0 {
+						if err := i18n.SetMessage(lang, "conf/"+name); err != nil {
+							panic("Fail to set message file: " + err.Error())
+						}
+						continue
+					}
+				}
+				beego.Error("locale ", name, " not loaded")
+			}
+		}
+	}
+}
+
+func settingCompress() {
+	setting, err := compress.LoadJsonConf(CompressConfPath)
+	if err != nil {
+		beego.Error(err)
+		return
+	}
+
+	setting.RunCommand()
+
+	setting.Js.SetProMode(IsProMode)
+	setting.Css.SetProMode(IsProMode)
+
+	setting.Js.SetStaticURL(AppUrl)
+	setting.Css.SetStaticURL(AppUrl)
+
+	beego.AddFuncMap("compress_js", setting.Js.CompressJs)
+	beego.AddFuncMap("compress_css", setting.Css.CompressCss)
+}
+
+func configWatcher() {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		panic("Failed start app watcher: " + err.Error())
@@ -180,25 +232,17 @@ func spawnWatcher() {
 					reloadConfig()
 					beego.Info("Config Reloaded")
 
-				case ".css":
-					beego.Info(event)
-					ver := ToStr(time.Now().Unix())
-					AppCssVer = ver
-
-				case ".js":
-					beego.Info(event)
-					ver := ToStr(time.Now().Unix())
-					AppJsVer = ver
+				case ".json":
+					if event.Name == CompressConfPath {
+						settingCompress()
+						beego.Info("Beego Compress Reloaded")
+					}
 				}
 			}
 		}
 	}()
 
 	if err := watcher.WatchFlags("conf", fsnotify.FSN_MODIFY); err != nil {
-		beego.Error(err)
-	}
-
-	if err := watcher.WatchFlags("static", fsnotify.FSN_MODIFY); err != nil {
 		beego.Error(err)
 	}
 }

@@ -81,12 +81,6 @@ func (this *baseRouter) Prepare() {
 		this.isLogin = false
 	}
 
-	if !utils.IsProMode {
-		ver := utils.ToStr(time.Now().Unix())
-		utils.AppJsVer = ver
-		utils.AppCssVer = ver
-	}
-
 	// Setting properties.
 	this.Data["AppDescription"] = utils.AppDescription
 	this.Data["AppKeywords"] = utils.AppKeywords
@@ -94,8 +88,6 @@ func (this *baseRouter) Prepare() {
 	this.Data["AppVer"] = utils.AppVer
 	this.Data["AppUrl"] = utils.AppUrl
 	this.Data["AppLogo"] = utils.AppLogo
-	this.Data["AppJsVer"] = utils.AppJsVer
-	this.Data["AppCssVer"] = utils.AppCssVer
 	this.Data["AvatarURL"] = utils.AvatarURL
 	this.Data["IsProMode"] = utils.IsProMode
 	this.Data["DateFormat"] = utils.DateFormat

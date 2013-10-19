@@ -167,7 +167,7 @@ func (form *PostAdminForm) SetToPost(post *Post) {
 	}
 	post.Category.Id = form.Category
 
-	// TODO make ContentCache
+	post.ContentCache = RenderPostContent(post.Content)
 }
 
 type CommentAdminForm struct {
@@ -215,5 +215,5 @@ func (form *CommentAdminForm) SetToComment(comment *Comment) {
 	}
 	comment.Post.Id = form.Post
 
-	// TODO make MessageCache
+	comment.MessageCache = RenderPostContent(comment.Message)
 }

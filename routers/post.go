@@ -79,6 +79,7 @@ func (this *PostRouter) Category() {
 	this.Data["Posts"] = posts
 	this.Data["Category"] = &cat
 	this.Data["CategorySlug"] = cat.Slug
+	this.Data["IsCategory"] = true
 
 	var cats []models.Category
 	this.setCategories(&cats)

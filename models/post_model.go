@@ -129,6 +129,14 @@ func (m *Comment) Delete() error {
 	return nil
 }
 
+func (m *Comment) GetMessageCache() string {
+	if utils.RealtimeRenderMD {
+		return RenderPostContent(m.Message)
+	} else {
+		return m.MessageCache
+	}
+}
+
 func (m *Comment) String() string {
 	return utils.ToStr(m.Id)
 }

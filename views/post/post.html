@@ -10,9 +10,17 @@
             </div>
             <div id="post-show">
                 <div class="cell first slim">
+                    <div class="avatar pull-right">
+                        <a href="{{.Post.User.Link}}" title="{{.Post.User.NickName}}">
+                            <img class="large" src="{{.Post.User.AvatarLink}}?size=48">
+                        </a>
+                    </div>
                     <h1 class="post-title">
                         {{.Post.Title}}
                     </h1>
+                    <div class="meta">
+                        <a class="tag" href="{{.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a> • <a class="tag" href="{{.Topic.Link}}">{{i18n .Lang (print "topic." .Post.Topic.Name)}}</a> • <span class="time">{{timesince .Lang .Post.Created}}</span>{{if .Post.Replys}} • <span class="last-reply">{{i18n .Lang "post.last_reply_from"}} <a href="{{.Post.User.Link}}">{{.Post.User.NickName}}</a></span>{{end}}
+                    </div>
                 </div>
                 <div class="cell first slim">
                     <div class="markdown">
@@ -23,14 +31,6 @@
         </div>
 	</div>
     <div id="sidebar" class="col-md-3">
-        <div class="box">
-            <div class="cell first">{{i18n .Lang "help"}}</div>
-            <div class="cell last">
-                <ul>
-                    <li><a href="">{{i18n .Lang "Markdown Syntax"}}</a></li>
-                </ul>
-            </div>
-        </div>
     </div>
 </div>
 <script type="text/javascript">
