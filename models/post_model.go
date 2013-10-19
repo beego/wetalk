@@ -27,7 +27,7 @@ import (
 type Post struct {
 	Id           int
 	User         *User  `orm:"rel(fk)"`
-	Title        string `orm:"size(100)"`
+	Title        string `orm:"size(60)"`
 	Content      string `orm:"type(text)"`
 	ContentCache string `orm:"type(text)"`
 	Browsers     int
@@ -76,6 +76,14 @@ func (m *Post) String() string {
 
 func (m *Post) Link() string {
 	return fmt.Sprintf("%sp/%d", utils.AppUrl, m.Id)
+}
+
+func (m *Post) GetContentCache() string {
+	if utils.RealtimeRenderMD {
+		return RenderPostContent(m.Content)
+	} else {
+		return m.ContentCache
+	}
 }
 
 func Posts() orm.QuerySeter {

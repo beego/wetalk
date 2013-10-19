@@ -16,6 +16,7 @@ package routers
 
 import (
 	"fmt"
+
 	"github.com/astaxie/beego/orm"
 
 	"github.com/beego/wetalk/models"
@@ -50,24 +51,6 @@ func (this *PostRouter) Home() {
 	this.Data["Posts"] = posts
 
 	this.Data["CategorySlug"] = "hot"
-}
-
-// Get implemented Get method for HomeRouter.
-func (this *PostRouter) Recent() {
-	this.TplNames = "post/recent.html"
-
-	pers := 25
-
-	qs := models.Posts()
-
-	cnt, _ := models.CountObjects(qs)
-	pager := this.SetPaginator(pers, cnt)
-
-	qs = qs.OrderBy("-Created").Limit(pers, pager.Offset()).RelatedSel()
-
-	var posts []models.Post
-	models.ListObjects(qs, &posts)
-	this.Data["Posts"] = posts
 }
 
 // Get implemented Get method for HomeRouter.
@@ -123,6 +106,19 @@ func (this *PostRouter) Navs() {
 	var posts []models.Post
 
 	switch slug {
+	case "recent":
+		qs := models.Posts()
+
+		cnt, _ := models.CountObjects(qs)
+		pager := this.SetPaginator(pers, cnt)
+
+		qs = qs.OrderBy("-Updated").Limit(pers, pager.Offset()).RelatedSel()
+
+		models.ListObjects(qs, &posts)
+
+		var cats []models.Category
+		this.setCategories(&cats)
+
 	case "best":
 		qs := models.Posts().Filter("IsBest", true)
 
@@ -194,15 +190,6 @@ func (this *PostRouter) Topic() {
 	slug := this.GetString(":slug")
 
 	switch slug {
-	case "new": // Create new topic.
-		if this.CheckLoginRedirect() {
-			return
-		}
-		this.TplNames = "post/new.html"
-
-		var topics []models.Topic
-		models.Topics().All(&topics)
-		this.Data["Topics"] = topics
 	default: // View topic.
 		this.TplNames = "post/topic.html"
 		topic := models.Topic{Slug: slug}
@@ -236,38 +223,24 @@ func (this *PostRouter) Topic() {
 }
 
 // Get implemented Get method for HomeRouter.
-func (this *PostRouter) TopicPost() {
+func (this *PostRouter) TopicSubmit() {
 	slug := this.GetString(":slug")
 
-	switch slug {
-	case "new":
-		if this.CheckLoginRedirect() {
-			return
-		}
-		this.TplNames = "post/new.html"
+	topic := models.Topic{Slug: slug}
+	if err := topic.Read("Slug"); err != nil {
+		this.Abort("404")
+		return
+	}
 
-		form := models.PostForm{}
-		if !this.ValidFormSets(&form) {
-			var topics []models.Topic
-			models.Topics().All(&topics)
-			this.Data["Topics"] = topics
-			return
-		}
+	result := map[string]interface{}{
+		"success": false,
+	}
 
-	default:
-		topic := models.Topic{Slug: slug}
-		if err := topic.Read("Slug"); err != nil {
-			this.Abort("404")
-			return
-		}
-
+	if this.IsAjax() {
 		action := this.GetString("action")
 		switch action {
 		case "favorite":
-			result := map[string]interface{}{
-				"success": false,
-			}
-			if this.isLogin {
+			if !this.FormOnceNotMatch() && this.isLogin {
 				qs := models.FollowTopics().Filter("User", &this.user).Filter("Topic", &topic)
 				if qs.Exist() {
 					qs.Delete()
@@ -277,10 +250,118 @@ func (this *PostRouter) TopicPost() {
 				}
 				topic.RefreshFollowers()
 				this.user.RefreshFavTopics()
+				result["once"] = this.Data["once_token"]
 				result["success"] = true
 			}
-			this.Data["json"] = result
-			this.ServeJson()
 		}
+	}
+
+	this.Data["json"] = result
+	this.ServeJson()
+}
+
+func (this *PostRouter) New() {
+	this.TplNames = "post/new.html"
+
+	if this.CheckActiveRedirect() {
+		return
+	}
+
+	form := models.PostForm{}
+
+	slug := this.GetString("topic")
+	if len(slug) > 0 {
+		topic := models.Topic{Slug: slug}
+		topic.Read("Slug")
+		form.Topic = topic.Id
+		this.Data["Topic"] = &topic
+	}
+
+	models.ListCategories(&form.Categories)
+	models.ListTopics(&form.Topics)
+	this.SetFormSets(&form)
+}
+
+func (this *PostRouter) NewSubmit() {
+	this.TplNames = "post/new.html"
+
+	if this.CheckActiveRedirect() {
+		return
+	}
+
+	if this.IsAjax() {
+		result := map[string]interface{}{
+			"success": false,
+		}
+		if !this.FormOnceNotMatch() {
+			action := this.GetString("action")
+			switch action {
+			case "preview":
+				content := this.GetString("content")
+				result["preview"] = models.RenderPostContent(content)
+				result["once"] = this.Data["once_token"]
+				result["success"] = true
+			}
+		}
+		this.Data["json"] = result
+		this.ServeJson()
+		return
+	}
+
+	form := models.PostForm{}
+	slug := this.GetString("topic")
+	if len(slug) > 0 {
+		topic := models.Topic{Slug: slug}
+		topic.Read("Slug")
+		form.Topic = topic.Id
+		this.Data["Topic"] = &topic
+	}
+
+	models.ListCategories(&form.Categories)
+	models.ListTopics(&form.Topics)
+	if !this.ValidFormSets(&form) {
+		return
+	}
+
+	var post models.Post
+	if err := form.SavePost(&post, &this.user); err == nil {
+		this.Redirect(post.Link(), 302)
+	} else {
+		fmt.Println(err)
+	}
+}
+
+func (this *PostRouter) Single() {
+	this.TplNames = "post/post.html"
+
+	var post models.Post
+	id, _ := this.GetInt(":post")
+	if id > 0 {
+		models.Posts().Filter("Id", id).RelatedSel().One(&post)
+	}
+
+	if post.Id == 0 {
+		this.Abort("404")
+		return
+	}
+
+	this.Data["Post"] = &post
+}
+
+func (this *PostRouter) SingleSubmit() {
+	if this.CheckActiveRedirect() {
+		return
+	}
+
+	var post models.Post
+	id, _ := this.GetInt(":post")
+	if id > 0 {
+		post.Id = int(id)
+		post.Read()
+	}
+
+	if post.Id == 0 {
+		this.Abort("404")
+		return
 	}
 }

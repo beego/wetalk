@@ -1,6 +1,6 @@
 {{template "base/base.html" .}}
 {{template "base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "User Profile"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "auth.user_profile"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -17,39 +17,39 @@
         <div class="col-md-9">
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="">{{i18n .Lang "User Profile"}}</a>
+                    <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="">{{i18n .Lang "auth.user_profile"}}</a>
                 </div>
                 <div class="cell last slim">
                     {{if .flash.NeedActive}}
                     <div class="alert alert-info">
-                        <h4>{{i18n .Lang "Need Active"}}</h4>
-                        {{i18n .Lang "To access page, require verify your e-mail."}}
+                        <h4>{{i18n .Lang "auth.active_need"}}</h4>
+                        {{i18n .Lang "auth.need_active_message"}}
                     </div>
                     {{end}}
                     {{if .flash.RegSuccess}}
                     <div class="alert alert-success">
-                        <h4>{{i18n .Lang "Congratulations!"}}</h4>
-                        {{i18n .Lang "We have sent a verify e-mail to your mail box, please veify that before you can continue."}}
+                        <h4>{{i18n .Lang "auth.register_success"}}</h4>
+                        {{i18n .Lang "auth.register_success_message"}}
                     </div>
                     {{end}}
                     {{if .flash.ProfileSave}}
                     <div class="alert alert-success">
-                        {{i18n .Lang "Profile success saved."}}
+                        {{i18n .Lang "auth.profile_saved"}}
                     </div>
                     {{end}}
                     {{if .flash.PasswordSave}}
                     <div class="alert alert-success">
-                        {{i18n .Lang "Password success changed."}}
+                        {{i18n .Lang "auth.password_changed"}}
                     </div>
                     {{end}}
-                    <h3 class="underline">Base Profile</h3>
+                    <h3 class="underline">{{i18n .Lang "auth.base_profile"}}</h3>
                     <form method="POST" action="{{.AppUrl}}settings/profile">
                         {{.xsrf_html}}{{.once_html}}
 
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="profile-username">{{i18n .Lang "Username"}}</label>
+                                    <label for="profile-username">{{i18n .Lang "model.user_username"}}</label>
                                     <input id="profile-username" value="{{.User.UserName}}" type="text" class="form-control" disabled>
                                 </div>
                             </div>
@@ -62,23 +62,23 @@
                         <div class="row">
                             <div class="col-md-6">
                                 {{with .ProfileFormSets.Fields.Email}}
-                                <div class="form-group{{if .Error}} has-error{{end}}{{if not $.User.IsActive}} has-warning{{end}} {{.Class}}">
+                                <div class="form-group{{if .Error}} has-error{{end}}{{if not $.User.IsActive}} has-warning{{end}}">
                                     {{.Label}}
                                     {{.Field}}
                                     <p class="error-block">
                                         {{if .Error}}{{.Error}}{{else}}
-                                            {{if not $.User.IsActive}}{{i18n $.Lang "Please verify your e-mail address."}}{{end}}
+                                            {{if not $.User.IsActive}}{{i18n $.Lang "auth.please_verify_email"}}{{end}}
                                         {{end}}
                                     </p>
                                     {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
                                 </div>
                                 {{end}}
 
-                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.HideEmail}}
+                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.PublicEmail}}
 
                                 {{if .User.IsActive}}{{else}}
                                 <div class="form-group">
-                                    <button id="verify-mail-send" type="button" data-loading-text="{{i18n .Lang "Sended !"}}" class="btn btn-warning btn-xs">{{i18n .Lang "Send verify email"}}</button>
+                                    <button id="verify-mail-send" type="button" data-loading-text="{{i18n .Lang "auth.verify_email_sended"}}" class="btn btn-warning btn-xs">{{i18n .Lang "auth.send_verify_email"}}</button>
                                 </div>
                                 {{end}}
                             </div>
@@ -91,7 +91,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 {{with .ProfileFormSets.Fields.GrEmail}}
-                                <div class="form-group{{if .Error}} has-error{{end}} {{.Class}}">
+                                <div class="form-group{{if .Error}} has-error{{end}}">
                                     {{.Label}}
                                     <div class="profile-avatar avatar" data-url="{{$.AvatarURL}}">
                                         <img src="{{$.AvatarURL}}{{.Value}}">
@@ -114,7 +114,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <input type="hidden" name="action" value="save-profile">
-                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "Save Profile"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "auth.save_profile"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -130,7 +130,7 @@
 
                                 <div class="form-group">
                                     <input type="hidden" name="action" value="change-password">
-                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "Change password"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "auth.change_password"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
                                 </div>
                             </form>
                         </div>

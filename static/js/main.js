@@ -17,10 +17,11 @@
 	            options = options || {};
 	            url = options.url;
 	            var xsrftoken = $('meta[name=_xsrf]').attr('content');
+	            var oncetoken = $('[name=_once]').val();
 	            var headers = options.headers || {};
 	            var domain = document.domain.replace(/\./ig, '\\.');
 	            if (!/^(http:|https:).*/.test(url) || eval('/^(http:|https:)\\/\\/(.+\\.)*' + domain + '.*/').test(url)) {
-	                headers = $.extend(headers, {'X-Xsrftoken':xsrftoken});
+	                headers = $.extend(headers, {'X-Xsrftoken':xsrftoken, 'X-Form-Once':oncetoken});
 	            }
 	            options.headers = headers;
 	            var callback = options.success;
@@ -30,7 +31,7 @@
 	            		$('[name=_once]').val(data.once);
 	            	}
 	            	if(callback){
-	            		callback(data);
+	            		callback.apply(this, arguments);
 	            	}
 	            }
 	            return ajax(url, options);
@@ -161,6 +162,8 @@
 	        $e.tooltip({placement: $e.data('placement'), title: $e.data('tooltip-text')});
 	        $e.tooltip('show');
 	    });
+
+		$('[rel=select2]').select2();
 	});
 
 })(jQuery);

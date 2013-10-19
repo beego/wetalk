@@ -14,7 +14,7 @@ import (
 
 func init() {
 	// a example to create a bootstrap style checkbox creater
-	RegisterFielder("checkbox", func(fSet *FieldSet) {
+	RegisterFieldCreater("checkbox", func(fSet *FieldSet) {
 		value := false
 		if b, ok := fSet.Value.(bool); ok {
 			value = b
@@ -29,6 +29,15 @@ func init() {
             	<i class="icon icon-ok"></i>
         	</button>%s
         </label>`, fSet.Name, value, fSet.Name, active, fSet.LabelText))
+	})
+
+	// a example to create a select2 box
+	RegisterFieldFilter("select", func(fSet *FieldSet) {
+		if strings.Index(fSet.Attrs, `rel="select2"`) != -1 {
+			field := string(fSet.Field)
+			field = strings.Replace(field, "<option", "<option></option><option", 1)
+			fSet.Field = template.HTML(field)
+		}
 	})
 }
 
@@ -50,7 +59,11 @@ type FormPlaceholder interface {
 
 type FieldCreater func(*FieldSet)
 
-var customFields = make(map[string]FieldCreater)
+type FieldFilter func(*FieldSet)
+
+var customCreaters = make(map[string]FieldCreater)
+
+var customFilters = make(map[string]FieldFilter)
 
 type fakeLocale struct{}
 
@@ -61,8 +74,13 @@ func (*fakeLocale) Tr(text string, args ...interface{}) string {
 var fakeLocaler FormLocaler = new(fakeLocale)
 
 // register a custom label/input creater
-func RegisterFielder(name string, field FieldCreater) {
-	customFields[name] = field
+func RegisterFieldCreater(name string, field FieldCreater) {
+	customCreaters[name] = field
+}
+
+// register a custom label/input creater
+func RegisterFieldFilter(name string, field FieldFilter) {
+	customFilters[name] = field
 }
 
 type FieldSet struct {
@@ -72,11 +90,11 @@ type FieldSet struct {
 	Name        string
 	LabelText   string
 	Value       interface{}
-	Class       string
 	Help        string
 	Error       string
 	Type        string
 	Placeholder string
+	Attrs       string
 }
 
 type FormSets struct {
@@ -154,8 +172,9 @@ outFor:
 			}
 		}
 
-		class := ""
 		fName := name
+
+		var attrm map[string]string
 
 		// parse struct tag settings
 		for _, v := range strings.Split(fT.Tag.Get("form"), ";") {
@@ -168,11 +187,26 @@ outFor:
 				switch tN {
 				case "type":
 					fTyp = v
-				case "class":
-					class = v
 				case "name":
 					fName = v
+				case "attr":
+					if attrm == nil {
+						attrm = make(map[string]string)
+					}
+					parts := strings.SplitN(v, ",", 2)
+					if len(parts) > 1 {
+						attrm[parts[0]] = parts[1]
+					} else {
+						attrm[v] = v
+					}
 				}
+			}
+		}
+
+		var attrs string
+		if attrm != nil {
+			for k, v := range attrm {
+				attrs += fmt.Sprintf(` %s="%s"`, k, v)
 			}
 		}
 
@@ -181,11 +215,11 @@ outFor:
 
 		var fSet FieldSet
 
-		fSet.Class = class
 		fSet.Id = fId
 		fSet.Name = fName
 		fSet.Value = value
 		fSet.Type = fTyp
+		fSet.Attrs = attrs
 
 		// get field label text
 		fSet.LabelText = fName
@@ -223,7 +257,7 @@ outFor:
 			}
 		}
 
-		if creater, ok := customFields[fTyp]; ok {
+		if creater, ok := customCreaters[fTyp]; ok {
 			// use custome creater generate label/input html
 			creater(&fSet)
 
@@ -232,19 +266,59 @@ outFor:
 			switch fTyp {
 			case "text":
 				fSet.Field = template.HTML(fmt.Sprintf(
-					`<input id="%s" name="%s" type="text" value="%v" class="form-control"%s>`, fId, fName, value, placeholders))
+					`<input id="%s" name="%s" type="text" value="%v" class="form-control"%s%s>`, fId, fName, value, placeholders, attrs))
 
 			case "textarea":
 				fSet.Field = template.HTML(fmt.Sprintf(
-					`<textarea id="%s" name="%s" rows="5" class="form-control"%s>%v</textarea>`, fId, fName, placeholders, value))
+					`<textarea id="%s" name="%s" rows="5" class="form-control"%s%s>%v</textarea>`, fId, fName, placeholders, attrs, value))
 
 			case "password":
 				fSet.Field = template.HTML(fmt.Sprintf(
-					`<input id="%s" name="%s" type="password" value="%v" class="form-control"%s>`, fId, fName, value, placeholders))
+					`<input id="%s" name="%s" type="password" value="%v" class="form-control"%s%s>`, fId, fName, value, placeholders, attrs))
+
+			case "select":
+				var options string
+				str := fmt.Sprintf(`<select id="%s" name="%s" class="form-control"%s%s>%s</select>`, fId, fName, placeholders, attrs)
+				fun := elm.Addr().MethodByName(name + "SelectData")
+
+				if fun.IsValid() {
+					results := fun.Call([]reflect.Value{})
+					if len(results) > 0 {
+						v := results[0]
+						if v.CanInterface() {
+							if vu, ok := v.Interface().([][]string); ok {
+								strv := ToStr(value)
+								seted := false
+								for _, parts := range vu {
+									var n, v string
+									switch {
+									case len(parts) > 1:
+										n, v = locale.Tr(parts[0]), parts[1]
+									case len(parts) == 1:
+										n, v = locale.Tr(parts[0]), parts[0]
+									}
+									var selected string
+									if !seted && strv == v {
+										selected = ` selected="selected"`
+										seted = true
+									}
+									options += fmt.Sprintf(`<option value="%s"%s>%s</option>`, v, selected, n)
+								}
+							}
+						}
+					}
+				}
+
+				if len(options) == 0 {
+					options = fmt.Sprintf(`<option value="%v">%v</option>`, value, value)
+				}
+
+				str = fmt.Sprintf(str, options)
+				fSet.Field = template.HTML(str)
 
 			case "hidden":
 				fSet.Field = template.HTML(fmt.Sprintf(
-					`<input id="%s" name="%s" type="hidden" value="%v">`, fId, fName, value))
+					`<input id="%s" name="%s" type="hidden" value="%v"%s>`, fId, fName, value, attrs))
 
 			case "date", "datetime":
 				t := value.(time.Time)
@@ -256,7 +330,7 @@ outFor:
 					tval = beego.Date(t, DateFormat)
 				}
 				fSet.Field = template.HTML(fmt.Sprintf(
-					`<input id="%s" name="%s" type="%s" value="%s" class="form-control"%s>`, fId, fName, fTyp, tval, placeholders))
+					`<input id="%s" name="%s" type="%s" value="%s" class="form-control"%s%s>`, fId, fName, fTyp, tval, placeholders, attrs))
 
 			case "checkbox":
 				var checked string
@@ -275,6 +349,12 @@ outFor:
 				fSet.Label = template.HTML(fmt.Sprintf(`
 					<label class="control-label" for="%s">%s</label>`, fId, fSet.LabelText))
 			}
+
+			if filter, ok := customFilters[fTyp]; ok {
+				// use custome filter replace label/input html
+				filter(&fSet)
+			}
+
 		}
 
 		fSets.FieldList = append(fSets.FieldList, &fSet)

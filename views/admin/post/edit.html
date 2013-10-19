@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "Edit Post"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "admin.edit_post"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -15,17 +15,17 @@
             {{end}}
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/post">{{i18n .Lang "Posts Admin"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/post/{{.Object.Id}}">{{i18n .Lang "Edit Post"}} {{.Object.Title}}</a>
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/post">{{i18n .Lang "model.admin_post"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/post/{{.Object.Id}}">{{i18n .Lang "model.edit_post"}} {{.Object.Title}}</a>
                 </div>
                 <div class="cell last slim">
                     {{if .flash.CreateSuccess}}
                     <div class="alert alert-info">
-                        {{i18n .Lang "Success create %s %s." "post" .Object.Title}}
+                        {{i18n .Lang "admin.success_create"}} {{.Object.Title}}
                     </div>
                     {{end}}
                     {{if .flash.UpdateSuccess}}
                     <div class="alert alert-info">
-                        {{i18n .Lang "Success update %s %s." "post" .Object.Title}}
+                        {{i18n .Lang "admin.success_update"}} {{.Object.Title}}
                     </div>
                     {{end}}
                     <form action="{{.AppUrl}}admin/post/{{.Object.Id}}" method="POST">
@@ -34,8 +34,8 @@
                                 {{.xsrf_html}}{{.once_html}}
                                 {{template "base/form/fields.html" .PostAdminFormSets}}
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "Update"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
-                                    <a type="submit" href="{{.AppUrl}}admin/post/{{.Object.Id}}/delete" class="btn btn-danger pull-right">{{i18n .Lang "Delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></a>
+                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "update"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                                    <a type="submit" href="{{.AppUrl}}admin/post/{{.Object.Id}}/delete" class="btn btn-danger pull-right">{{i18n .Lang "delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></a>
                                 </div>
                             </div>
                         </div>

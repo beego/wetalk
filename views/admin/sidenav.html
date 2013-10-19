@@ -1,25 +1,25 @@
 <div class="box">
     <div class="cell first">
-        <h4>{{i18n .Lang "Admin Center"}}</h4>
+        <h4>{{i18n .Lang "admin.admin_center"}}</h4>
     </div>
     <ul class="nav nav-side">
         <li{{if .consoleAdmin}} class="active"{{end}}>
-            <a href="{{.AppUrl}}admin">{{i18n .Lang "Console"}}</a>
+            <a href="{{.AppUrl}}admin">{{i18n .Lang "admin.admin_console"}}</a>
         </li>
         <li{{if .userAdmin}} class="active"{{end}}>
-            <a href="{{.AppUrl}}admin/user">{{i18n .Lang "Users Admin"}}</a>
+            <a href="{{.AppUrl}}admin/user">{{i18n .Lang "model.admin_user"}}</a>
         </li>
         <li{{if .postAdmin}} class="active"{{end}}>
-            <a href="{{.AppUrl}}admin/post">{{i18n .Lang "Posts Admin"}}</a>
+            <a href="{{.AppUrl}}admin/post">{{i18n .Lang "model.admin_post"}}</a>
         </li>
         <li{{if .commentAdmin}} class="active"{{end}}>
-            <a href="{{.AppUrl}}admin/comment">{{i18n .Lang "Comments Admin"}}</a>
+            <a href="{{.AppUrl}}admin/comment">{{i18n .Lang "model.admin_comment"}}</a>
         </li>
         <li{{if .topicAdmin}} class="active"{{end}}>
-            <a href="{{.AppUrl}}admin/topic">{{i18n .Lang "Topics Admin"}}</a>
+            <a href="{{.AppUrl}}admin/topic">{{i18n .Lang "model.admin_topic"}}</a>
         </li>
         <li{{if .categoryAdmin}} class="active"{{end}}>
-            <a href="{{.AppUrl}}admin/category">{{i18n .Lang "Categories Admin"}}</a>
+            <a href="{{.AppUrl}}admin/category">{{i18n .Lang "model.admin_category"}}</a>
         </li>
     </ul>
 </div>

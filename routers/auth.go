@@ -85,7 +85,7 @@ func (this *LoginRouter) Login() {
 		if this.IsAjax() {
 			this.Data["json"] = map[string]interface{}{
 				"success":  true,
-				"message":  this.Tr("Success! Reloading page, plz wait."),
+				"message":  this.Tr("auth.login_success_ajax"),
 				"redirect": loginRedirect,
 			}
 			this.ServeJson()
@@ -105,7 +105,7 @@ func (this *LoginRouter) Login() {
 ajaxError:
 	this.Data["json"] = map[string]interface{}{
 		"success": false,
-		"message": this.Tr("User not exist or Password was Wrong."),
+		"message": this.Tr("auth.login_error_ajax"),
 		"once":    this.Data["once_token"],
 	}
 	this.ServeJson()

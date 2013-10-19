@@ -16,8 +16,9 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"html/template"
-	"reflect"
+	"net/url"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -27,11 +28,6 @@ import (
 // get HTML i18n string
 func i18nHTML(lang, format string, args ...interface{}) template.HTML {
 	return template.HTML(i18n.Tr(lang, format, args...))
-}
-
-// get HTML i18n string with specify section
-func i18nsHTML(lang, section, format string, args ...interface{}) template.HTML {
-	return template.HTML(i18n.Trs(lang, section, format, args...))
 }
 
 func boolicon(b bool) (s template.HTML) {
@@ -55,6 +51,17 @@ func loadtimes(t time.Time) int {
 	return int(time.Now().Sub(t).Nanoseconds() / 1e6)
 }
 
+func sum(base interface{}, value interface{}, params ...interface{}) (s string) {
+	switch v := base.(type) {
+	case string:
+		s = v + ToStr(value)
+		for _, p := range params {
+			s += ToStr(p)
+		}
+	}
+	return s
+}
+
 func dict(values ...interface{}) (map[string]interface{}, error) {
 	if len(values)%2 != 0 {
 		return nil, errors.New("invalid dict call")
@@ -74,184 +81,38 @@ func timesince(lang string, t time.Time) string {
 	now := time.Now()
 	seonds := int(now.Sub(t).Seconds())
 	if seonds < 60 {
-		return i18n.Tr(lang, "%d seconds ago", seonds)
+		return i18n.Tr(lang, "seconds_ago", seonds)
 	} else if seonds < 60*60 {
-		return i18n.Tr(lang, "%d minutes ago", seonds/60)
+		return i18n.Tr(lang, "minutes_ago", seonds/60)
 	} else if seonds < 60*60*24 {
-		return i18n.Tr(lang, "%d hours ago", seonds/(60*60))
+		return i18n.Tr(lang, "hours_ago", seonds/(60*60))
 	} else {
-		return i18n.Tr(lang, "%d days ago", seonds/(60*60*24))
+		return i18n.Tr(lang, "days_ago", seonds/(60*60*24))
 	}
+}
+
+// create an login url with specify redirect to param
+func loginto(uris ...string) template.HTMLAttr {
+	var uri string
+	if len(uris) > 0 {
+		uri = uris[0]
+	}
+	to := fmt.Sprintf("%slogin", AppUrl)
+	if len(uri) > 0 {
+		to += "?to=" + url.QueryEscape(uri)
+	}
+	return template.HTMLAttr(to)
 }
 
 func init() {
 	// Register template functions.
 	beego.AddFuncMap("i18n", i18nHTML)
-	beego.AddFuncMap("i18ns", i18nsHTML)
 	beego.AddFuncMap("boolicon", boolicon)
 	beego.AddFuncMap("date", date)
 	beego.AddFuncMap("datetime", datetime)
 	beego.AddFuncMap("dict", dict)
 	beego.AddFuncMap("timesince", timesince)
-
-	// move go1.2 template funcs to this
-	// Comparisons
-	beego.AddFuncMap("eq", eq) // ==
-	beego.AddFuncMap("ge", ge) // >=
-	beego.AddFuncMap("gt", gt) // >
-	beego.AddFuncMap("le", le) // <=
-	beego.AddFuncMap("lt", lt) // <
-	beego.AddFuncMap("ne", ne) // !=
-
 	beego.AddFuncMap("loadtimes", loadtimes)
-}
-
-var (
-	errBadComparisonType = errors.New("invalid type for comparison")
-	errBadComparison     = errors.New("incompatible types for comparison")
-	errNoComparison      = errors.New("missing argument for comparison")
-)
-
-type kind int
-
-const (
-	invalidKind kind = iota
-	boolKind
-	complexKind
-	intKind
-	floatKind
-	integerKind
-	stringKind
-	uintKind
-)
-
-func basicKind(v reflect.Value) (kind, error) {
-	switch v.Kind() {
-	case reflect.Bool:
-		return boolKind, nil
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return intKind, nil
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		return uintKind, nil
-	case reflect.Float32, reflect.Float64:
-		return floatKind, nil
-	case reflect.Complex64, reflect.Complex128:
-		return complexKind, nil
-	case reflect.String:
-		return stringKind, nil
-	}
-	return invalidKind, errBadComparisonType
-}
-
-// eq evaluates the comparison a == b || a == c || ...
-func eq(arg1 interface{}, arg2 ...interface{}) (bool, error) {
-	v1 := reflect.ValueOf(arg1)
-	k1, err := basicKind(v1)
-	if err != nil {
-		return false, err
-	}
-	if len(arg2) == 0 {
-		return false, errNoComparison
-	}
-	for _, arg := range arg2 {
-		v2 := reflect.ValueOf(arg)
-		k2, err := basicKind(v2)
-		if err != nil {
-			return false, err
-		}
-		if k1 != k2 {
-			return false, errBadComparison
-		}
-		truth := false
-		switch k1 {
-		case boolKind:
-			truth = v1.Bool() == v2.Bool()
-		case complexKind:
-			truth = v1.Complex() == v2.Complex()
-		case floatKind:
-			truth = v1.Float() == v2.Float()
-		case intKind:
-			truth = v1.Int() == v2.Int()
-		case stringKind:
-			truth = v1.String() == v2.String()
-		case uintKind:
-			truth = v1.Uint() == v2.Uint()
-		default:
-			panic("invalid kind")
-		}
-		if truth {
-			return true, nil
-		}
-	}
-	return false, nil
-}
-
-// ne evaluates the comparison a != b.
-func ne(arg1, arg2 interface{}) (bool, error) {
-	// != is the inverse of ==.
-	equal, err := eq(arg1, arg2)
-	return !equal, err
-}
-
-// lt evaluates the comparison a < b.
-func lt(arg1, arg2 interface{}) (bool, error) {
-	v1 := reflect.ValueOf(arg1)
-	k1, err := basicKind(v1)
-	if err != nil {
-		return false, err
-	}
-	v2 := reflect.ValueOf(arg2)
-	k2, err := basicKind(v2)
-	if err != nil {
-		return false, err
-	}
-	if k1 != k2 {
-		return false, errBadComparison
-	}
-	truth := false
-	switch k1 {
-	case boolKind, complexKind:
-		return false, errBadComparisonType
-	case floatKind:
-		truth = v1.Float() < v2.Float()
-	case intKind:
-		truth = v1.Int() < v2.Int()
-	case stringKind:
-		truth = v1.String() < v2.String()
-	case uintKind:
-		truth = v1.Uint() < v2.Uint()
-	default:
-		panic("invalid kind")
-	}
-	return truth, nil
-}
-
-// le evaluates the comparison <= b.
-func le(arg1, arg2 interface{}) (bool, error) {
-	// <= is < or ==.
-	lessThan, err := lt(arg1, arg2)
-	if lessThan || err != nil {
-		return lessThan, err
-	}
-	return eq(arg1, arg2)
-}
-
-// gt evaluates the comparison a > b.
-func gt(arg1, arg2 interface{}) (bool, error) {
-	// > is the inverse of <=.
-	lessOrEqual, err := le(arg1, arg2)
-	if err != nil {
-		return false, err
-	}
-	return !lessOrEqual, nil
-}
-
-// ge evaluates the comparison a >= b.
-func ge(arg1, arg2 interface{}) (bool, error) {
-	// >= is the inverse of <.
-	lessThan, err := lt(arg1, arg2)
-	if err != nil {
-		return false, err
-	}
-	return !lessThan, nil
+	beego.AddFuncMap("sum", sum)
+	beego.AddFuncMap("loginto", loginto)
 }

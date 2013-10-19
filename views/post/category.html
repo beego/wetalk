@@ -1,11 +1,14 @@
 {{template "base/base.html" .}}
 {{template "base/base_common.html" .}}
-{{define "meta"}}<title>{{i18ns .Lang "category" .Category.Name}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang (print "category." .Category.Name)}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content" class="col-md-8">
         <div class="box">
-            <div class="cell nav-cats first">
+            <div class="cell breadcrumb nav-cats first">
+                {{template "post/component/nav-list.html" .}}
+            </div>
+            <div class="cell nav-cats">
                 {{template "post/component/nav-cats.html" .}}
             </div>
             {{if .Topics}}
@@ -15,19 +18,16 @@
             {{end}}
         </div>
         <div class="box">
-            <div class="cell first breadcrumb">
-                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.Category.Link}}">{{i18ns .Lang "category" .Category.Name}}</a>
-            </div>
-            {{if .paginator.HasPages}}
-                <div class="post-list">
+            {{if .paginator.Nums}}
+                <div class="post-list first">
                     {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
                 </div>
         		<div class="cell last">
                     {{template "base/paginator_pn.html" .}}
                 </div>
             {{else}}
-                <div class="cell last">
-                    <div class="text-center">{{i18n .Lang "No posts found here"}}</div>
+                <div class="cell first last">
+                    <div class="text-center">{{i18n .Lang "postnav.not_found_posts"}}</div>
                 </div>
             {{end}}
     	</div>

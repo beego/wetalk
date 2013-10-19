@@ -13,14 +13,14 @@
         </div>
         <form class="navbar-form navbar-left" role="search">
             <div class="form-group">
-                <input id="search-box" class="form-control" type="text" placeholder="{{i18n .Lang "Search"}}" name="q">
+                <input id="search-box" class="form-control" type="text" placeholder="{{i18n .Lang "search"}}" name="q">
             </div>
         </form>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
-                <li {{if .IsHome}}class="active"{{end}}><a href="{{.AppUrl}}">{{i18n .Lang "Home"}}</a></li>
-                <li {{if .IsResource}}class="active"{{end}}><a href="/resource">{{i18n .Lang "Resource"}}</a></li>
-                <li><a target="_blank" href="http://beego.me">{{i18n .Lang "Official website"}}</a></li>
+                <li {{if .IsHome}}class="active"{{end}}><a href="{{.AppUrl}}">{{i18n .Lang "home"}}</a></li>
+                <li {{if .IsResource}}class="active"{{end}}><a href="/resource">{{i18n .Lang "resource"}}</a></li>
+                <li><a target="_blank" href="http://beego.me">{{i18n .Lang "official_website"}}</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right navbar-menu">
                 {{if .IsLogin}}
@@ -28,38 +28,38 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img class="middle" src="{{.AvatarURL}}{{.User.GrEmail}}?size=48"></a>
                     <ul class="dropdown-menu">
                         {{if .User.IsAdmin}}
-                            <li><a href="{{.AppUrl}}admin">{{i18n .Lang "Admin Center"}}</a></li>
+                            <li><a href="{{.AppUrl}}admin">{{i18n .Lang "admin.admin_center"}}</a></li>
                             <li class="divider"></li>
                         {{end}}
-                        <li><a href="{{.AppUrl}}settings/profile">{{i18n .Lang "User Profile"}} <i class="icon icon-cog pull-right"></i></a></li>
-                        <li><a href="{{.AppUrl}}logout">{{i18n .Lang "Logout"}} <i class="icon icon-signout pull-right"></i></a></li>
+                        <li><a href="{{.AppUrl}}settings/profile">{{i18n .Lang "auth.user_profile"}} <i class="icon icon-cog pull-right"></i></a></li>
+                        <li><a href="{{.AppUrl}}logout">{{i18n .Lang "auth.logout"}} <i class="icon icon-signout pull-right"></i></a></li>
                     </ul>
                 </li>
                 {{else}}
                 <li class="dropdown{{if .IsLoginPage}} active{{end}}">
-                    <a href="{{.AppUrl}}login" class="dropdown-toggle" data-toggle="dropdown">{{i18n .Lang "Login"}}</a>
+                    <a href="{{.AppUrl}}login" class="dropdown-toggle" data-toggle="dropdown">{{i18n .Lang "auth.login"}}</a>
                     <form id="dropdown-login" class="dropdown-menu cell" action="{{.AppUrl}}login" method="POST">
                         {{.xsrf_html}}{{.once_html}}
                         <div class="alert alert-info alert-small">
-                            {{i18n .Lang "Login your account."}}
+                            {{i18n .Lang "auth.login_your_account"}}
                         </div>
                         <div class="form-group">
-                            <input class="form-control" name="UserName" type="text" placeholder="{{i18n .Lang "Username"}} / {{i18n .Lang "Email"}}" value="">
+                            <input class="form-control" name="UserName" type="text" placeholder="{{i18n .Lang "auth.login_username"}} / {{i18n .Lang "auth.login_email"}}" value="">
                         </div>
                         <div class="form-group">
-                            <input class="form-control" name="Password" type="password" placeholder="{{i18n .Lang "Password"}}">
+                            <input class="form-control" name="Password" type="password" placeholder="{{i18n .Lang "auth.login_password"}}">
                         </div>
                         <p>
                             <label>
-                                <input type="hidden" name="remember" value="0">
-                                <button type="button" data-toggle="button" data-name="remember" value="0" class="btn btn-default btn-xs btn-checked"><i class="icon icon-ok"></i></button>{{i18n .Lang "Remember Me"}}
+                                <input type="hidden" name="Remember" value="0">
+                                <button type="button" data-toggle="button" data-name="Remember" value="0" class="btn btn-default btn-xs btn-checked"><i class="icon icon-ok"></i></button>{{i18n .Lang "auth.login_remember_me"}}
                             </label>
-                            <span class="pull-right"><a href="http://i.wapp.lab/login/lost/"><i class="icon-question-sign"></i> {{i18n .Lang "Forgot Password"}}</a></span>
+                            <span class="pull-right"><a href="http://i.wapp.lab/login/lost/"><i class="icon-question-sign"></i> {{i18n .Lang "auth.forgot_password"}}</a></span>
                         </p>
-                        <button class="btn btn-primary btn-block" type="submit">登录</button>
+                        <button class="btn btn-primary btn-block" type="submit">{{i18n .Lang "auth.login"}}</button>
                     </form>
                 </li>
-                <li {{if .IsRegister}}class="active"{{end}}><a href="{{.AppUrl}}register">{{i18n .Lang "Register"}}</a></li>
+                <li {{if .IsRegister}}class="active"{{end}}><a href="{{.AppUrl}}register">{{i18n .Lang "auth.register"}}</a></li>
                 {{end}}
             </ul>
         </div>

@@ -13,17 +13,17 @@
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
-                <li {{if .IsHome}}class="active"{{end}}><a href="{{.AppUrl}}">{{i18n .Lang "Home"}}</a></li>
+                <li {{if .IsHome}}class="active"{{end}}><a href="{{.AppUrl}}">{{i18n .Lang "home"}}</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right navbar-menu">
                 {{if .IsLogin}}
                 <li class="dropdown avatar">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img class="middle" src="{{.AvatarURL}}{{.User.GrEmail}}?size=48"></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{.AppUrl}}admin">{{i18n .Lang "Admin Center"}}</a></li>
+                        <li><a href="{{.AppUrl}}admin">{{i18n .Lang "admin.admin_center"}}</a></li>
                         <li class="divider"></li>
-                        <li><a href="{{.AppUrl}}settings/profile">{{i18n .Lang "User Profile"}} <i class="icon icon-cog pull-right"></i></a></li>
-                        <li><a href="{{.AppUrl}}logout">{{i18n .Lang "Logout"}} <i class="icon icon-signout pull-right"></i></a></li>
+                        <li><a href="{{.AppUrl}}settings/profile">{{i18n .Lang "auth.user_profile"}} <i class="icon icon-cog pull-right"></i></a></li>
+                        <li><a href="{{.AppUrl}}logout">{{i18n .Lang "auth.logout"}} <i class="icon icon-signout pull-right"></i></a></li>
                     </ul>
                 </li>
                 {{end}}

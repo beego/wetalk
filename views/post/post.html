@@ -1,0 +1,41 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}<title>{{.Post.Title}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-9">
+        <div class="box">
+            <div class="cell first breadcrumb last">
+                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.Post.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a><i class="divider icon-angle-right"></i><a href="{{.Post.Topic.Link}}">{{i18n .Lang (print "topic." .Post.Topic.Name)}}</a>
+            </div>
+            <div id="post-show">
+                <div class="cell first slim">
+                    <h1 class="post-title">
+                        {{.Post.Title}}
+                    </h1>
+                </div>
+                <div class="cell first slim">
+                    <div class="markdown">
+                        {{.Post.GetContentCache|str2html}}
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+    <div id="sidebar" class="col-md-3">
+        <div class="box">
+            <div class="cell first">{{i18n .Lang "help"}}</div>
+            <div class="cell last">
+                <ul>
+                    <li><a href="">{{i18n .Lang "Markdown Syntax"}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    (function($){
+
+    })(jQuery);
+</script>
+{{end}}

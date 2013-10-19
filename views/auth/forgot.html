@@ -1,47 +1,47 @@
 {{template "base/base.html" .}}
 {{template "base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "Forgot Password"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "auth.forgot_password"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content" class="col-md-8 col-md-offset-2">
     	<div class="box">
     		<div class="cell first breadcrumb">
-    			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang .AppName}}</a>
+    			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang "app_name"}}</a>
     		</div>
     		<div class="cell last slim">
     			<div class="row">
                     {{if .flash.SuccessSend}}
                     <div class="col-md-12">
-                        <h3>{{i18n .Lang "Success Send Mail !"}}</h3>
+                        <h3>{{i18n .Lang "auth.forgot_sended"}}</h3>
                         <hr>
                         <p>
-                            {{i18n .Lang "Please check your mailbox, and click the secure link to reset password."}}
+                            {{i18n .Lang "auth.forgot_sended_msg"}}
                         </p>
                     </div>
                     {{else}}
     				<div class="col-md-6 auth-page">
     					<h3 class="title">
-    						<i class="icon icon-user"></i> {{i18n .Lang "Forgot Password"}}
+    						<i class="icon icon-user"></i> {{i18n .Lang "auth.forgot_password"}}
     					</h3>
     					<form action="{{.AppUrl}}forgot" method="POST">
                             {{.xsrf_html}}{{.once_html}}
 
                             {{template "base/form/field_group.html" .ForgotFormSets.Fields.Email}}
 
-                            <button class="btn btn-primary">{{i18n .Lang "Reset Password"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                            <button class="btn btn-primary">{{i18n .Lang "auth.reset_password"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
     					</form>
     				</div>
 
     				<div class="col-md-6 auth-page">
         				<div class="auth-page">
         					<h3 class="title">
-        						<i class="icon icon-question"></i> {{i18n .Lang "Help"}}
+        						<i class="icon icon-question"></i> {{i18n .Lang "help"}}
         					</h3>
         					<p class="well">
-        						{{i18n .Lang "If you remember your password suddently, please Sign In."}}
+        						{{i18n .Lang "auth.reset_if_remember_sign_in"}}
         					</p>
         					<p>
-                            	<a href="/login" class="btn btn-default">{{i18n .Lang "Login Now"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a>
+                            	<a href="{{.AppUrl}}login" class="btn btn-default">{{i18n .Lang "auth.login_now"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a>
         					</p>
 	        			</div>
     				</div>

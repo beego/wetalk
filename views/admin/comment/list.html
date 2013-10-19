@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "Comments Admin"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "model.admin_comment"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -15,24 +15,24 @@
             {{end}}
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/comment">{{i18n .Lang "Comments Admin"}}</a>
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/comment">{{i18n .Lang "model.admin_comment"}}</a>
                 </div>
                 <div class="cell last slim">
                     {{if .flash.DeleteSuccess}}
                     <div class="alert alert-info">
-                        {{i18n .Lang "Success delete!"}}
+                        {{i18n .Lang "admin.success_delete"}}
                     </div>
                     {{end}}
                     <p>
-                        <a href="/admin/comment/new" class="btn btn-default">{{i18n .Lang "New Comment"}}</a>
+                        <a href="/admin/comment/new" class="btn btn-default">{{i18n .Lang "model.new_comment"}}</a>
                     </p>
                     <table class="table table-hover table-condensed color-link">
                         <thead>
                             <tr>
-                                <th>{{i18n .Lang "Id"}}</th>
-                                <th>{{i18n .Lang "Post Title"}}</th>
-                                <th>{{i18n .Lang "User"}}</th>
-                                <th>{{i18n .Lang "Created"}}</th>
+                                <th>Id</th>
+                                <th>{{i18n .Lang "model.post_title"}}</th>
+                                <th>{{i18n .Lang "model.user_username"}}</th>
+                                <th>{{i18n .Lang "model.created"}}</th>
                         </thead>
                         <tbody>
                             {{range $comment := .Objects}}

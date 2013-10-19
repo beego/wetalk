@@ -21,15 +21,77 @@ import (
 )
 
 type PostForm struct {
-	Topic   string `valid:"Required"`
-	Title   string `valid:"Required;MaxSize(100)"`
-	Content string `form:"type(textarea)" valid:"Required;MinSize(50)"`
+	Category   int        `form:"type(select);attr(rel,select2)" valid:"Required"`
+	Topic      int        `form:"type(select);attr(rel,select2)" valid:"Required"`
+	Title      string     `form:"attr(autocomplete,off)" valid:"Required;MinSize(5);MaxSize(60)"`
+	Content    string     `form:"type(textarea)" valid:"Required;MinSize(10)"`
+	Categories []Category `form:"-"`
+	Topics     []Topic    `form:"-"`
+}
+
+func (form *PostForm) CategorySelectData() [][]string {
+	data := make([][]string, 0, len(form.Categories)+1)
+	for _, cat := range form.Categories {
+		data = append(data, []string{"category." + cat.Name, utils.ToStr(cat.Id)})
+	}
+	return data
+}
+
+func (form *PostForm) TopicSelectData() [][]string {
+	data := make([][]string, 0, len(form.Topics)+1)
+	for _, topic := range form.Topics {
+		data = append(data, []string{"topic." + topic.Name, utils.ToStr(topic.Id)})
+	}
+	return data
+}
+
+func (form *PostForm) Valid(v *validation.Validation) {
+	valid := false
+	for _, topic := range form.Topics {
+		if topic.Id == form.Topic {
+			valid = true
+		}
+	}
+
+	if !valid {
+		v.SetError("Topic", "error")
+	}
+
+	valid = false
+	for _, cat := range form.Categories {
+		if cat.Id == form.Category {
+			valid = true
+		}
+	}
+
+	if !valid {
+		v.SetError("Category", "error")
+	}
+}
+
+func (form *PostForm) SavePost(post *Post, user *User) error {
+	post.Title = form.Title
+	post.Content = form.Content
+	post.Category = &Category{Id: form.Category}
+	post.Topic = &Topic{Id: form.Topic}
+	post.User = user
+	post.LastReply = user
+	post.ContentCache = RenderPostContent(form.Content)
+	return post.Insert()
+}
+
+func (form *PostForm) Placeholders() map[string]string {
+	return map[string]string{
+		"Category": "model.category_choose_dot",
+		"Topic":    "model.topic_choose_dot",
+		"Title":    "post.plz_enter_title",
+	}
 }
 
 type PostAdminForm struct {
 	Create    bool   `form:"-"`
 	User      int    `valid:"Required"`
-	Title     string `valid:"Required;MaxSize(100)"`
+	Title     string `valid:"Required;MaxSize(60)"`
 	Content   string `form:"type(textarea)" valid:"Required"`
 	Browsers  int    ``
 	Replys    int    ``
@@ -43,22 +105,22 @@ type PostAdminForm struct {
 func (form *PostAdminForm) Valid(v *validation.Validation) {
 	user := User{Id: form.User}
 	if user.Read() != nil {
-		v.SetError("User", "Not found by this id")
+		v.SetError("User", "admin.not_found_by_id")
 	}
 
 	user.Id = form.LastReply
 	if user.Read() != nil {
-		v.SetError("LastReply", "Not found by this id")
+		v.SetError("LastReply", "admin.not_found_by_id")
 	}
 
 	topic := Topic{Id: form.Topic}
 	if topic.Read() != nil {
-		v.SetError("Topic", "Not found by this id")
+		v.SetError("Topic", "admin.not_found_by_id")
 	}
 
 	cat := Category{Id: form.Category}
 	if cat.Read() != nil {
-		v.SetError("Category", "Not found by this id")
+		v.SetError("Category", "admin.not_found_by_id")
 	}
 }
 
@@ -119,12 +181,12 @@ type CommentAdminForm struct {
 func (form *CommentAdminForm) Valid(v *validation.Validation) {
 	user := User{Id: form.User}
 	if user.Read() != nil {
-		v.SetError("User", "Not found by this id")
+		v.SetError("User", "admin.not_found_by_id")
 	}
 
 	post := Post{Id: form.Post}
 	if post.Read() != nil {
-		v.SetError("Post", "Not found by this id")
+		v.SetError("Post", "admin.not_found_by_id")
 	}
 }
 

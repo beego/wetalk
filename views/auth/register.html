@@ -1,38 +1,38 @@
 {{template "base/base.html" .}}
 {{template "base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "Register"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "auth.register"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content" class="col-md-8 col-md-offset-2">
     	<div class="box">
     		<div class="cell first breadcrumb">
-    			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang .AppName}}</a>
+    			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang "app_name"}}</a>
     		</div>
     		<div class="cell last slim">
     			<div class="row">
     				<div class="col-md-6 auth-page">
     					<h3 class="title">
-    						<i class="icon icon-user"></i> {{i18n .Lang "Sign Up"}}
+    						<i class="icon icon-user"></i> {{i18n .Lang "auth.sign_up"}}
     					</h3>
     					<form method="POST" action="{{.AppUrl}}register">
                             {{.xsrf_html}}{{.once_html}}
 
                             {{template "base/form/fields.html" .RegisterFormSets}}
 
-                            <button class="btn btn-primary">{{i18n .Lang "Sign Up"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                            <button class="btn btn-primary">{{i18n .Lang "auth.sign_up"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
     					</form>
     				</div>
 
     				<div class="col-md-6 auth-page">
         				<div class="auth-page">
         					<h3 class="title">
-        						<i class="icon icon-question"></i> {{i18n .Lang "Help"}}
+        						<i class="icon icon-question"></i> {{i18n .Lang "help"}}
         					</h3>
         					<p class="well">
-        						{{i18n .Lang "If you have already registered. Please Sign In."}}
+        						{{i18n .Lang "auth.register_if_you_registered"}}
         					</p>
         					<p>
-                            	<a href="/login" class="btn btn-default">{{i18n .Lang "Login Now"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a>
+                            	<a href="{{.AppUrl}}login" class="btn btn-default">{{i18n .Lang "auth.login_now"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></a>
         					</p>
 	        			</div>
     				</div>

@@ -1,72 +1,68 @@
 {{template "base/base.html" .}}
 {{template "base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "New post"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "post.post_new"}} - {{i18n .Lang .AppName}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content" class="col-md-9">
         <div class="box">
             <div class="cell first breadcrumb">
-                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i>{{i18n .Lang "New post"}}
+                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i>{{if .Topic}}<a href="{{.Topic.Link}}">{{i18n .Lang (print "topic." .Topic.Name)}}</a><i class="divider icon-angle-right"></i>{{end}}{{i18n .Lang "post.post_new"}}
             </div>
-            <div class="cell nav-topics last">
-                <form method="post" action="/topic/new" id="post-form" class="form-horizontal">
+            <div class="cell last">
+                <form id="post-new" method="POST" action="{{.AppUrl}}new{{if .Topic}}?topic={{.Topic.Slug}}{{end}}">
                     {{.xsrf_html}}{{.once_html}}
-                    
-                    <div class="form-group">
-                        <label class="col-md-2 control-label"><abbr title="required">*</abbr>{{i18n .Lang "Title"}}</label>
-                        <div class="col-md-3" style="padding-left: 0px;">
-                            <select id="node" name="topic" class="form-control">
-                                {{range .Topics}}
-                                <option value="{{.Name}}">{{.Name}}</option>
-                                {{end}}
-                            </select>
-                        </div>
 
-                        <div class="col-md-7{{if .PostFormSets.Fields.Title.Error}} has-error{{end}}" style="padding-left: 0px;">
-                            <input type="text" class="form-control" size="30" name="title" value="{{.PostFormSets.Fields.Title.Field}}">
-                        </div>
-                        {{with .PostFormSets.Fields.Title}}
-                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
-                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                    <div class="form-group">
+                        {{with .PostFormSets.Fields.Category}}
+                            <div class="post-categories{{if .Error}} has-error{{end}}">
+                                {{.Field}}
+                            </div>
                         {{end}}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="col-md-2 control-label"><abbr title="required">*</abbr>{{i18n .Lang "Content"}}</label>
-                        <div class="col-md-10{{if .PostFormSets.Fields.Content.Error}} has-error{{end}}" style="padding-left: 0px;">
-                            <textarea name="content" cols="30" rows="20" class="form-control post-content"></textarea>
-                        </div>
-                        {{with .PostFormSets.Fields.Content}}
-                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
-                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                        {{with .PostFormSets.Fields.Topic}}
+                            <div class="post-topics{{if .Error}} has-error{{end}}">
+                                {{.Field}}
+                            </div>
                         {{end}}
+                        <span class="clearfix"></span>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="col-md-2 control-label">{{i18n .Lang "Preview"}}</label>
-                        <div class="col-md-10 markdown" style="width: 81.5%;"></div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button type="submit" class="btn btn-info">{{i18n .Lang "Create post"}}</button>
-                            <button class="btn btn-danger" onclick="return backToHome();">{{i18n .Lang "Discard"}}</button>
+
+                    {{with .PostFormSets.Fields.Title}}
+                        <div class="form-group{{if .Error}} has-error{{end}}">
+                            {{.Field}}
+                            {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                            {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                        </div>
+                    {{end}}
+
+                    <ul id="post-editor" class="nav nav-tabs">
+                      <li class="active"><a href="#post-content" data-toggle="tab">{{i18n .Lang "post.write_content"}}</a></li>
+                      <li><a href="#post-preview" data-toggle="tab">{{i18n .Lang "post.preview"}}</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div id="post-content" class="tab-pane post-content active">
+                            {{with .PostFormSets.Fields.Content}}
+                                <div class="form-group{{if .Error}} has-error{{end}}">
+                                    {{.Field}}
+                                    {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                                    {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                                </div>
+                            {{end}}
+                        </div>
+                        <div id="post-preview" class="tab-pane post-preview markdown" >
                         </div>
                     </div>
-                    
-                    <script type="text/javascript">
-                        function backToHome() {
-				      		window.location.href = "/";
-				      		return false;
-				      	}
-                    </script>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">{{i18n .Lang "submit"}} <i class="icon-chevron-sign-right"></i></button>
+                    </div>
                 </form>
             </div>
         </div>
 	</div>
     <div id="sidebar" class="col-md-3">
         <div class="box">
-            <div class="cell first">{{i18n .Lang "Help"}}</div>
+            <div class="cell first">{{i18n .Lang "help"}}</div>
             <div class="cell last">
                 <ul>
                     <li><a href="">{{i18n .Lang "Markdown Syntax"}}</a></li>
@@ -75,4 +71,47 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    (function($){
+
+        var $con, cache;
+        $(function(){
+            $con = $('#post-content').find('[name=Content]');
+            $con.autosize();
+            cache = $.trim($con.val());
+        });
+        $(document).on('shown.bs.tab', '#post-editor [data-toggle=tab]', function(){
+            var $e = $(this);
+            if($e.attr('href') == '#post-preview') {
+                var n = $.trim($con.val());
+                if(n == '' || n == cache) return;
+                cache = n;
+                $.post("{{.AppUrl}}new", {'action': 'preview', 'content': n}, function(data){
+                    if(data.success){
+                        $('#post-preview').html(data.preview);
+                    }
+                });
+            }
+        });
+
+        function setSelectRange(e, start, end){
+            if (e.setSelectionRange) {
+                 /* WebKit */ 
+                e.focus();
+                e.setSelectionRange(start, end);
+            } else if (e.createTextRange) {
+                /* IE */
+                var range = e.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', end);
+                range.moveStart('character', start);
+                range.select();
+            } else if (e.selectionStart) {
+                e.selectionStart = start;
+                e.selectionEnd = end;
+            }
+        }
+
+    })(jQuery);
+</script>
 {{end}}

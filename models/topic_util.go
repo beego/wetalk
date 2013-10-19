@@ -24,6 +24,10 @@ func ListCategories(cats *[]Category) (int64, error) {
 	return Categories().OrderBy("-order").All(cats)
 }
 
+func ListTopics(topics *[]Topic) (int64, error) {
+	return Topics().OrderBy("-Followers").All(topics)
+}
+
 func ListTopicsOfCat(topics *[]Topic, cat *Category) (int64, error) {
 	var list orm.ParamsList
 	var where string

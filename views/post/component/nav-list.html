@@ -1,6 +1,6 @@
 <span class="cat"><a{{if eq $.CategorySlug "hot"}} class="active"{{end}} href="{{$.AppUrl}}"><i class="icon icon-home"></i></a></span>
-<span class="cat"><a{{if eq $.CategorySlug "best"}} class="active"{{end}} href="{{$.AppUrl}}best">{{i18ns $.Lang "category" "Best"}}</a></span>
-<span class="cat"><a{{if eq $.CategorySlug "cold"}} class="active"{{end}} href="{{$.AppUrl}}cold">{{i18ns $.Lang "category" "Cold"}}</a></span>
-<span class="cat"><a{{if eq $.CategorySlug "favs"}} class="active"{{end}} href="{{$.AppUrl}}favs">{{i18ns $.Lang "category" "Favs"}}</a></span>
-<span class="cat"><a{{if eq $.CategorySlug "follow"}} class="active"{{end}} href="{{$.AppUrl}}follow">{{i18ns $.Lang "category" "Follow"}}</a></span>
-<a href="/topic/new" class="btn btn-sm btn-info pull-right">{{i18ns $.Lang "category" "New post"}}</a>
+<span class="cat"><a{{if eq $.CategorySlug "recent"}} class="active"{{end}} href="{{$.AppUrl}}recent">{{i18n $.Lang "category.Recent"}}</a></span>
+<span class="cat"><a{{if eq $.CategorySlug "best"}} class="active"{{end}} href="{{$.AppUrl}}best">{{i18n $.Lang "category.Best"}}</a></span>
+<span class="cat"><a{{if eq $.CategorySlug "cold"}} class="active"{{end}} href="{{$.AppUrl}}cold">{{i18n $.Lang "category.Cold"}}</a></span>
+<span class="cat"><a{{if eq $.CategorySlug "favs"}} class="active"{{end}} href="{{$.AppUrl}}favs">{{i18n $.Lang "category.Favs"}}</a></span>
+<span class="cat"><a{{if eq $.CategorySlug "follow"}} class="active"{{end}} href="{{$.AppUrl}}follow">{{i18n $.Lang "category.Follow"}}</a></span>

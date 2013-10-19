@@ -14,7 +14,9 @@
 
 package models
 
-import ()
+import (
+	"github.com/slene/blackfriday"
+)
 
 func ListPostsOfCategory(cat *Category, posts *[]Post) (int64, error) {
 	return Posts().Filter("Category", cat).RelatedSel().OrderBy("-Updated").All(posts)
@@ -22,4 +24,28 @@ func ListPostsOfCategory(cat *Category, posts *[]Post) (int64, error) {
 
 func ListPostsOfTopic(topic *Topic, posts *[]Post) (int64, error) {
 	return Posts().Filter("Topic", topic).RelatedSel().OrderBy("-Updated").All(posts)
+}
+
+func RenderPostContent(mdStr string) string {
+	htmlFlags := 0
+	htmlFlags |= blackfriday.HTML_USE_XHTML
+	htmlFlags |= blackfriday.HTML_USE_SMARTYPANTS
+	htmlFlags |= blackfriday.HTML_SMARTYPANTS_FRACTIONS
+	htmlFlags |= blackfriday.HTML_SMARTYPANTS_LATEX_DASHES
+	htmlFlags |= blackfriday.HTML_SKIP_HTML
+	htmlFlags |= blackfriday.HTML_SKIP_STYLE
+	htmlFlags |= blackfriday.HTML_SKIP_SCRIPT
+	renderer := blackfriday.HtmlRenderer(htmlFlags, "", "")
+
+	// set up the parser
+	extensions := 0
+	extensions |= blackfriday.EXTENSION_NO_INTRA_EMPHASIS
+	extensions |= blackfriday.EXTENSION_TABLES
+	extensions |= blackfriday.EXTENSION_FENCED_CODE
+	extensions |= blackfriday.EXTENSION_AUTOLINK
+	extensions |= blackfriday.EXTENSION_STRIKETHROUGH
+	extensions |= blackfriday.EXTENSION_SPACE_HEADERS
+
+	body := blackfriday.Markdown([]byte(mdStr), renderer, extensions)
+	return string(body)
 }

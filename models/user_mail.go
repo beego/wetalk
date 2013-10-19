@@ -33,7 +33,7 @@ func NewMailMessage(To []string, subject, body string) mailer.Message {
 func SendRegisterMail(locale i18n.Locale, user *User) {
 	code := CreateUserActiveCode(user, nil)
 
-	subject := locale.Tr("Register success, Welcome")
+	subject := locale.Tr("mail.register_success_subject")
 	body := locale.Tr("code: %s", code)
 
 	msg := NewMailMessage([]string{user.Email}, subject, body)
@@ -47,7 +47,7 @@ func SendRegisterMail(locale i18n.Locale, user *User) {
 func SendResetPwdMail(locale i18n.Locale, user *User) {
 	code := CreateUserResetPwdCode(user, nil)
 
-	subject := locale.Tr("Fogot password verify email")
+	subject := locale.Tr("mail.reset_passowrd_subject")
 	body := locale.Tr("code: %s", code)
 
 	msg := NewMailMessage([]string{user.Email}, subject, body)
@@ -61,7 +61,7 @@ func SendResetPwdMail(locale i18n.Locale, user *User) {
 func SendActiveMail(locale i18n.Locale, user *User) {
 	code := CreateUserActiveCode(user, nil)
 
-	subject := locale.Tr("Verify your email address")
+	subject := locale.Tr("mail.verify_your_email_subject")
 	body := locale.Tr("code: %s", code)
 
 	msg := NewMailMessage([]string{user.Email}, subject, body)

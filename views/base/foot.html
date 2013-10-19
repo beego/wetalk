@@ -1,32 +1,32 @@
 	<footer id="footer">
 		<div class="container footer-wrap">
 			<p>
-				<a href="/about"><strong>{{i18n .Lang "About"}}</strong></a>
+				<a href="/about"><strong>{{i18n .Lang "about"}}</strong></a>
 				|
 				<a href="/faq"><strong>FAQ</strong></a>
 				|
 				<a target="_blank" href="https://github.com/beego/wetalk" target="_blank"><strong>GitHub</strong></a>
 			</p>
-			
+
 			<p>
-				{{i18n .Lang "Copyright"}} © 2013 {{i18n .Lang "Beego Community"}}
+				{{i18n .Lang "copyright"}} © 2013 {{i18n .Lang "beego_community"}}
 			</p>
 			
 			<p class="desc">
-				{{i18n .Lang "As an open source project, contribute is welcome!"}}
+				{{i18n .Lang "footer_desc"}}
 				<br>
-				Ver.{{.AppVer}} - {{.PageStartTime|loadtimes}}ms. {{i18n .Lang "Powered by"}} <a target="_blank" href="http://beego.me">Beego</a>. {{i18n .Lang "Based on"}} <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>. {{i18n .Lang "Icons from"}} <a target="_blank" href="http://fortawesome.github.io/Font-Awesome/">Font Awesome</a>.
+				Ver.{{.AppVer}} - {{.PageStartTime|loadtimes}}ms. {{i18n .Lang "powered_by"}} <a target="_blank" href="http://beego.me">Beego</a>. {{i18n .Lang "based_on"}} <a target="_blank" href="http://getbootstrap.com/">Bootstrap</a>. {{i18n .Lang "icons_from"}} <a target="_blank" href="http://fortawesome.github.io/Font-Awesome/">Font Awesome</a>.
 			</p>
 
-			<strong>{{i18n .Lang "Language"}}: </strong>
+			<strong>{{i18n .Lang "language_choice"}}: </strong>
 		    <div class="btn-group dropup">
-			    <button type="button" class="btn btn-default btn-md dropdown-toggle" data-toggle="dropdown">{{.CurLang}} <i class="caret"></i></button>
+			    <button type="button" class="btn btn-default btn-md dropdown-toggle" data-toggle="dropdown">{{i18n .Lang .Lang}} <i class="caret"></i></button>
 			    <ul class="dropdown-menu">
-				{{$keyword := .Keyword}}
-			    	{{range .RestLangs}}
-			    		<li><a href="javascript::" data-lang="{{.Lang}}" class="lang-changed">{{.Name}}</a></li>
+			    	{{range .Langs}}
+			    		<li><a href="javascript::" data-lang="{{.}}" class="lang-changed">{{i18n $.Lang .}}</a></li>
 			    	{{end}}
 			    </ul>
 		    </div>
 		</div>
+		<input type="hidden" name="_once" value="{{.once_token}}" style="display:none;" />
 	</footer>

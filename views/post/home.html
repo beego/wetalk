@@ -1,9 +1,9 @@
 {{template "base/base.html" .}}
 {{template "base/base_common.html" .}}
 {{define "meta"}}
-    <title>{{i18n .Lang .AppName}} - {{i18n .Lang "an open source project for Gopher community"}}</title>
-    <meta name="description" content="{{.AppDescription}}" />
-    <meta name="keywords" content="{{.AppKeywords}}">
+    <title>{{i18n .Lang "app_name"}} - {{i18n .Lang "app_intro"}}</title>
+    <meta name="description" content="{{i18n .Lang "app_desc"}}" />
+    <meta name="keywords" content="{{i18n .Lang "app_keywords"}}">
 {{end}}
 {{define "body"}}
 <div class="row">
@@ -18,14 +18,14 @@
         </div>
         <div class="box">
             <div class="cell breadcrumb first">
-                <a href="{{.AppUrl}}"><i class="icon-level-up"></i> {{i18n .Lang "Hot Posts"}}</a>
+                <a href="{{.AppUrl}}"><i class="icon-level-up"></i> {{i18n .Lang "postnav.hot_posts"}}</a>
             </div>
             <div class="post-list">
                 {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
             </div>
             <div class="cell last">
-                <i class="icon-rss-sign color-oragne"></i> <a href="{{.AppUrl}}feed">{{i18n .Lang "Atom Feed Subscribe"}}</a>
-                <span class="pull-right"><a href="{{.AppUrl}}recent"><i class="icon-caret-right"></i> {{i18n .Lang "Recent Posts"}}</a></span>
+                <i class="icon-rss-sign color-oragne"></i> <a href="{{.AppUrl}}feed">{{i18n .Lang "atom_feed_subscribe"}}</a>
+                <span class="pull-right"><a href="{{.AppUrl}}recent"><i class="icon-caret-right"></i> {{i18n .Lang "postnav.recent_posts"}}</a></span>
             </div>
     	</div>
 	</div>

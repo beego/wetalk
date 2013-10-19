@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "Users Admin"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "model.admin_user"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -15,29 +15,29 @@
             {{end}}
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user">{{i18n .Lang "Users Admin"}}</a>
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user">{{i18n .Lang "model.admin_user"}}</a>
                 </div>
                 <div class="cell last slim">
                     {{if .flash.DeleteSuccess}}
                     <div class="alert alert-info">
-                        {{i18n .Lang "Success delete!"}}
+                        {{i18n .Lang "admin.success_delete"}}
                     </div>
                     {{end}}
                     <p>
-                        <a href="/admin/user/new" class="btn btn-default">{{i18n .Lang "New User"}}</a>
+                        <a href="/admin/user/new" class="btn btn-default">{{i18n .Lang "model.new_user"}}</a>
                     </p>
                     <table class="table table-hover table-condensed color-link">
                         <thead>
                             <tr>
-                                <th>{{i18n .Lang "Id"}}</th>
-                                <th>{{i18n .Lang "Username"}}</th>
-                                <th>{{i18n .Lang "Nickname"}}</th>
-                                <th>{{i18n .Lang "Email"}}</th>
-                                <th>{{i18n .Lang "Admin"}}</th>
-                                <th>{{i18n .Lang "Active"}}</th>
-                                <th>{{i18n .Lang "Forbid"}}</th>
-                                <th>{{i18n .Lang "Created"}}</th>
-                                <th>{{i18n .Lang "Updated"}}</th>
+                                <th>Id</th>
+                                <th>{{i18n .Lang "model.user_username"}}</th>
+                                <th>{{i18n .Lang "model.user_nickname"}}</th>
+                                <th>{{i18n .Lang "model.user_email"}}</th>
+                                <th>{{i18n .Lang "model.user_isadmin"}}</th>
+                                <th>{{i18n .Lang "model.user_isactive"}}</th>
+                                <th>{{i18n .Lang "model.user_isforbid"}}</th>
+                                <th>{{i18n .Lang "model.created"}}</th>
+                                <th>{{i18n .Lang "model.updated"}}</th>
                             </tr>
                         </thead>
                         <tbody>

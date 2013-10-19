@@ -35,6 +35,11 @@ input[type="password"]:-ms-input-placeholder {
   padding-top: 4px;
 }
 
+textarea,
+textarea.form-control {
+  padding: 10px;
+}
+
 #front .container {
   max-width: 1000px;
 }
@@ -461,18 +466,141 @@ h6.underline {
   width: auto;
 }
 
-.markdown {
-    padding: 15px;
-    border: 1px solid #d9d9d9;
-    background-color:#fafafa;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px; 
-    word-wrap: break-word;
+#post-new .post-content textarea {
+  margin-top: 10px;
+  min-height: 300px;
 }
 
-.post-content {
-    max-width: 593px;
-    min-width: 593px;
-    min-height: 300px;
+#post-new .post-preview {
+  min-height: 305px;
+  margin: 10px 10px;
+  padding: 0 5px;
+}
+
+#post-new .post-categories,
+#post-new .post-topics {
+  width: 170px;
+  display: inline-block;
+  float: left;
+}
+
+#post-new .post-topics {
+  margin-left: 10px;
+}
+
+#post-show .post-title {
+  font-size: 22px;
+  line-height: 1.3em;
+  margin: 5px 0;
+  padding: 0 0 10px;
+  font-weight: 700;
+}
+
+.markdown a {
+  color: #4183C4;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  line-height: 1.7;
+  margin: 15px 0;
+  padding: 0;
+}
+
+.markdown h1,
+.markdown h2 {
+  font-size: 18px;
+  border-bottom: 1px solid #DDD;
+}
+
+.markdown h2 {
+  border-bottom: 1px solid #EEE;
+}
+
+.markdown h3 {
+  font-size: 16px
+}
+
+.markdown h4 {
+  font-size: 14px
+}
+
+.markdown h5 {
+  font-size: 12px
+}
+
+.markdown h6 {
+  font-size: 11px
+}
+
+.markdown table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  display: block;
+  overflow: auto;
+  width: 100%;
+  margin: 0 0 9px;
+}
+
+.markdown table th {
+  font-weight: 700
+}
+
+.markdown table th,
+.markdown table td {
+  border: 1px solid #DDD;
+  padding: 6px 13px;
+}
+
+.markdown table tr {
+  background-color: #FFF;
+  border-top: 1px solid #CCC;
+}
+
+.markdown table tr:nth-child(2n) {
+  background-color: #F8F8F8
+}
+
+.markdown li {
+  line-height: 1.6;
+}
+
+.markdown dl dt {
+  font-style: italic;
+  margin-top: 9px;
+}
+
+.markdown dl dd {
+  margin: 0 0 9px;
+  padding: 0 9px;
+}
+
+.markdown blockquote,
+.markdown blockquote p {
+  font-size: 13px;
+  background-color: #f5f5f5;
+}
+
+.markdown > pre {
+  line-height: 1.6;
+  white-space: pre;
+  overflow: auto;
+}
+
+.markdown > pre > code {
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.markdown hr {
+  border: 0 none;
+  color: #ccc;
+  height: 4px;
+  padding: 0;
+  margin: 15px 0;
+  background: transparent url('../img/hr.png') repeat-x 0 0;
 }

@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "Edit Comment"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "model.delete_comment"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -15,7 +15,7 @@
             {{end}}
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/comment">{{i18n .Lang "Comments Admin"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/comment/{{.Object.Id}}">{{i18n .Lang "Delete comment"}} - {{.Object.Post.Title}}</a>
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/comment">{{i18n .Lang "model.admin_comment"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/comment/{{.Object.Id}}">{{i18n .Lang "model.delete_comment"}} - {{.Object.Post.Title}}</a>
                 </div>
                 <div class="cell last slim">
                     <form action="{{.AppUrl}}admin/comment/{{.Object.Id}}/delete" method="POST">
@@ -28,18 +28,18 @@
                                             <td>{{.Object.Id}}</td>
                                         </tr>
                                         <tr>
-                                            <td>{{i18n .Lang "User"}}:</td>
+                                            <td>{{i18n .Lang "model.user_username"}}:</td>
                                             <td>{{.Object.User.UserName}}</td>
                                         </tr>
                                         <tr>
-                                            <td>{{i18n .Lang "Title"}}:</td>
+                                            <td>{{i18n .Lang "model.post_title"}}:</td>
                                             <td>{{.Object.Post.Title}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 {{.xsrf_html}}{{.once_html}}
                                 <div class="form-group">
-                                    <button class="btn btn-danger">{{i18n .Lang "Delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></button>
+                                    <button class="btn btn-danger">{{i18n .Lang "delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></button>
                                 </div>
                             </div>
                         </div>

@@ -24,20 +24,12 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/validation"
 	"github.com/beego/i18n"
 
 	"github.com/beego/wetalk/models"
 	"github.com/beego/wetalk/utils"
 )
-
-var langTypes []*langType // Languages are supported.
-
-// langType represents a language type.
-type langType struct {
-	Lang, Name string
-}
 
 type NestPreparer interface {
 	NestPrepare()
@@ -89,10 +81,10 @@ func (this *baseRouter) Prepare() {
 		this.isLogin = false
 	}
 
-	if utils.IsProMode {
-	} else {
-		utils.AppJsVer = beego.Date(time.Now(), "YmdHis")
-		utils.AppCssVer = beego.Date(time.Now(), "YmdHis")
+	if !utils.IsProMode {
+		ver := utils.ToStr(time.Now().Unix())
+		utils.AppJsVer = ver
+		utils.AppCssVer = ver
 	}
 
 	// Setting properties.
@@ -106,28 +98,11 @@ func (this *baseRouter) Prepare() {
 	this.Data["AppCssVer"] = utils.AppCssVer
 	this.Data["AvatarURL"] = utils.AvatarURL
 	this.Data["IsProMode"] = utils.IsProMode
-	this.Data["IsBeta"] = utils.IsBeta
 	this.Data["DateFormat"] = utils.DateFormat
 	this.Data["DateTimeFormat"] = utils.DateTimeFormat
 
-	// Setting language version.
-	if len(langTypes) == 0 {
-		// Initialize languages.
-		langs := strings.Split(utils.Cfg.MustValue("lang", "types"), "|")
-		names := strings.Split(utils.Cfg.MustValue("lang", "names"), "|")
-		langTypes = make([]*langType, 0, len(langs))
-		for i, v := range langs {
-			langTypes = append(langTypes, &langType{
-				Lang: v,
-				Name: names[i],
-			})
-		}
-	}
-
-	isNeedRedir, langVer := setLangVer(this.Ctx, this.Input(), this.Data)
-	this.Lang = langVer
 	// Redirect to make URL clean.
-	if isNeedRedir {
+	if this.setLang() {
 		i := strings.Index(this.Ctx.Request.RequestURI, "?")
 		this.Redirect(this.Ctx.Request.RequestURI[:i], 302)
 		return
@@ -149,6 +124,11 @@ func (this *baseRouter) Prepare() {
 	if app, ok := this.AppController.(NestPreparer); ok {
 		app.NestPrepare()
 	}
+}
+
+// on router finished
+func (this *baseRouter) Finish() {
+
 }
 
 // check if user not active then redirect
@@ -322,19 +302,26 @@ func (this *baseRouter) EndFlashRedirect() {
 func (this *baseRouter) FormOnceNotMatch() bool {
 	notMatch := false
 	recreat := false
-	// exist in request value
-	if value, ok := this.Input()["_once"]; ok && len(value) > 0 {
-		// exist in session
-		if v, ok := this.GetSession("form_once").(string); ok && v != "" {
-			// not match
-			if value[0] != v {
-				notMatch = true
-			} else {
-				// if matched then re-creat once
-				recreat = true
-			}
+
+	// get token from request param / header
+	var value string
+	if vus, ok := this.Input()["_once"]; ok && len(vus) > 0 {
+		value = vus[0]
+	} else {
+		value = this.Ctx.Input.Header("X-Form-Once")
+	}
+
+	// exist in session
+	if v, ok := this.GetSession("form_once").(string); ok && v != "" {
+		// not match
+		if value != v {
+			notMatch = true
+		} else {
+			// if matched then re-creat once
+			recreat = true
 		}
 	}
+
 	this.FormOnceCreate(recreat)
 	return notMatch
 }
@@ -453,46 +440,36 @@ func (this *baseRouter) SetPaginator(per int, nums int64) *utils.Paginator {
 	return p
 }
 
-// setLangVer sets site language version.
-func setLangVer(ctx *context.Context, input url.Values, data map[interface{}]interface{}) (bool, string) {
+// setLang sets site language version.
+func (this *baseRouter) setLang() bool {
 	isNeedRedir := false
 
+	// get all lang names from i18n
+	langs := i18n.ListLangs()
+
 	// 1. Check URL arguments.
-	lang := input.Get("lang")
+	lang := this.GetString("lang")
 
 	// 2. Get language information from cookies.
 	if len(lang) == 0 {
-		ck, err := ctx.Request.Cookie("lang")
-		if err == nil {
-			lang = ck.Value
-		}
+		lang = this.Ctx.GetCookie("lang")
 	} else {
 		isNeedRedir = true
 	}
 
 	// Check again in case someone modify by purpose.
-	isValid := false
-	for _, v := range langTypes {
-		if lang == v.Lang {
-			isValid = true
-			break
-		}
-	}
-	if !isValid {
+	if !i18n.IsExist(lang) {
 		lang = ""
 		isNeedRedir = false
 	}
 
 	// 3. Get language information from 'Accept-Language'.
 	if len(lang) == 0 {
-		al := ctx.Request.Header.Get("Accept-Language")
+		al := this.Ctx.Input.Header("Accept-Language")
 		if len(al) > 4 {
 			al = al[:5] // Only compare first 5 letters.
-			for _, v := range langTypes {
-				if al == v.Lang {
-					lang = al
-					break
-				}
+			if i18n.IsExist(al) {
+				lang = al
 			}
 		}
 	}
@@ -503,26 +480,14 @@ func setLangVer(ctx *context.Context, input url.Values, data map[interface{}]int
 		isNeedRedir = false
 	}
 
-	curLang := langType{
-		Lang: lang,
-	}
-
 	// Save language information in cookies.
-	ctx.SetCookie("lang", curLang.Lang, 1<<31-1, "/")
-
-	restLangs := make([]*langType, 0, len(langTypes)-1)
-	for _, v := range langTypes {
-		if lang != v.Lang {
-			restLangs = append(restLangs, v)
-		} else {
-			curLang.Name = v.Name
-		}
-	}
+	this.Ctx.SetCookie("lang", lang, 1<<31-1, "/")
 
 	// Set language properties.
-	data["Lang"] = curLang.Lang
-	data["CurLang"] = curLang.Name
-	data["RestLangs"] = restLangs
+	this.Data["Lang"] = lang
+	this.Data["Langs"] = langs
 
-	return isNeedRedir, curLang.Lang
+	this.Lang = lang
+
+	return isNeedRedir
 }

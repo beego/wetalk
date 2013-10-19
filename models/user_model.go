@@ -36,24 +36,24 @@ type Setting struct {
 // IsActive: set active when email is verified
 // IsForbid: forbid user login
 type User struct {
-	Id        int
-	UserName  string `orm:"size(30);unique"`
-	NickName  string `orm:"size(30)"`
-	Password  string `orm:"size(128)"`
-	Url       string `orm:"size(100)"`
-	Email     string `orm:"size(80);unique"`
-	GrEmail   string `orm:"size(32)"`
-	Info      string
-	HideEmail bool
-	Followers int
-	Following int
-	FavTopics int
-	IsAdmin   bool      `orm:"index"`
-	IsActive  bool      `orm:"index"`
-	IsForbid  bool      `orm:"index"`
-	Rands     string    `orm:"size(10)"`
-	Created   time.Time `orm:"auto_now_add"`
-	Updated   time.Time `orm:"auto_now"`
+	Id          int
+	UserName    string `orm:"size(30);unique"`
+	NickName    string `orm:"size(30)"`
+	Password    string `orm:"size(128)"`
+	Url         string `orm:"size(100)"`
+	Email       string `orm:"size(80);unique"`
+	GrEmail     string `orm:"size(32)"`
+	Info        string
+	PublicEmail bool
+	Followers   int
+	Following   int
+	FavTopics   int
+	IsAdmin     bool      `orm:"index"`
+	IsActive    bool      `orm:"index"`
+	IsForbid    bool      `orm:"index"`
+	Rands       string    `orm:"size(10)"`
+	Created     time.Time `orm:"auto_now_add"`
+	Updated     time.Time `orm:"auto_now"`
 }
 
 func (m *User) Insert() error {

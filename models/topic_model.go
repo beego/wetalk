@@ -26,11 +26,11 @@ import (
 // post topic
 type Topic struct {
 	Id        int
-	Name      string `orm:"size(30);unique"`
-	Image     *Image `orm:"rel(one);null"`
-	Intro     string `orm:"type(text)"`
-	Slug      string `orm:"size(100);unique"`
-	Followers int
+	Name      string    `orm:"size(30);unique"`
+	Image     *Image    `orm:"rel(one);null"`
+	Intro     string    `orm:"type(text)"`
+	Slug      string    `orm:"size(100);unique"`
+	Followers int       `orm:"index"`
 	Order     int       `orm:"index"`
 	Created   time.Time `orm:"auto_now_add"`
 	Updated   time.Time `orm:"auto_now;index"`

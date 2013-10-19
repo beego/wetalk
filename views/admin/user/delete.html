@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "Edit User"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "model.delete_user"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -15,7 +15,7 @@
             {{end}}
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user">{{i18n .Lang "Users Admin"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user/{{.Object.Id}}">{{i18n .Lang "Edit User"}} {{.Object.UserName}}</a>
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user">{{i18n .Lang "model.admin_user"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user/{{.Object.Id}}">{{i18n .Lang "model.delete_user"}} {{.Object.UserName}}</a>
                 </div>
                 <div class="cell last slim">
                     <form action="{{.AppUrl}}admin/user/{{.Object.Id}}/delete" method="POST">
@@ -28,18 +28,18 @@
                                             <td>{{.Object.Id}}</td>
                                         </tr>
                                         <tr>
-                                            <td>{{i18n .Lang "Username"}}:</td>
+                                            <td>{{i18n .Lang "model.user_username"}}:</td>
                                             <td>{{.Object.UserName}}</td>
                                         </tr>
                                         <tr>
-                                            <td>{{i18n .Lang "Email"}}:</td>
+                                            <td>{{i18n .Lang "model.user_email"}}:</td>
                                             <td>{{.Object.Email}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 {{.xsrf_html}}{{.once_html}}
                                 <div class="form-group">
-                                    <button class="btn btn-danger">{{i18n .Lang "Delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></button>
+                                    <button class="btn btn-danger">{{i18n .Lang "delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></button>
                                 </div>
                             </div>
                         </div>

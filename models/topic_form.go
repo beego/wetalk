@@ -23,6 +23,7 @@ import (
 type TopicAdminForm struct {
 	Create    bool   `form:"-"`
 	Id        int    `form:"-"`
+	Image     string `valid:"Required"`
 	Name      string `valid:"Required;MaxSize(30)"`
 	Intro     string `form:"type(textarea)" valid:"Required"`
 	Slug      string `valid:"Required;MaxSize(100)"`
@@ -34,11 +35,11 @@ func (form *TopicAdminForm) Valid(v *validation.Validation) {
 	qs := Topics()
 
 	if CheckIsExist(qs, "Name", form.Name, form.Id) {
-		v.SetError("Name", "Field value need unique")
+		v.SetError("Name", "admin.field_need_unique")
 	}
 
 	if CheckIsExist(qs, "Slug", form.Slug, form.Id) {
-		v.SetError("Slug", "Field value need unique")
+		v.SetError("Slug", "admin.field_need_unique")
 	}
 }
 
@@ -62,11 +63,11 @@ func (form *CategoryAdminForm) Valid(v *validation.Validation) {
 	qs := Categories()
 
 	if CheckIsExist(qs, "Name", form.Name, form.Id) {
-		v.SetError("Name", "Field value need unique")
+		v.SetError("Name", "admin.field_need_unique")
 	}
 
 	if CheckIsExist(qs, "Slug", form.Slug, form.Id) {
-		v.SetError("Slug", "Field value need unique")
+		v.SetError("Slug", "admin.field_need_unique")
 	}
 }
 

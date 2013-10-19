@@ -36,40 +36,42 @@ func (form *RegisterForm) Valid(v *validation.Validation) {
 
 	// Check if passwords of two times are same.
 	if form.Password != form.PasswordRe {
-		v.SetError("PasswordRe", "Password not match first input")
+		v.SetError("PasswordRe", "auth.repassword_not_match")
 		return
 	}
 
 	e1, e2, _ := CanRegistered(form.UserName, form.Email)
 
 	if !e1 {
-		v.SetError("UserName", "Username has been already taken")
+		v.SetError("UserName", "auth.username_already_taken")
 	}
 
 	if !e2 {
-		v.SetError("Email", "Email has been already taken")
+		v.SetError("Email", "auth.email_already_taken")
 	}
 }
 
 func (form *RegisterForm) Labels() map[string]string {
 	return map[string]string{
-		"UserName":   "Username",
-		"PasswordRe": "Retype Password",
+		"UserName":   "auth.login_username",
+		"Email":      "auth.login_email",
+		"Password":   "auth.login_password",
+		"PasswordRe": "auth.retype_password",
 	}
 }
 
 func (form *RegisterForm) Helps() map[string]string {
 	return map[string]string{
-		"UserName": form.Locale.Tr("Min-length is %d", 5) + ", " + form.Locale.Tr("only contains %s", "a-z 0-9 - _"),
+		"UserName": form.Locale.Tr("valid.min_length_is", 5) + ", " + form.Locale.Tr("valid.only_contains", "a-z 0-9 - _"),
 	}
 }
 
 func (form *RegisterForm) Placeholders() map[string]string {
 	return map[string]string{
-		"UserName":   "Please enter your username",
-		"Email":      "Please enter your e-mail address",
-		"Password":   "Please enter your password",
-		"PasswordRe": "Please reenter your password",
+		"UserName":   "auth.plz_enter_username",
+		"Email":      "auth.plz_enter_email",
+		"Password":   "auth.plz_enter_password",
+		"PasswordRe": "auth.plz_reenter_password",
 	}
 }
 
@@ -82,8 +84,9 @@ type LoginForm struct {
 
 func (form *LoginForm) Labels() map[string]string {
 	return map[string]string{
-		"UserName": "Username or Email",
-		"Remember": "Remember Me",
+		"UserName": "auth.username_or_email",
+		"Password": "auth.login_password",
+		"Remember": "auth.login_remember_me",
 	}
 }
 
@@ -93,15 +96,21 @@ type ForgotForm struct {
 	User  *User  `form:"-"`
 }
 
+func (form *ForgotForm) Labels() map[string]string {
+	return map[string]string{
+		"Email": "auth.login_email",
+	}
+}
+
 func (form *ForgotForm) Helps() map[string]string {
 	return map[string]string{
-		"Email": "This operaion lead to send your an e-mail with a reset secure link",
+		"Email": "auth.forgotform_email_help",
 	}
 }
 
 func (form *ForgotForm) Valid(v *validation.Validation) {
 	if HasUser(form.User, form.Email) == false {
-		v.SetError("Email", "Wong email address, please check your input.")
+		v.SetError("Email", "auth.forgotform_wrong_email")
 	}
 }
 
@@ -114,33 +123,33 @@ type ResetPwdForm struct {
 func (form *ResetPwdForm) Valid(v *validation.Validation) {
 	// Check if passwords of two times are same.
 	if form.Password != form.PasswordRe {
-		v.SetError("PasswordRe", "Password not match first input")
+		v.SetError("PasswordRe", "auth.repassword_not_match")
 		return
 	}
 }
 
 func (form *ResetPwdForm) Labels() map[string]string {
 	return map[string]string{
-		"PasswordRe": "Retype Password",
+		"PasswordRe": "auth.retype_password",
 	}
 }
 
 func (form *ResetPwdForm) Placeholders() map[string]string {
 	return map[string]string{
-		"Password":   "Please enter your password",
-		"PasswordRe": "Please reenter your password",
+		"Password":   "auth.plz_enter_password",
+		"PasswordRe": "auth.plz_reenter_password",
 	}
 }
 
 // Settings Profile form
 type ProfileForm struct {
-	NickName  string      `valid:"Required;MaxSize(30)"`
-	Url       string      `valid:"MaxSize(100)"`
-	Info      string      `form:"type(textarea)" valid:"MaxSize(255)"`
-	Email     string      `valid:"Required;Email;MaxSize(100)"`
-	HideEmail bool        `valid:""`
-	GrEmail   string      `valid:"Required;MaxSize(80)"`
-	Locale    i18n.Locale `form:"-"`
+	NickName    string      `valid:"Required;MaxSize(30)"`
+	Url         string      `valid:"MaxSize(100)"`
+	Info        string      `form:"type(textarea)" valid:"MaxSize(255)"`
+	Email       string      `valid:"Required;Email;MaxSize(100)"`
+	PublicEmail bool        `valid:""`
+	GrEmail     string      `valid:"Required;MaxSize(80)"`
+	Locale      i18n.Locale `form:"-"`
 }
 
 func (form *ProfileForm) SetFromUser(user *User) {
@@ -169,26 +178,26 @@ func (form *ProfileForm) SaveUserProfile(user *User) error {
 
 func (form *ProfileForm) Labels() map[string]string {
 	return map[string]string{
-		"NickName":  "Nickname",
-		"HideEmail": "Private your email",
-		"GrEmail":   "Gravatar Token",
-		"Url":       "Website",
+		"NickName":    "model.user_nickname",
+		"PublicEmail": "auth.profile_publicemail",
+		"GrEmail":     "auth.profile_gremail",
+		"Url":         "auth.profile_url",
 	}
 }
 
 func (form *ProfileForm) Helps() map[string]string {
 	return map[string]string{
-		"GrEmail": "Enter an email will convert to token, direct input token is supported",
+		"GrEmail": "auth.profile_gremail_help",
 		"Info":    form.Locale.Tr("Max-length is %d", 255),
 	}
 }
 
 func (form *ProfileForm) Placeholders() map[string]string {
 	return map[string]string{
-		"NickName": "Please enter your nickname",
-		"GrEmail":  "You can enter an another gravatar token",
-		"Url":      "Please enter your site url",
-		"Info":     "Please say something introduce yourself",
+		"NickName": "auth.plz_enter_nickname",
+		"GrEmail":  "auth.plz_enter_gremail",
+		"Url":      "auth.plz_enter_website",
+		"Info":     "auth.plz_enter_your_info",
 	}
 }
 
@@ -202,7 +211,7 @@ type PasswordForm struct {
 func (form *PasswordForm) Valid(v *validation.Validation) {
 	// Check if passwords of two times are same.
 	if form.Password != form.PasswordRe {
-		v.SetError("PasswordRe", "Password not match first input")
+		v.SetError("PasswordRe", "auth.repassword_not_match")
 		return
 	}
 
@@ -214,46 +223,46 @@ func (form *PasswordForm) Valid(v *validation.Validation) {
 
 func (form *PasswordForm) Labels() map[string]string {
 	return map[string]string{
-		"PasswordOld": "Old Password",
-		"Password":    "New Password",
-		"PasswordRe":  "Retype Password",
+		"PasswordOld": "auth.old_password",
+		"Password":    "auth.new_password",
+		"PasswordRe":  "auth.retype_password",
 	}
 }
 
 func (form *PasswordForm) Placeholders() map[string]string {
 	return map[string]string{
-		"PasswordOld": "Please enter your old password",
-		"Password":    "Please enter your new password",
-		"PasswordRe":  "Please reenter your password",
+		"PasswordOld": "auth.plz_enter_old_password",
+		"Password":    "auth.plz_enter_new_password",
+		"PasswordRe":  "auth.plz_reenter_password",
 	}
 }
 
 type UserAdminForm struct {
-	Create    bool   `form:"-"`
-	Id        int    `form:"-"`
-	UserName  string `valid:"Required;AlphaDash;MinSize(5);MaxSize(30)"`
-	Email     string `valid:"Required;Email;MaxSize(100)"`
-	HideEmail bool   ``
-	NickName  string `valid:"Required;MaxSize(30)"`
-	Url       string `valid:"MaxSize(100)"`
-	Info      string `form:"type(textarea)" valid:"MaxSize(255)"`
-	GrEmail   string `valid:"Required;MaxSize(80)"`
-	Followers int    ``
-	Following int    ``
-	IsAdmin   bool   ``
-	IsActive  bool   ``
-	IsForbid  bool   ``
+	Create      bool   `form:"-"`
+	Id          int    `form:"-"`
+	UserName    string `valid:"Required;AlphaDash;MinSize(5);MaxSize(30)"`
+	Email       string `valid:"Required;Email;MaxSize(100)"`
+	PublicEmail bool   ``
+	NickName    string `valid:"Required;MaxSize(30)"`
+	Url         string `valid:"MaxSize(100)"`
+	Info        string `form:"type(textarea)" valid:"MaxSize(255)"`
+	GrEmail     string `valid:"Required;MaxSize(80)"`
+	Followers   int    ``
+	Following   int    ``
+	IsAdmin     bool   ``
+	IsActive    bool   ``
+	IsForbid    bool   ``
 }
 
 func (form *UserAdminForm) Valid(v *validation.Validation) {
 	qs := Users()
 
 	if CheckIsExist(qs, "UserName", form.UserName, form.Id) {
-		v.SetError("UserName", "Username has been already taken")
+		v.SetError("UserName", "auth.username_already_taken")
 	}
 
 	if CheckIsExist(qs, "Email", form.Email, form.Id) {
-		v.SetError("Email", "Email has been already taken")
+		v.SetError("Email", "auth.email_already_taken")
 	}
 }
 

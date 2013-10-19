@@ -24,8 +24,7 @@ func CheckIsExist(qs orm.QuerySeter, field string, value interface{}, skipId int
 	if skipId > 0 {
 		qs = qs.Exclude("Id", skipId)
 	}
-	cnt, _ := qs.Count()
-	return cnt > 0
+	return qs.Exist()
 }
 
 func CountObjects(qs orm.QuerySeter) (int64, error) {

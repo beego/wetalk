@@ -1,6 +1,6 @@
 {{template "base/base.html" .}}
 {{template "base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "Posts of your favorite topics"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "postnav.favs_posts_of_your"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content" class="col-md-8">
@@ -11,15 +11,15 @@
             {{if .Topics}}
             <div class="cell nav-topics last">
                 {{template "post/component/nav-topics.html" .}}
-                <div class="pull-right"><a target="_blank" href="{{.User.Link}}/favs">{{i18n .Lang "More"}} <i class="icon-double-angle-right"></i></a></div>
+                <div class="pull-right"><a target="_blank" href="{{.User.Link}}/favs">{{i18n .Lang "more"}} <i class="icon-double-angle-right"></i></a></div>
             </div>
             {{end}}
         </div>
         <div class="box">
             <div class="cell first breadcrumb">
-                <i class="divider icon-angle-down"></i><a href="{{.AppUrl}}favs">{{i18n .Lang "Posts of your favorite topics"}}</a>
+                <i class="divider icon-angle-down"></i><a href="{{.AppUrl}}favs">{{i18n .Lang "postnav.favs_posts_of_your"}}</a>
             </div>
-            {{if .paginator.HasPages}}
+            {{if .paginator.Nums}}
                 <div class="post-list">
                     {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
                 </div>
@@ -28,7 +28,7 @@
                 </div>
             {{else}}
                 <div class="cell last">
-                    <div class="text-center">{{i18n .Lang "No posts found here"}}</div>
+                    <div class="text-center">{{i18n .Lang "postnav.not_found_posts"}}</div>
                 </div>
             {{end}}
         </div>

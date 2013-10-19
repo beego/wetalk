@@ -1,24 +1,24 @@
 {{template "base/base.html" .}}
 {{template "base/base_common.html" .}}
 {{define "meta"}}
-    <title>{{i18ns .Lang "topic" .Topic.Name}} - {{i18n .Lang .AppName}}</title>
-    <meta name="description" content="{{i18ns .Lang "topic" .Topic.Intro}}" />
+    <title>{{i18n .Lang (print "topic." .Topic.Name)}} - {{i18n .Lang "app_name"}}</title>
+    <meta name="description" content="{{i18n .Lang (print "topicintro." .Topic.Intro)}}" />
 {{end}}
 {{define "body"}}
 <div class="row">
     <div id="content" class="col-md-8">
     	<div class="box">
             <div class="cell breadcrumb first">
-                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.Topic.Link}}">{{i18ns .Lang "topic" .Topic.Name}}</a>
+                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.Topic.Link}}">{{i18n .Lang (print "topic." .Topic.Name)}}</a>
                 <span class="pull-right">
                 </span>
             </div>
             <div class="cell topic-info">
                 <div class="topic-img pull-left">
-                    <img src="http://gravatar.qiniudn.com/avatar/50c6d70b642671bea1c8144e92f1ac6f?size=48">
+                    <img src="">
                 </div>
                 <div class="topic-intro">
-                    {{i18ns .Lang "topic" .Topic.Intro}}
+                    {{i18n .Lang (print "topicintro." .Topic.Intro)}}
                 </div>
                 <div class="topic-meta">
                     <div class="pull-left">
@@ -26,20 +26,28 @@
                         <div class="input-group input-group-sm">
                             <span class="input-group-btn">
                         {{end}}
-                        {{if .HasFavorite}}
-                            <button rel="do-favorite" class="btn btn-default btn-sm active"><i class="icon-minus"></i> {{i18n .Lang "Remove Favorite"}}</button>
+                        {{if .IsLogin}}
+                            {{if .HasFavorite}}
+                                <button rel="do-favorite" class="btn btn-default btn-sm active"><i class="icon-minus"></i> {{i18n .Lang "topic.favorite_remove"}}</button>
+                            {{else}}
+                                <button rel="do-favorite" class="btn btn-default btn-sm"><i class="icon-heart"></i> {{i18n .Lang "topic.favorite_add"}}</button>
+                            {{end}}
                         {{else}}
-                            <button rel="do-favorite" class="btn btn-default btn-sm"><i class="icon-heart"></i> {{i18n .Lang "Add Favorite"}}</button>
+                            <a class="btn btn-default btn-sm" href="{{loginto .Topic.Link}}"><i class="icon-heart"></i> {{i18n .Lang "topic.favorite_add"}}</a>
                         {{end}}
-                        {{if .Topic.Followers}} </span><span class="input-group-addon">{{.Topic.Followers}} {{i18n .Lang "Favorited"}}</span></div>{{end}}
+                        {{if .Topic.Followers}} </span><span class="input-group-addon">{{.Topic.Followers}} {{i18n .Lang "topic.favorite_already"}}</span></div>{{end}}
                     </div>
                     <div class="pull-right">
-                        <a class="btn btn-primary btn-sm" href="/topic/new"><i class="icon-chevron-sign-up"></i> {{i18n .Lang "New Post"}}</a>
+                        {{if .IsLogin}}
+                            <a class="btn btn-primary btn-sm" href="{{.AppUrl}}new?topic={{.Topic.Slug}}"><i class="icon-chevron-sign-up"></i> {{i18n .Lang "post.post_new"}}</a>
+                        {{else}}
+                            <a class="btn btn-primary btn-sm" href="{{loginto .Topic.Link}}"><i class="icon-chevron-sign-up"></i> {{i18n .Lang "post.post_new"}}</a>
+                        {{end}}
                     </div>
                 </div>
                 <span class="clearfix"></span>
             </div>
-            {{if .paginator.HasPages}}
+            {{if .paginator.Nums}}
                 <div class="post-list">
                     {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
                 </div>
@@ -48,7 +56,7 @@
                 </div>
             {{else}}
                 <div class="cell last">
-                    <div class="text-center">{{i18n .Lang "No posts found here"}}</div>
+                    <div class="text-center">{{i18n .Lang "postnav.not_found_posts"}}</div>
                 </div>
             {{end}}
     	</div>
