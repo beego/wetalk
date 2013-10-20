@@ -189,7 +189,7 @@ func settingLocales() {
 }
 
 func settingCompress() {
-	setting, err := compress.LoadJsonConf(CompressConfPath)
+	setting, err := compress.LoadJsonConf(CompressConfPath, IsProMode, AppUrl)
 	if err != nil {
 		beego.Error(err)
 		return
@@ -197,11 +197,9 @@ func settingCompress() {
 
 	setting.RunCommand()
 
-	setting.Js.SetProMode(IsProMode)
-	setting.Css.SetProMode(IsProMode)
-
-	setting.Js.SetStaticURL(AppUrl)
-	setting.Css.SetStaticURL(AppUrl)
+	if IsProMode {
+		setting.RunCompress(true, false, true)
+	}
 
 	beego.AddFuncMap("compress_js", setting.Js.CompressJs)
 	beego.AddFuncMap("compress_css", setting.Css.CompressCss)
