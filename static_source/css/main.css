@@ -14,7 +14,7 @@ label {
 input[type="password"] {
   color: #777;
   font: small-caption;
-  font-size: 18px;
+  font-size: 18
 }
 
 input[type="password"]::-webkit-input-placeholder {
@@ -46,7 +46,7 @@ textarea.form-control {
 
 #navbar .logo img {
   height: 30px;
-  margin: 5px 10px 0px 0;
+  margin: 5px 10px 0 0;
 }
 
 #navbar .navbar-menu li.has-icon > a {
@@ -98,14 +98,13 @@ textarea.form-control {
 /* footer */
 #footer {
   background: #fff;
-  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);;
-  -moz-box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.05);
   -webkit-box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);;
   margin-top: 65px;
 }
 
 #footer .footer-wrap {
-  padding: 20px 0px;
+  padding: 20px 0;
 }
 
 #footer .desc {
@@ -117,11 +116,8 @@ textarea.form-control {
     background-color: #fafafa;
     border-bottom: 1px solid #e2e2e2;
     border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    box-shadow: 1px 0px 4px rgba(0, 0, 0, 0.20);
-    -moz-box-shadow: 1px 0px 4px rgba(0, 0, 0, 0.20);
-    -webkit-box-shadow: 1px 0px 4px rgba(0, 0, 0, 0.20);
+    -webkit-box-shadow: 1px 0 4px rgba(0, 0, 0, 0.20);
+    box-shadow: 1px 0 4px rgba(0, 0, 0, 0.20);
 }
 
 .cell {
@@ -132,20 +128,12 @@ textarea.form-control {
 
 .cell.first {
   border-top-left-radius: 3px;
-  -moz-border-top-left-radius: 3px;
-  -webkit-border-top-left-radius: 3px;
   border-top-right-radius: 3px;
-  -moz-border-top-right-radius: 3px;
-  -webkit-border-top-right-radius: 3px;
 }
 
 .cell.last {
   border-bottom-left-radius: 3px;
-  -moz-border-bottom-left-radius: 3px;
-  -webkit-border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
-  -moz-border-bottom-right-radius: 3px;
-  -webkit-border-bottom-right-radius: 3px;
 }
 
 .cell.slim {
@@ -167,8 +155,6 @@ textarea.form-control {
   padding: 3px 8px;
   margin: 1px 0;
   border-radius: 3px;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
 }
 
 .nav-cats .cat a:hover {
@@ -208,8 +194,6 @@ textarea.form-control {
 /* avatar */
 .avatar img {
   border-radius: 3px;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
   width: 48px;
   height: 48px;
 }
@@ -235,16 +219,13 @@ textarea.form-control {
 
 
 /* post-list */
-.post-list .post {
-}
-
 .post-list .post .avatar {
   margin-left: 5px;
   float: left;
 }
 
 .post-list .post .title {
-  margin: 0px 20px 0 65px;
+  margin: 0 20px 0 65px;
   line-height: 24px;
   font-size: 15px;
   font-weight: normal;
@@ -365,11 +346,7 @@ textarea.form-control {
   margin: 0 5px;
   color: #b94a48;
   border-bottom-left-radius: 3px;
-  -moz-border-bottom-left-radius: 3px;
-  -webkit-border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
-  -moz-border-bottom-right-radius: 3px;
-  -webkit-border-bottom-right-radius: 3px;
   background-color: #f2dede;
   border: 1px solid #c09853;
   border-top: none;
@@ -434,16 +411,18 @@ h6.underline {
   color: orange;
 }
 
+a.color-link,
 .color-link a {
   color: #2892BC;
 }
 
+a.color-link:hover ,
 .color-link a:hover {
   color: #146B8E;
 }
 
 .topic-info .topic-img {
-  margin: 0 15px 0px;
+  margin: 0 15px 0;
 }
 
 .topic-info .topic-img img {
@@ -471,34 +450,57 @@ h6.underline {
   width: auto;
 }
 
-#post-new .post-content textarea {
-  margin-top: 10px;
+.markdown-editor {
+  margin: 0 0 15px;
+}
+
+.markdown-editor .md-toolbar {
+   -webkit-touch-callout: none;
+   -webkit-user-select: none;
+   -khtml-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+}
+
+.markdown-editor .form-group {
+  margin: 0;
+}
+
+.markdown-editor textarea {
+  margin-top: 5px;
   min-height: 300px;
+  font-size: 14px;
+  background-color: #fcfcfc;
+  -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
 }
 
-#post-new .post-preview {
-  min-height: 305px;
-  margin: 10px 10px;
-  padding: 0 5px;
+.markdown-editor textarea:focus {
+  background-color: #f9f9f9;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-#post-new .post-categories,
-#post-new .post-topics {
-  width: 170px;
-  display: inline-block;
-  float: left;
+.markdown-editor textarea:focus {
+  border-color: #ccc;
 }
 
-#post-new .post-topics {
-  margin-left: 10px;
+.markdown-editor.has-error textarea:focus {
+  box-shadow: none;
 }
 
-#post-show .post-title {
-  font-size: 22px;
-  line-height: 1.3em;
-  margin: 5px 0;
-  padding: 0 0 10px;
-  font-weight: 700;
+.markdown-editor .md-preview {
+  margin-top: 5px;
+  min-height: 300px;
+  padding: 15px 15px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.md-image {
+  width: 240px;
 }
 
 .markdown {
@@ -606,10 +608,71 @@ h6.underline {
 }
 
 .markdown hr {
-  border: 0 none;
+  border: none;
   color: #ccc;
   height: 4px;
   padding: 0;
   margin: 15px 0;
   background: transparent url('/static/img/hr.png') repeat-x 0 0;
+}
+
+.btn.disabled:active,
+.btn.disabled:focus,
+.btn.disabled:hover,
+.btn.disabled { 
+  background-image: none;
+  background-color: #ddd;
+}
+
+#post-new .post-categories,
+#post-new .post-topics {
+  width: 170px;
+  float: left;
+}
+
+#post-new .post-topics {
+  margin-left: 10px;
+}
+
+#post-show .post-title {
+  font-size: 22px;
+  line-height: 1.3em;
+  margin: 5px 0;
+  padding: 0 0 10px;
+  font-weight: 700;
+}
+
+#post-show .post-content {
+  padding: 15px 0;
+}
+
+#post-reply .markdown-editor textarea,
+#post-reply .markdown-editor .md-preview {
+  min-height: 122px;
+}
+
+#post-comments .comment .content blockquote:last-child,
+#post-comments .comment .content ul:last-child,
+#post-comments .comment .content ol:last-child,
+#post-comments .comment .content pre:last-child,
+#post-comments .comment .content pre:last-child,
+#post-comments .comment .content p:last-child {
+  margin-bottom: 0;
+}
+
+#post-comments .comment .avatar {
+  float: left;
+}
+
+#post-comments .comment .meta {
+  margin: 0 0 10px 0;
+}
+
+#post-comments .comment .meta a {
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+#post-comments .comment .content {
+  margin: 0 0 0 58px;
 }

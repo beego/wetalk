@@ -86,7 +86,6 @@ func RegisterUser(user *User, form RegisterForm) error {
 
 	user.UserName = form.UserName
 	user.Email = form.Email
-	user.NickName = form.UserName
 
 	// save salt and encode password, use $ as split char
 	user.Password = fmt.Sprintf("%s$%s", salt, pwd)

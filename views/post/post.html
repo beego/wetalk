@@ -11,7 +11,7 @@
             <div id="post-show">
                 <div class="cell first slim">
                     <div class="avatar pull-right">
-                        <a href="{{.Post.User.Link}}" title="{{.Post.User.NickName}}">
+                        <a href="{{.Post.User.Link}}" title="{{.Post.User.UserName}}">
                             <img class="large" src="{{.Post.User.AvatarLink}}?size=48">
                         </a>
                     </div>
@@ -19,14 +19,63 @@
                         {{.Post.Title}}
                     </h1>
                     <div class="meta">
-                        <a class="tag" href="{{.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a> • <a class="tag" href="{{.Topic.Link}}">{{i18n .Lang (print "topic." .Post.Topic.Name)}}</a> • <span class="time">{{timesince .Lang .Post.Created}}</span>{{if .Post.Replys}} • <span class="last-reply">{{i18n .Lang "post.last_reply_from"}} <a href="{{.Post.User.Link}}">{{.Post.User.NickName}}</a></span>{{end}}
+                        <a class="tag" href="{{.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a> • <a class="tag" href="{{.Topic.Link}}">{{i18n .Lang (print "topic." .Post.Topic.Name)}}</a> • <span class="time">{{timesince .Lang .Post.Created}}</span>{{if .Post.Replys}} • <span class="last-reply">{{i18n .Lang "post.last_reply_from"}} <a href="{{.Post.User.Link}}">{{.Post.User.UserName}}</a></span>{{end}}
                     </div>
                 </div>
-                <div class="cell first slim">
-                    <div class="markdown">
+                <div class="cell slim">
+                    <div class="post-content markdown">
                         {{.Post.GetContentCache|str2html}}
                     </div>
                 </div>
+            </div>
+        </div>
+        <div id="post-comments" class="box">
+            {{if .CommentsNum}}
+                <div class="cell first breadcrumb">
+                    {{i18n .Lang "post.total_replies" .CommentsNum}}
+                </div>
+            {{end}}
+            {{if .CommentsNum}}
+                {{range .Comments}}
+                    <div class="cell comment">
+                        <div class="avatar">
+                            <a href="{{.User.Link}}">
+                                <img src="{{.User.AvatarLink}}?size=48">
+                            </a>
+                        </div>
+                        <div class="content">
+                            <div class="meta">
+                                <a href="{{.User.Link}}">{{.User.UserName}}</a>
+                                <span class="time">{{timesince $.Lang .Created}}</span>
+                            </div>
+                            {{.GetMessageCache|str2html}}
+                        </div>
+                        <span class="clearfix"></span>
+                    </div>
+                {{end}}
+            {{else}}
+                <div class="cell last">
+                    <div class="text-center">{{i18n .Lang "post.no_replies"}}</div>
+                </div>
+            {{end}}
+        </div>
+        <div class="box">
+            <div class="cell first last">
+                {{if .IsLogin}}
+                    <form id="post-reply" method="POST" action="{{.Post.Link}}#post-reply">
+                        {{.xsrf_html}}{{.once_html}}
+                        <div class="markdown-editor"  data-preview-url="{{$.AppUrl}}new" data-savekey="post/comment">
+                            {{with .CommentFormSets.Fields.Message}}
+                                {{template "post/component/editor.html" dict "root" $ "Field" .Field "Error" .Error "Help" .Help}}
+                            {{end}}
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary">{{i18n .Lang "submit"}}</button>
+                        </div>
+                    </form>
+                {{else}}
+                    <div class="text-center"><a href="{{loginto .Post.Link}}" class="btn btn-primary">{{i18n .Lang "auth.need_login_to_reply"}}</a></div>
+                {{end}}
             </div>
         </div>
 	</div>

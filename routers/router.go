@@ -140,6 +140,11 @@ func (this *baseRouter) CheckActiveRedirect(args ...interface{}) bool {
 		}
 	}
 	if needActive {
+		// check login
+		if this.CheckLoginRedirect() {
+			return true
+		}
+
 		// redirect to active page
 		if !this.user.IsActive {
 			this.FlashRedirect("/settings/profile", code, "NeedActive")
@@ -430,6 +435,14 @@ func (this *baseRouter) SetPaginator(per int, nums int64) *utils.Paginator {
 	p := utils.NewPaginator(this.Ctx.Request, per, nums)
 	this.Data["paginator"] = p
 	return p
+}
+
+func (this *baseRouter) JsStorage(action, key string, values ...string) {
+	value := action + ":::" + key
+	if len(values) > 0 {
+		value += ":::" + values[0]
+	}
+	this.Ctx.SetCookie("JsStorage", value, 1<<31-1, "/")
 }
 
 // setLang sets site language version.

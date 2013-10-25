@@ -14,6 +14,7 @@
 package utils
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/rand"
@@ -22,12 +23,41 @@ import (
 	"encoding/hex"
 	"fmt"
 	"hash"
+	"math/big"
 	"reflect"
 	"strconv"
 	"time"
 
 	"github.com/astaxie/beego"
 )
+
+func NumberEncode(number string, alphabet []byte) string {
+	token := make([]byte, 0, 12)
+	x, ok := new(big.Int).SetString(number, 10)
+	if !ok {
+		return ""
+	}
+	y := big.NewInt(int64(len(alphabet)))
+	m := new(big.Int)
+	for x.Sign() > 0 {
+		x, m = x.DivMod(x, y, m)
+		token = append(token, alphabet[int(m.Int64())])
+	}
+	return string(token)
+}
+
+func NumberDecode(token string, alphabet []byte) string {
+	x := new(big.Int)
+	y := big.NewInt(int64(len(alphabet)))
+	z := new(big.Int)
+	for i := len(token) - 1; i >= 0; i-- {
+		v := bytes.IndexByte(alphabet, token[i])
+		z.SetInt64(int64(v))
+		x.Mul(x, y)
+		x.Add(x, z)
+	}
+	return x.String()
+}
 
 // Random generate string
 func GetRandomString(n int) string {

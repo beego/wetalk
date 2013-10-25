@@ -4,9 +4,9 @@
 	<meta name="_xsrf" content="{{.xsrf_token}}" />
 	<link rel="shortcut icon" href="{{.AppUrl}}static/img/favicon.png" />
 	{{compress_css "lib"}}
-	{{print "<!--[if IE 7]>"|str2html}}
+	{{str2html "<!--[if IE 7]>"}}
 	{{compress_css "ie7"}}
-	{{print "<![endif]-->"|str2html}}
+	{{str2html "<![endif]-->"}}
 	{{compress_css "app"}}
 	{{compress_js "lib"}}
 	{{compress_js "app"}}

@@ -34,23 +34,10 @@
                         </div>
                     {{end}}
 
-                    <ul id="post-editor" class="nav nav-tabs">
-                      <li class="active"><a href="#post-content" data-toggle="tab">{{i18n .Lang "post.write_content"}}</a></li>
-                      <li><a href="#post-preview" data-toggle="tab">{{i18n .Lang "post.preview"}}</a></li>
-                    </ul>
-
-                    <div class="tab-content">
-                        <div id="post-content" class="tab-pane post-content active">
-                            {{with .PostFormSets.Fields.Content}}
-                                <div class="form-group{{if .Error}} has-error{{end}}">
-                                    {{.Field}}
-                                    {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
-                                    {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
-                                </div>
-                            {{end}}
-                        </div>
-                        <div id="post-preview" class="tab-pane post-preview markdown" >
-                        </div>
+                    <div class="markdown-editor"  data-preview-url="{{$.AppUrl}}new" data-savekey="post/new">
+                        {{with .PostFormSets.Fields.Content}}
+                            {{template "post/component/editor.html" dict "root" $ "Field" .Field "Error" .Error "Help" .Help}}
+                        {{end}}
                     </div>
 
                     <div class="form-group">
@@ -65,53 +52,12 @@
             <div class="cell first">{{i18n .Lang "help"}}</div>
             <div class="cell last">
                 <ul>
-                    <li><a href="">{{i18n .Lang "Markdown Syntax"}}</a></li>
+                    <li><a href="">{{i18n .Lang "markdown_syntax"}}</a></li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    (function($){
-
-        var $con, cache;
-        $(function(){
-            $con = $('#post-content').find('[name=Content]');
-            $con.autosize();
-            cache = $.trim($con.val());
-        });
-        $(document).on('shown.bs.tab', '#post-editor [data-toggle=tab]', function(){
-            var $e = $(this);
-            if($e.attr('href') == '#post-preview') {
-                var n = $.trim($con.val());
-                if(n == '' || n == cache) return;
-                cache = n;
-                $.post("{{.AppUrl}}new", {'action': 'preview', 'content': n}, function(data){
-                    if(data.success){
-                        $('#post-preview').html(data.preview);
-                    }
-                });
-            }
-        });
-
-        function setSelectRange(e, start, end){
-            if (e.setSelectionRange) {
-                 /* WebKit */ 
-                e.focus();
-                e.setSelectionRange(start, end);
-            } else if (e.createTextRange) {
-                /* IE */
-                var range = e.createTextRange();
-                range.collapse(true);
-                range.moveEnd('character', end);
-                range.moveStart('character', start);
-                range.select();
-            } else if (e.selectionStart) {
-                e.selectionStart = start;
-                e.selectionEnd = end;
-            }
-        }
-
-    })(jQuery);
 </script>
 {{end}}

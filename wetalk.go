@@ -45,15 +45,19 @@ func main() {
 		beego.SetStaticPath("/static_source", "static_source")
 	}
 
-	// Register routers.
+	// Add Filters
+	beego.AddFilter("^/img/:", "AfterStatic", routers.ImageFilter)
 
-	posts := new(routers.PostRouter)
+	// Register routers.
+	posts := new(routers.PostListRouter)
 	beego.Router("/", posts, "get:Home")
-	beego.Router("/p/:post([0-9]+)", posts, "get:Single;post:SingleSubmit")
-	beego.Router("/new", posts, "get:New;post:NewSubmit")
 	beego.Router("/:slug(recent|best|cold|favs|follow)", posts, "get:Navs")
 	beego.Router("/category/:slug", posts, "get:Category")
 	beego.Router("/topic/:slug", posts, "get:Topic;post:TopicSubmit")
+
+	post := new(routers.PostRouter)
+	beego.Router("/new", post, "get:New;post:NewSubmit")
+	beego.Router("/p/:post([0-9]+)", post, "get:Single;post:SingleSubmit")
 
 	user := new(routers.UserRouter)
 	beego.Router("/u/:username", user, "get:Home")
@@ -73,6 +77,9 @@ func main() {
 	forgot := new(routers.ForgotRouter)
 	beego.Router("/forgot", forgot)
 	beego.Router("/reset/:code([0-9a-zA-Z]+)", forgot, "get:Reset;post:ResetPost")
+
+	upload := new(routers.UploadRouter)
+	beego.Router("/upload", upload, "post:Post")
 
 	adminDashboard := new(routers.AdminDashboardRouter)
 	beego.Router("/admin", adminDashboard)

@@ -143,7 +143,6 @@ func (form *ResetPwdForm) Placeholders() map[string]string {
 
 // Settings Profile form
 type ProfileForm struct {
-	NickName    string      `valid:"Required;MaxSize(30)"`
 	Url         string      `valid:"MaxSize(100)"`
 	Info        string      `form:"type(textarea)" valid:"MaxSize(255)"`
 	Email       string      `valid:"Required;Email;MaxSize(100)"`
@@ -178,7 +177,6 @@ func (form *ProfileForm) SaveUserProfile(user *User) error {
 
 func (form *ProfileForm) Labels() map[string]string {
 	return map[string]string{
-		"NickName":    "model.user_nickname",
 		"PublicEmail": "auth.profile_publicemail",
 		"GrEmail":     "auth.profile_gremail",
 		"Url":         "auth.profile_url",
@@ -194,10 +192,9 @@ func (form *ProfileForm) Helps() map[string]string {
 
 func (form *ProfileForm) Placeholders() map[string]string {
 	return map[string]string{
-		"NickName": "auth.plz_enter_nickname",
-		"GrEmail":  "auth.plz_enter_gremail",
-		"Url":      "auth.plz_enter_website",
-		"Info":     "auth.plz_enter_your_info",
+		"GrEmail": "auth.plz_enter_gremail",
+		"Url":     "auth.plz_enter_website",
+		"Info":    "auth.plz_enter_your_info",
 	}
 }
 
@@ -243,7 +240,6 @@ type UserAdminForm struct {
 	UserName    string `valid:"Required;AlphaDash;MinSize(5);MaxSize(30)"`
 	Email       string `valid:"Required;Email;MaxSize(100)"`
 	PublicEmail bool   ``
-	NickName    string `valid:"Required;MaxSize(30)"`
 	Url         string `valid:"MaxSize(100)"`
 	Info        string `form:"type(textarea)" valid:"MaxSize(255)"`
 	GrEmail     string `valid:"Required;MaxSize(80)"`

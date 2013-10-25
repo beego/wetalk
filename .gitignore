@@ -26,3 +26,7 @@ _testmain.go
 wetalk
 bale.go
 sessions
+tmp
+upload
+static/css
+static/js

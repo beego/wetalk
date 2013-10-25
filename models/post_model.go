@@ -36,6 +36,7 @@ type Post struct {
 	LastReply    *User  `orm:"rel(fk)"`
 	Topic        *Topic `orm:"rel(fk)"`
 	IsBest       bool
+	Images       string
 	Category     *Category `orm:"rel(fk)"`
 	Created      time.Time `orm:"auto_now_add"`
 	Updated      time.Time `orm:"auto_now;index"`
@@ -86,6 +87,10 @@ func (m *Post) GetContentCache() string {
 	}
 }
 
+func (m *Post) Comments() orm.QuerySeter {
+	return Comments().Filter("Post", m.Id)
+}
+
 func Posts() orm.QuerySeter {
 	return orm.NewOrm().QueryTable("post").OrderBy("-Id")
 }
@@ -97,7 +102,7 @@ type Comment struct {
 	Post         *Post  `orm:"rel(fk)"`
 	Message      string `orm:"type(text)"`
 	MessageCache string `orm:"type(text)"`
-	Status       int
+	Status       int8
 	Created      time.Time `orm:"auto_now_add;index"`
 }
 

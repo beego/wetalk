@@ -170,12 +170,24 @@ func (form *PostAdminForm) SetToPost(post *Post) {
 	post.ContentCache = RenderPostContent(post.Content)
 }
 
+type CommentForm struct {
+	Message string `form:"type(textarea)" valid:"Required;MinSize(5)"`
+}
+
+func (form *CommentForm) SaveComment(comment *Comment, user *User, post *Post) error {
+	comment.Message = form.Message
+	comment.MessageCache = RenderPostContent(form.Message)
+	comment.User = user
+	comment.Post = post
+	return comment.Insert()
+}
+
 type CommentAdminForm struct {
 	Create  bool   `form:"-"`
 	User    int    `valid:"Required"`
 	Post    int    `valid:"Required"`
 	Message string `form:"type(textarea)" valid:"Required"`
-	Status  int    `valid:"Required"`
+	Status  int8   `valid:"Required"`
 }
 
 func (form *CommentAdminForm) Valid(v *validation.Validation) {

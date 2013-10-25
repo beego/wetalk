@@ -39,25 +39,29 @@ const (
 )
 
 var (
-	AppName           string
-	AppDescription    string
-	AppKeywords       string
-	AppVer            string
-	AppHost           string
-	AppUrl            string
-	AppLogo           string
-	AvatarURL         string
-	SecretKey         string
-	IsProMode         bool
-	MailUser          string
-	MailFrom          string
-	ActiveCodeLives   int
-	ResetPwdCodeLives int
-	LoginRememberDays int
-	DateFormat        string
-	DateTimeFormat    string
-	RealtimeRenderMD  bool
-	CompressSettings  *compress.Settings
+	AppName            string
+	AppDescription     string
+	AppKeywords        string
+	AppVer             string
+	AppHost            string
+	AppUrl             string
+	AppLogo            string
+	AvatarURL          string
+	SecretKey          string
+	IsProMode          bool
+	MailUser           string
+	MailFrom           string
+	ActiveCodeLives    int
+	ResetPwdCodeLives  int
+	LoginRememberDays  int
+	DateFormat         string
+	DateTimeFormat     string
+	RealtimeRenderMD   bool
+	ImageSizeSmall     int
+	ImageSizeMiddle    int
+	ImageLinkAlphabets []byte
+	ImageXSend         bool
+	ImageXSendHeader   string
 )
 
 var (
@@ -96,8 +100,6 @@ func LoadConfig() *goconfig.ConfigFile {
 	IsProMode = beego.RunMode == "pro"
 	if IsProMode {
 		beego.SetLevel(beego.LevelInfo)
-	} else {
-		beego.SetLevel(beego.LevelDebug)
 	}
 
 	// cache system
@@ -157,6 +159,26 @@ func reloadConfig() {
 	ResetPwdCodeLives = Cfg.MustInt("app", "resetpwd_code_live_days")
 	LoginRememberDays = Cfg.MustInt("app", "login_remember_days")
 	RealtimeRenderMD = Cfg.MustBool("app", "realtime_render_markdown")
+
+	ImageSizeSmall = Cfg.MustInt("app", "image_size_small")
+	ImageSizeMiddle = Cfg.MustInt("app", "image_size_middle")
+
+	if ImageSizeSmall <= 0 {
+		ImageSizeSmall = 300
+	}
+
+	if ImageSizeMiddle <= ImageSizeSmall {
+		ImageSizeMiddle = ImageSizeSmall + 400
+	}
+
+	str, _ := Cfg.GetValue("app", "image_link_alphabets")
+	if len(str) == 0 {
+		str = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	}
+	ImageLinkAlphabets = []byte(str)
+
+	ImageXSend = Cfg.MustBool("app", "image_xsend")
+	ImageXSendHeader, _ = Cfg.GetValue("app", "image_xsend_header")
 
 	// set mailer connect args
 	mailer.MailHost = Cfg.MustValue("mailer", "host")

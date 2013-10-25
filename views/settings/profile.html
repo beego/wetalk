@@ -48,19 +48,6 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="profile-username">{{i18n .Lang "model.user_username"}}</label>
-                                    <input id="profile-username" value="{{.User.UserName}}" type="text" class="form-control" disabled>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.NickName}}
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
                                 {{with .ProfileFormSets.Fields.Email}}
                                 <div class="form-group{{if .Error}} has-error{{end}}{{if not $.User.IsActive}} has-warning{{end}}">
                                     {{.Label}}

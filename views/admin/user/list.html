@@ -31,7 +31,6 @@
                             <tr>
                                 <th>Id</th>
                                 <th>{{i18n .Lang "model.user_username"}}</th>
-                                <th>{{i18n .Lang "model.user_nickname"}}</th>
                                 <th>{{i18n .Lang "model.user_email"}}</th>
                                 <th>{{i18n .Lang "model.user_isadmin"}}</th>
                                 <th>{{i18n .Lang "model.user_isactive"}}</th>
@@ -45,7 +44,6 @@
                             <tr>
                                 <td><a href="{{$.AppUrl}}admin/user/{{$user.Id}}">{{$user.Id}}</a></td>
                                 <td><a href="{{$.AppUrl}}admin/user/{{$user.Id}}">{{$user.UserName}}</a></td>
-                                <td>{{$user.NickName}}</td>
                                 <td>{{$user.Email}}</td>
                                 <td>{{$user.IsAdmin|boolicon}}</td>
                                 <td>{{$user.IsActive|boolicon}}</td>

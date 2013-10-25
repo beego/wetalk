@@ -9,7 +9,9 @@
                 "DistFile": "lib.min.js",
                 "SourceFiles": [
                     "jquery.min.js",
-                    "lib.min.js"
+                    "bootstrap.js",
+                    "lib.min.js",
+                    "jStorage.js"
                 ],
                 "SkipFiles": [
                     "jquery.min.js",
@@ -19,7 +21,8 @@
             "app": {
                 "DistFile": "app.min.js",
                 "SourceFiles": [
-                    "main.js"
+                    "main.js",
+                    "editor.js"
                 ]
             },
             "admin": {
@@ -45,7 +48,7 @@
                     "select2.css"
                 ],
                 "SkipFiles": [
-                    "bootstrap-font-awesome.min.css",
+                    "font-awesome.min.css",
                     "select2.css"
                 ]
             },

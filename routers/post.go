@@ -23,22 +23,22 @@ import (
 )
 
 // HomeRouter serves home page.
-type PostRouter struct {
+type PostListRouter struct {
 	baseRouter
 }
 
-func (this *PostRouter) setCategories(cats *[]models.Category) {
+func (this *PostListRouter) setCategories(cats *[]models.Category) {
 	models.ListCategories(cats)
 	this.Data["Categories"] = *cats
 }
 
-func (this *PostRouter) setTopicsOfCat(topics *[]models.Topic, cat *models.Category) {
+func (this *PostListRouter) setTopicsOfCat(topics *[]models.Topic, cat *models.Category) {
 	models.ListTopicsOfCat(topics, cat)
 	this.Data["Topics"] = *topics
 }
 
 // Get implemented Get method for HomeRouter.
-func (this *PostRouter) Home() {
+func (this *PostListRouter) Home() {
 	this.Data["IsHome"] = true
 	this.TplNames = "post/home.html"
 
@@ -54,7 +54,7 @@ func (this *PostRouter) Home() {
 }
 
 // Get implemented Get method for HomeRouter.
-func (this *PostRouter) Category() {
+func (this *PostListRouter) Category() {
 	this.TplNames = "post/category.html"
 
 	slug := this.GetString(":slug")
@@ -89,7 +89,7 @@ func (this *PostRouter) Category() {
 }
 
 // Get implemented Get method for HomeRouter.
-func (this *PostRouter) Navs() {
+func (this *PostListRouter) Navs() {
 	slug := this.GetString(":slug")
 
 	switch slug {
@@ -187,7 +187,7 @@ func (this *PostRouter) Navs() {
 }
 
 // Get implemented Get method for HomeRouter.
-func (this *PostRouter) Topic() {
+func (this *PostListRouter) Topic() {
 	slug := this.GetString(":slug")
 
 	switch slug {
@@ -224,7 +224,7 @@ func (this *PostRouter) Topic() {
 }
 
 // Get implemented Get method for HomeRouter.
-func (this *PostRouter) TopicSubmit() {
+func (this *PostListRouter) TopicSubmit() {
 	slug := this.GetString(":slug")
 
 	topic := models.Topic{Slug: slug}
@@ -259,6 +259,10 @@ func (this *PostRouter) TopicSubmit() {
 
 	this.Data["json"] = result
 	this.ServeJson()
+}
+
+type PostRouter struct {
+	baseRouter
 }
 
 func (this *PostRouter) New() {
@@ -326,27 +330,49 @@ func (this *PostRouter) NewSubmit() {
 
 	var post models.Post
 	if err := form.SavePost(&post, &this.user); err == nil {
+		this.JsStorage("deleteKey", "post/new")
 		this.Redirect(post.Link(), 302)
-	} else {
-		fmt.Println(err)
 	}
 }
 
-func (this *PostRouter) Single() {
+func (this *PostRouter) loadPost(post *models.Post) bool {
 	this.TplNames = "post/post.html"
 
-	var post models.Post
 	id, _ := this.GetInt(":post")
 	if id > 0 {
-		models.Posts().Filter("Id", id).RelatedSel().One(&post)
+		models.Posts().Filter("Id", id).RelatedSel().One(post)
 	}
 
 	if post.Id == 0 {
 		this.Abort("404")
+		return true
+	}
+
+	this.Data["Post"] = post
+
+	return false
+}
+
+func (this *PostRouter) loadComments(post *models.Post, comments *[]*models.Comment) {
+	qs := post.Comments()
+	if num, err := qs.RelatedSel("User").OrderBy("Id").All(comments); err == nil {
+		this.Data["Comments"] = *comments
+		this.Data["CommentsNum"] = num
+		fmt.Println(comments, num)
+	}
+}
+
+func (this *PostRouter) Single() {
+	var post models.Post
+	if this.loadPost(&post) {
 		return
 	}
 
-	this.Data["Post"] = &post
+	var comments []*models.Comment
+	this.loadComments(&post, &comments)
+
+	form := models.CommentForm{}
+	this.SetFormSets(&form)
 }
 
 func (this *PostRouter) SingleSubmit() {
@@ -355,14 +381,28 @@ func (this *PostRouter) SingleSubmit() {
 	}
 
 	var post models.Post
-	id, _ := this.GetInt(":post")
-	if id > 0 {
-		post.Id = int(id)
-		post.Read()
+	if this.loadPost(&post) {
+		return
 	}
 
-	if post.Id == 0 {
-		this.Abort("404")
+	var redir bool
+
+	defer func() {
+		if !redir {
+			var comments []*models.Comment
+			this.loadComments(&post, &comments)
+		}
+	}()
+
+	form := models.CommentForm{}
+	if !this.ValidFormSets(&form) {
 		return
+	}
+
+	comment := models.Comment{}
+	if err := form.SaveComment(&comment, &this.user, &post); err == nil {
+		this.JsStorage("deleteKey", "post/comment")
+		this.Redirect(post.Link(), 302)
+		redir = true
 	}
 }
