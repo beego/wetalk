@@ -13,6 +13,11 @@
                     {{.xsrf_html}}{{.once_html}}
 
                     <div class="form-group">
+                        {{with .PostFormSets.Fields.Lang}}
+                            <div class="post-langs{{if .Error}} has-error{{end}}">
+                                {{.Field}}
+                            </div>
+                        {{end}}
                         {{with .PostFormSets.Fields.Category}}
                             <div class="post-categories{{if .Error}} has-error{{end}}">
                                 {{.Field}}

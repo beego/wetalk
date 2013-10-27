@@ -610,13 +610,15 @@ a.color-link:hover ,
   width: 280px;
 }
 
+#post-new .post-langs {
+  width: 120px;
+  float: left;
+}
+
 #post-new .post-categories,
 #post-new .post-topics {
   width: 170px;
   float: left;
-}
-
-#post-new .post-topics {
   margin-left: 10px;
 }
 

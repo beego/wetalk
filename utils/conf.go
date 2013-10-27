@@ -16,7 +16,6 @@
 package utils
 
 import (
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -171,14 +170,14 @@ func reloadConfig() {
 		ImageSizeMiddle = ImageSizeSmall + 400
 	}
 
-	str, _ := Cfg.GetValue("app", "image_link_alphabets")
+	str := Cfg.MustValue("app", "image_link_alphabets")
 	if len(str) == 0 {
 		str = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	}
 	ImageLinkAlphabets = []byte(str)
 
 	ImageXSend = Cfg.MustBool("app", "image_xsend")
-	ImageXSendHeader, _ = Cfg.GetValue("app", "image_xsend_header")
+	ImageXSendHeader = Cfg.MustValue("app", "image_xsend_header")
 
 	// set mailer connect args
 	mailer.MailHost = Cfg.MustValue("mailer", "host")
@@ -189,23 +188,13 @@ func reloadConfig() {
 }
 
 func settingLocales() {
-	// autoload locales with locale_LANG.ini files
-	dirs, _ := ioutil.ReadDir("conf")
-	for _, info := range dirs {
-		if !info.IsDir() {
-			name := info.Name()
-			if filepath.HasPrefix(name, "locale_") {
-				if filepath.Ext(name) == ".ini" {
-					lang := name[7 : len(name)-4]
-					if len(lang) > 0 {
-						if err := i18n.SetMessage(lang, "conf/"+name); err != nil {
-							panic("Fail to set message file: " + err.Error())
-						}
-						continue
-					}
-				}
-				beego.Error("locale ", name, " not loaded")
-			}
+	// load locales with locale_LANG.ini files
+	langs := Cfg.MustValue("app", "langs")
+	for _, lang := range strings.Split(langs, "|") {
+		lang = strings.TrimSpace(lang)
+		if err := i18n.SetMessage(lang, "conf/"+"locale_"+lang+".ini"); err != nil {
+			beego.Error("Fail to set message file: " + err.Error())
+			os.Exit(2)
 		}
 	}
 }

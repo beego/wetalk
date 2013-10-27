@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"github.com/astaxie/beego/orm"
+	"github.com/beego/i18n"
 
 	"github.com/beego/wetalk/models"
 )
@@ -277,6 +278,11 @@ func (this *PostRouter) New() {
 	}
 
 	form := models.PostForm{}
+	for i, lang := range i18n.ListLangs() {
+		if lang == this.Locale.Lang {
+			form.Lang = int8(i)
+		}
+	}
 
 	slug := this.GetString("topic")
 	if len(slug) > 0 {

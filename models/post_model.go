@@ -35,6 +35,7 @@ type Post struct {
 	Favorites    int
 	LastReply    *User  `orm:"rel(fk)"`
 	Topic        *Topic `orm:"rel(fk)"`
+	Lang         int8   `orm:"index"`
 	IsBest       bool
 	Images       string
 	Category     *Category `orm:"rel(fk)"`
