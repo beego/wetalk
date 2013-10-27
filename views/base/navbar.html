@@ -11,15 +11,15 @@
                 <img src="{{.AppLogo}}" style="min-width:30px;">
             </a>
         </div>
-        <form class="navbar-form navbar-left" role="search">
+        <form id="navbar-search" class="navbar-form navbar-left" role="search">
             <div class="form-group">
-                <input id="search-box" class="form-control" type="text" placeholder="{{i18n .Lang "search"}}" name="q">
+                <input class="form-control" type="text" placeholder="{{i18n .Lang "search"}}" name="q">
             </div>
         </form>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
                 <li {{if .IsHome}}class="active"{{end}}><a href="{{.AppUrl}}">{{i18n .Lang "home"}}</a></li>
-                <li {{if .IsResource}}class="active"{{end}}><a href="/resource">{{i18n .Lang "resource"}}</a></li>
+                <!-- <li {{if .IsResource}}class="active"{{end}}><a href="/resource">{{i18n .Lang "resource"}}</a></li> -->
                 <li><a target="_blank" href="http://beego.me">{{i18n .Lang "official_website"}}</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right navbar-menu">
@@ -31,8 +31,8 @@
                             <li><a href="{{.AppUrl}}admin">{{i18n .Lang "admin.admin_center"}}</a></li>
                             <li class="divider"></li>
                         {{end}}
-                        <li><a href="{{.AppUrl}}settings/profile">{{i18n .Lang "auth.user_profile"}} <i class="icon icon-cog pull-right"></i></a></li>
-                        <li><a href="{{.AppUrl}}logout">{{i18n .Lang "auth.logout"}} <i class="icon icon-signout pull-right"></i></a></li>
+                        <li><a href="{{.AppUrl}}settings/profile"><span>{{i18n .Lang "auth.user_profile"}}</span></a></li>
+                        <li><a href="{{.AppUrl}}logout">{{i18n .Lang "auth.logout"}}</a></li>
                     </ul>
                 </li>
                 {{else}}

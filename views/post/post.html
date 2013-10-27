@@ -7,6 +7,8 @@
         <div class="box">
             <div class="cell first breadcrumb last">
                 <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.Post.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a><i class="divider icon-angle-right"></i><a href="{{.Post.Topic.Link}}">{{i18n .Lang (print "topic." .Post.Topic.Name)}}</a>
+                <span class="pull-right">
+                </span>
             </div>
             <div id="post-show">
                 <div class="cell first slim">
@@ -48,7 +50,9 @@
                                 <a href="{{.User.Link}}">{{.User.UserName}}</a>
                                 <span class="time">{{timesince $.Lang .Created}}</span>
                             </div>
-                            {{.GetMessageCache|str2html}}
+                            <div class="markdown">
+                                {{.GetMessageCache|str2html}}
+                            </div>
                         </div>
                         <span class="clearfix"></span>
                     </div>
@@ -80,6 +84,12 @@
         </div>
 	</div>
     <div id="sidebar" class="col-md-3">
+        <p>
+            <a href="{{.AppUrl}}new?topic={{.Post.Topic.Slug}}" class="btn btn-success">
+                <i class="icon-double-angle-right"></i>
+                {{i18n .Lang "post.post_new_with_topic" (i18n .Lang (print "topic." .Post.Topic.Name))}}
+            </a>
+        </p>
     </div>
 </div>
 <script type="text/javascript">

@@ -11,30 +11,6 @@ label {
   cursor: pointer;
 }
 
-input[type="password"] {
-  color: #777;
-  font: small-caption;
-  font-size: 18
-}
-
-input[type="password"]::-webkit-input-placeholder {
-  font-size: 13px;
-  line-height: 13px;
-  padding-top: 4px;
-}
-
-input[type="password"]::-moz-placeholder {
-  font-size: 13px;
-  line-height: 13px;
-  padding-top: 4px;
-}
-
-input[type="password"]:-ms-input-placeholder {
-  font-size: 13px;
-  line-height: 13px;
-  padding-top: 4px;
-}
-
 textarea,
 textarea.form-control {
   padding: 10px;
@@ -463,7 +439,7 @@ a.color-link:hover ,
    user-select: none;
 }
 
-.markdown-editor .form-group {
+.markdown-editor > .form-group {
   margin: 0;
 }
 
@@ -616,6 +592,15 @@ a.color-link:hover ,
   background: transparent url('/static/img/hr.png') repeat-x 0 0;
 }
 
+.markdown blockquote:last-child,
+.markdown ul:last-child,
+.markdown ol:last-child,
+.markdown pre:last-child,
+.markdown pre:last-child,
+.markdown p:last-child {
+  margin-bottom: 0;
+}
+
 .btn.disabled:active,
 .btn.disabled:focus,
 .btn.disabled:hover,
@@ -649,15 +634,6 @@ a.color-link:hover ,
 #post-reply .markdown-editor textarea,
 #post-reply .markdown-editor .md-preview {
   min-height: 122px;
-}
-
-#post-comments .comment .content blockquote:last-child,
-#post-comments .comment .content ul:last-child,
-#post-comments .comment .content ol:last-child,
-#post-comments .comment .content pre:last-child,
-#post-comments .comment .content pre:last-child,
-#post-comments .comment .content p:last-child {
-  margin-bottom: 0;
 }
 
 #post-comments .comment .avatar {

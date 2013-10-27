@@ -15,7 +15,7 @@
         <div class="box">
             <div class="cell breadcrumb first">
                 <i class="divider icon-angle-down"></i><a href="{{.AppUrl}}recent">{{i18n .Lang "postnav.recent_posts"}}</a>
-                <span class="pull-right"><i class="icon-rss-sign color-oragne"></i> <a href="{{.AppUrl}}feed">{{i18n .Lang "atom_feed_subscribe"}}</a></span>
+                <span class="pull-right"><i class="icon-rss-sign color-oragne"></i> <a href="#">{{i18n .Lang "atom_feed_subscribe"}}</a></span>
             </div>
             <div class="post-list">
                 {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
