@@ -208,7 +208,7 @@ textarea.form-control {
 }
 
 .post-list .post .meta {
-  color: #ccc;
+  color: #aaa;
   margin: 9px 0 0 65px;
   font-size: 12px;
 }
@@ -219,12 +219,13 @@ textarea.form-control {
 }
 
 .post-list .post .meta .tag {
+  border-radius: 3px;
   padding: 2px 3px;
-  background-color: #f0f0f0;
+  background-color: #eee;
 }
 
 .post-list .post .meta .tag:hover {
-  background-color: #e2e2e2;
+  background-color: #ddd;
   text-decoration: none;
 }
 
@@ -365,11 +366,6 @@ h6.underline {
 .profile-avatar img {
   vertical-align: bottom;
   margin-right: 10px;
-}
-
-/* dropdown login */
-#dropdown-login {
-  width: 280px;
 }
 
 .nav-side .active > a {
@@ -609,13 +605,20 @@ a.color-link:hover ,
   background-color: #ddd;
 }
 
+/* dropdown login */
+#dropdown-login {
+  width: 280px;
+}
+
+#post-new .post-langs {
+  width: 120px;
+  float: left;
+}
+
 #post-new .post-categories,
 #post-new .post-topics {
   width: 170px;
   float: left;
-}
-
-#post-new .post-topics {
   margin-left: 10px;
 }
 
@@ -628,7 +631,23 @@ a.color-link:hover ,
 }
 
 #post-show .post-content {
-  padding: 15px 0;
+  padding: 0 0 15px;
+  margin: 15px 0 0 0;
+}
+
+#post-show .post-meta {
+  color: #aaa;
+}
+
+#post-show .post-meta .tag {
+  border-radius: 3px;
+  padding: 2px 3px;
+  background-color: #eee;
+}
+
+#post-show .post-meta .tag:hover {
+  background-color: #ddd;
+  text-decoration: none;
 }
 
 #post-reply .markdown-editor textarea,

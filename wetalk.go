@@ -58,6 +58,7 @@ func main() {
 	post := new(routers.PostRouter)
 	beego.Router("/new", post, "get:New;post:NewSubmit")
 	beego.Router("/p/:post([0-9]+)", post, "get:Single;post:SingleSubmit")
+	beego.Router("/p/:post([0-9]+)/edit", post, "get:Edit;post:EditSubmit")
 
 	user := new(routers.UserRouter)
 	beego.Router("/u/:username", user, "get:Home")

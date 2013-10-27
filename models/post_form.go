@@ -15,12 +15,16 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/astaxie/beego/validation"
+	"github.com/beego/i18n"
 
 	"github.com/beego/wetalk/utils"
 )
 
 type PostForm struct {
+	Lang       int8       `form:"type(select);attr(rel,select2)"`
 	Category   int        `form:"type(select);attr(rel,select2)" valid:"Required"`
 	Topic      int        `form:"type(select);attr(rel,select2)" valid:"Required"`
 	Title      string     `form:"attr(autocomplete,off)" valid:"Required;MinSize(5);MaxSize(60)"`
@@ -29,8 +33,17 @@ type PostForm struct {
 	Topics     []Topic    `form:"-"`
 }
 
+func (form *PostForm) LangSelectData() [][]string {
+	langs := i18n.ListLangs()
+	data := make([][]string, 0, len(langs))
+	for i, lang := range langs {
+		data = append(data, []string{lang, utils.ToStr(i)})
+	}
+	return data
+}
+
 func (form *PostForm) CategorySelectData() [][]string {
-	data := make([][]string, 0, len(form.Categories)+1)
+	data := make([][]string, 0, len(form.Categories))
 	for _, cat := range form.Categories {
 		data = append(data, []string{"category." + cat.Name, utils.ToStr(cat.Id)})
 	}
@@ -38,7 +51,7 @@ func (form *PostForm) CategorySelectData() [][]string {
 }
 
 func (form *PostForm) TopicSelectData() [][]string {
-	data := make([][]string, 0, len(form.Topics)+1)
+	data := make([][]string, 0, len(form.Topics))
 	for _, topic := range form.Topics {
 		data = append(data, []string{"topic." + topic.Name, utils.ToStr(topic.Id)})
 	}
@@ -67,6 +80,17 @@ func (form *PostForm) Valid(v *validation.Validation) {
 	if !valid {
 		v.SetError("Category", "error")
 	}
+
+	valid = false
+	for i, _ := range i18n.ListLangs() {
+		if form.Lang == int8(i) {
+			valid = true
+		}
+	}
+
+	if !valid {
+		v.SetError("Lang", "error")
+	}
 }
 
 func (form *PostForm) SavePost(post *Post, user *User) error {
@@ -78,6 +102,30 @@ func (form *PostForm) SavePost(post *Post, user *User) error {
 	post.LastReply = user
 	post.ContentCache = RenderPostContent(form.Content)
 	return post.Insert()
+}
+
+func (form *PostForm) SetFromPost(post *Post) {
+	utils.SetFormValues(post, form)
+	form.Category = post.Category.Id
+	form.Topic = post.Topic.Id
+}
+
+func (form *PostForm) UpdatePost(post *Post, user *User) error {
+	changes := utils.FormChanges(post, form)
+	if len(changes) == 0 {
+		return nil
+	}
+	utils.SetFormValues(form, post)
+	post.Category.Id = form.Category
+	post.Topic.Id = form.Topic
+	for _, c := range changes {
+		if c == "Content" {
+			post.ContentCache = RenderPostContent(form.Content)
+			changes = append(changes, "ContentCache")
+		}
+	}
+	fmt.Println(changes)
+	return post.Update(changes...)
 }
 
 func (form *PostForm) Placeholders() map[string]string {
@@ -99,6 +147,7 @@ type PostAdminForm struct {
 	LastReply int    `valid:"Required"`
 	Topic     int    `valid:"Required"`
 	Category  int    `valid:"Required"`
+	Lang      int8
 	IsBest    bool
 }
 

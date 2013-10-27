@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"github.com/astaxie/beego/orm"
+	"github.com/beego/i18n"
 
 	"github.com/beego/wetalk/models"
 )
@@ -277,6 +278,11 @@ func (this *PostRouter) New() {
 	}
 
 	form := models.PostForm{}
+	for i, lang := range i18n.ListLangs() {
+		if lang == this.Locale.Lang {
+			form.Lang = int8(i)
+		}
+	}
 
 	slug := this.GetString("topic")
 	if len(slug) > 0 {
@@ -339,12 +345,14 @@ func (this *PostRouter) NewSubmit() {
 	}
 }
 
-func (this *PostRouter) loadPost(post *models.Post) bool {
-	this.TplNames = "post/post.html"
-
+func (this *PostRouter) loadPost(post *models.Post, user *models.User) bool {
 	id, _ := this.GetInt(":post")
 	if id > 0 {
-		models.Posts().Filter("Id", id).RelatedSel().One(post)
+		qs := models.Posts().Filter("Id", id)
+		if user != nil {
+			qs = qs.Filter("User", user.Id)
+		}
+		qs.RelatedSel(1).One(post)
 	}
 
 	if post.Id == 0 {
@@ -366,8 +374,10 @@ func (this *PostRouter) loadComments(post *models.Post, comments *[]*models.Comm
 }
 
 func (this *PostRouter) Single() {
+	this.TplNames = "post/post.html"
+
 	var post models.Post
-	if this.loadPost(&post) {
+	if this.loadPost(&post, nil) {
 		return
 	}
 
@@ -376,15 +386,19 @@ func (this *PostRouter) Single() {
 
 	form := models.CommentForm{}
 	this.SetFormSets(&form)
+
+	models.PostBrowsersAdd(this.user.Id, this.Ctx.Input.IP(), &post)
 }
 
 func (this *PostRouter) SingleSubmit() {
+	this.TplNames = "post/post.html"
+
 	if this.CheckActiveRedirect() {
 		return
 	}
 
 	var post models.Post
-	if this.loadPost(&post) {
+	if this.loadPost(&post, nil) {
 		return
 	}
 
@@ -407,5 +421,71 @@ func (this *PostRouter) SingleSubmit() {
 		this.JsStorage("deleteKey", "post/comment")
 		this.Redirect(post.Link(), 302)
 		redir = true
+
+		models.PostReplysCount(&post)
+	}
+}
+
+func (this *PostRouter) Edit() {
+	this.TplNames = "post/edit.html"
+
+	if this.CheckActiveRedirect() {
+		return
+	}
+
+	var post models.Post
+	if this.loadPost(&post, &this.user) {
+		return
+	}
+
+	form := models.PostForm{}
+	form.SetFromPost(&post)
+	models.ListCategories(&form.Categories)
+	models.ListTopics(&form.Topics)
+	this.SetFormSets(&form)
+}
+
+func (this *PostRouter) EditSubmit() {
+	this.TplNames = "post/edit.html"
+
+	if this.CheckActiveRedirect() {
+		return
+	}
+
+	var post models.Post
+	if this.loadPost(&post, &this.user) {
+		return
+	}
+
+	if this.IsAjax() {
+		result := map[string]interface{}{
+			"success": false,
+		}
+		if !this.FormOnceNotMatch() {
+			action := this.GetString("action")
+			switch action {
+			case "preview":
+				content := this.GetString("content")
+				result["preview"] = models.RenderPostContent(content)
+				result["once"] = this.Data["once_token"]
+				result["success"] = true
+			}
+		}
+		this.Data["json"] = result
+		this.ServeJson()
+		return
+	}
+
+	form := models.PostForm{}
+	form.SetFromPost(&post)
+	models.ListCategories(&form.Categories)
+	models.ListTopics(&form.Topics)
+	if !this.ValidFormSets(&form) {
+		return
+	}
+
+	if err := form.UpdatePost(&post, &this.user); err == nil {
+		this.JsStorage("deleteKey", "post/edit")
+		this.Redirect(post.Link(), 302)
 	}
 }
