@@ -1,3 +1,17 @@
+<div class="box">
+	<div class="cell first">{{i18n .Lang "sidebar.community_news"}}</div>
+	<div class="cell last">
+		{{if eq .Lang "en-US"}}
+		<p>Welcome, gophers!</p>
+		<p>Beego Community is finally here. You can post, share and find awesome Go resources and people in this big family.</p>
+		<p>Website is under BETA, so please report issue if any, thanks!</p>
+		{{else if eq .Lang "zh-CN"}}
+		<p>欢迎各位 Go 语言爱好者！</p>
+		<p>我们很高兴地告诉您，Beego Community 终于上线了。您可以在这个大家庭中发布、分享并寻找给力的 Go 语言资源与大牛。</p>
+		<p>网站仍处于测试阶段，如果发现任何问题，请及时告知我们，谢谢！</p>
+		{{end}}
+	</div>
+</div>
 <p>
     <a href="{{.AppUrl}}new" class="btn btn-success">
         <i class="icon-double-angle-right"></i>
@@ -5,11 +19,6 @@
     </a>
 </p>
 <!-- <div class="box">
-	<div class="cell first">{{i18n .Lang "sidebar.community_news"}}</div>
-	<div class="cell last">The earth is going to hit the sun.</div>
-</div>
-
-<div class="box">
 	<div class="cell first">{{i18n .Lang "sidebar.hot_topics"}}</div>
 	<div class="cell last">Are you going to kill her? Just because I don't like her?</div>
 </div>
@@ -26,9 +35,16 @@
 <div class="box">
 	<div class="cell first">{{i18n .Lang "sidebar.community_stars"}}</div>
 	<div class="cell last">1. Oh, yeah</div>
-</div>
+</div> -->
 
 <div class="box">
 	<div class="cell first">{{i18n .Lang "sidebar.frined_links"}}</div>
-	<div class="cell last">Golang</div>
-</div> -->
+	<div class="cell last">
+		<ul>
+			<li><a target="_blank" href="http://golang.org">The Go Programming Language</a></li>
+			<li><a target="_blank" href="http://studygolang.com">Golang China</a></li>
+			<li><a target="_blank" href="http://golangtc.com">Golang 中国</a></li>
+			<li><a target="_blank" href="http://gowalker.org">Go Walker</a></li>
+		</ul>
+	</div>
+</div>

@@ -93,6 +93,9 @@ func RegisterUser(user *User, form RegisterForm) error {
 	// save md5 email value for gravatar
 	user.GrEmail = utils.EncodeMd5(form.Email)
 
+	// Use username as default nickname.
+	user.NickName = user.UserName
+
 	return user.Insert()
 }
 
