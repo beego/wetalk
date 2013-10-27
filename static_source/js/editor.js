@@ -93,8 +93,10 @@
             }
         }
 
-        function setMode(newMode) {
-            var repl = mode == newMode;
+        function setMode(newMode, repl) {
+            if(typeof repl != 'boolean'){
+                repl = mode == newMode;
+            }
             mode = newMode;
             e.save(repl);
         }
@@ -106,12 +108,8 @@
         }
 
         $t.on('paste drop dragover dragenter', function(){
-            setMode('paste');
+            setMode('paste', false);
         });
-
-        // $t.on('mousedown unfocus focus', function(){
-            // setMode('moving');
-        // });
 
         $t.on('keyup', function(e){
             if (!e.ctrlKey && !e.metaKey) {
@@ -177,7 +175,7 @@
             save: function(repl){
                 if(repl){
                     stacks[cur] = getStack();
-                } else if(e.last() != $t.val()){
+                } else if(e.last() !== $t.val()){
                     stacks.push(getStack());
                 }
                 cur = stacks.length - 1;
@@ -278,6 +276,9 @@
                     $.post(url, {'action': 'preview', 'content': n}, function(data){
                         if(data.success){
                             $preview.html(data.preview);
+                            if($preview.mdFilter){
+                                $preview.mdFilter();
+                            }
                         }
                     });
                 }

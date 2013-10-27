@@ -98,6 +98,7 @@
 		window.location.reload();
 	});
 
+	// avoid re-submit
 	(function(){
 		var unload = false;
 		var submited = 'submited';
@@ -156,36 +157,38 @@
 
 
 	// file upload
-	function uploadFileChange($e, $file, $field, flag){
-		var current = $file.val();
-		var last = $e.data('last') || '';
-		if(current != last){
-			$e.data('last', current);
-			$field.val(current.replace(/.*(\\|\/)/, ''));
-			if(!flag){
-				$file.trigger('change');
+	(function(){
+		function uploadFileChange($e, $file, $field, flag){
+			var current = $file.val();
+			var last = $e.data('last') || '';
+			if(current != last){
+				$e.data('last', current);
+				$field.val(current.replace(/.*(\\|\/)/, ''));
+				if(!flag){
+					$file.trigger('change');
+				}
 			}
 		}
-	}
 
-	$(document).on('click', '[data-dismiss=upload]', function(e){
-		var $e = $(this);
-		var $btn = $(e.target);
-		if($btn.attr('rel') != 'button' && $btn.attr('rel') != 'filename') {
-			return;
-		}
-		var $file = $e.find('input[type=file]');
-		var $field = $e.find('[rel=filename]');
-		$file.click();
-		setTimeout(uploadFileChange, 0, $e, $file, $field);
-	});
+		$(document).on('click', '[data-dismiss=upload]', function(e){
+			var $e = $(this);
+			var $btn = $(e.target);
+			if($btn.attr('rel') != 'button' && $btn.attr('rel') != 'filename') {
+				return;
+			}
+			var $file = $e.find('input[type=file]');
+			var $field = $e.find('[rel=filename]');
+			$file.click();
+			setTimeout(uploadFileChange, 0, $e, $file, $field);
+		});
 
-	$(document).on('change', '[data-dismiss=upload] input[type=file]', function(){
-		var $file = $(this);
-		var $e = $file.parents('[data-dismiss=upload]');
-		var $field = $e.find('[rel=filename]');
-		uploadFileChange($e, $file, $field, true);
-	});
+		$(document).on('change', '[data-dismiss=upload] input[type=file]', function(){
+			var $file = $(this);
+			var $e = $file.parents('[data-dismiss=upload]');
+			var $field = $e.find('[rel=filename]');
+			uploadFileChange($e, $file, $field, true);
+		});
+	}());
 
 	(function(){
 		var v = $.cookie('JsStorage');
@@ -198,6 +201,37 @@
 		}
 	})();
 
+	(function(){
+		$(document).on('submit', '#navbar-search', function(){
+			var q = $(this).find('[name=q]').val();
+			if($.trim(q) !== ''){
+				var host = window.location.hostname + ":" + window.location.port;
+				var url = 'http://www.google.com/search?q=' + 'site:' + host + '/p%20' +  escape($.trim(q));
+				window.open(url, "_blank");
+			}
+            return false;
+		});
+	})();
+
+	(function(){
+
+		$.fn.mdFilter = function(){
+			var $e = $(this);
+			$e.find('img').each(function(_,img){
+				var $img = $(img);
+				$img.addClass('img-responsive');
+				var src = $img.attr('src');
+				var url = src.replace(/(\/img\/.+\.)(\d+)(\.(jpg|png))/, function(_,p1,p2,p3){
+					return p1 + "full" + p3;
+				});
+				if(url !== src){
+					$img.wrap('<a target="_blank" href="'+url+'"></a>');
+				}
+			});
+		};
+
+	})();
+
 	$(function(){
 		// on dom ready
 
@@ -208,6 +242,8 @@
 		});
 
 		$('[rel=select2]').select2();
+
+		$('.markdown').mdFilter();
 	});
 
 })(jQuery);

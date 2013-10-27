@@ -11,30 +11,6 @@ label {
   cursor: pointer;
 }
 
-input[type="password"] {
-  color: #777;
-  font: small-caption;
-  font-size: 18
-}
-
-input[type="password"]::-webkit-input-placeholder {
-  font-size: 13px;
-  line-height: 13px;
-  padding-top: 4px;
-}
-
-input[type="password"]::-moz-placeholder {
-  font-size: 13px;
-  line-height: 13px;
-  padding-top: 4px;
-}
-
-input[type="password"]:-ms-input-placeholder {
-  font-size: 13px;
-  line-height: 13px;
-  padding-top: 4px;
-}
-
 textarea,
 textarea.form-control {
   padding: 10px;

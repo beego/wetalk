@@ -46,11 +46,15 @@ func (this *PostListRouter) Home() {
 	this.setCategories(&cats)
 
 	var posts []models.Post
-	qs := models.Posts().OrderBy("-Created").Limit(50).RelatedSel()
+	qs := models.Posts().OrderBy("-Created").Limit(25).RelatedSel()
 	models.ListObjects(qs, &posts)
 	this.Data["Posts"] = posts
 
 	this.Data["CategorySlug"] = "hot"
+
+	var topics []models.Topic
+	models.ListTopics(&topics)
+	this.Data["Topics"] = topics
 }
 
 // Get implemented Get method for HomeRouter.
@@ -113,7 +117,7 @@ func (this *PostListRouter) Navs() {
 		cnt, _ := models.CountObjects(qs)
 		pager := this.SetPaginator(pers, cnt)
 
-		qs = qs.OrderBy("-Updated").Limit(pers, pager.Offset()).RelatedSel()
+		qs = qs.OrderBy("-Updated").Limit(pers, pager.Offset()+25).RelatedSel()
 
 		models.ListObjects(qs, &posts)
 
@@ -358,7 +362,6 @@ func (this *PostRouter) loadComments(post *models.Post, comments *[]*models.Comm
 	if num, err := qs.RelatedSel("User").OrderBy("Id").All(comments); err == nil {
 		this.Data["Comments"] = *comments
 		this.Data["CommentsNum"] = num
-		fmt.Println(comments, num)
 	}
 }
 
