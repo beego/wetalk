@@ -50,7 +50,9 @@
                                 <a href="{{.User.Link}}">{{.User.UserName}}</a>
                                 <span class="time">{{timesince $.Lang .Created}}</span>
                             </div>
-                            {{.GetMessageCache|str2html}}
+                            <div class="markdown">
+                                {{.GetMessageCache|str2html}}
+                            </div>
                         </div>
                         <span class="clearfix"></span>
                     </div>
