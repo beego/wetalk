@@ -15,7 +15,13 @@
 package models
 
 import (
+	"fmt"
 	"github.com/slene/blackfriday"
+
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+
+	"github.com/beego/wetalk/utils"
 )
 
 func ListPostsOfCategory(cat *Category, posts *[]Post) (int64, error) {
@@ -48,4 +54,35 @@ func RenderPostContent(mdStr string) string {
 
 	body := blackfriday.Markdown([]byte(mdStr), renderer, extensions)
 	return string(body)
+}
+
+func PostBrowsersAdd(uid int, ip string, post *Post) {
+	var key string
+	if uid == 0 {
+		key = ip
+	} else {
+		key = utils.ToStr(uid)
+	}
+	key = fmt.Sprintf("PCA%d%s", post.Id, key)
+	if utils.Cache.Get(key) != nil {
+		return
+	}
+	_, err := Posts().Filter("Id", post.Id).Update(orm.Params{
+		"Browsers": orm.ColValue(orm.Col_Add, 1),
+	})
+	if err != nil {
+		beego.Error("PostCounterAdd ", err)
+	}
+	utils.Cache.Put(key, true, 60)
+}
+
+func PostReplysCount(post *Post) {
+	cnt, err := post.Comments().Count()
+	if err == nil {
+		post.Replys = int(cnt)
+		err = post.Update("Replys")
+	}
+	if err != nil {
+		beego.Error("PostReplysCount ", err)
+	}
 }

@@ -41,7 +41,7 @@
                         {{if .IsLogin}}
                             <a class="btn btn-primary btn-sm" href="{{.AppUrl}}new?topic={{.Topic.Slug}}"><i class="icon-chevron-sign-up"></i> {{i18n .Lang "post.post_new"}}</a>
                         {{else}}
-                            <a class="btn btn-primary btn-sm" href="{{loginto .Topic.Link}}"><i class="icon-chevron-sign-up"></i> {{i18n .Lang "post.post_new"}}</a>
+                            <a class="btn btn-primary btn-sm" href="{{loginto (print .AppUrl "new?topic=" .Topic.Slug)}}"><i class="icon-chevron-sign-up"></i> {{i18n .Lang "post.post_new"}}</a>
                         {{end}}
                     </div>
                 </div>

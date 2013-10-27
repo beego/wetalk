@@ -15,6 +15,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/astaxie/beego/validation"
 
 	"github.com/beego/wetalk/utils"
@@ -78,6 +79,32 @@ func (form *PostForm) SavePost(post *Post, user *User) error {
 	post.LastReply = user
 	post.ContentCache = RenderPostContent(form.Content)
 	return post.Insert()
+}
+
+func (form *PostForm) SetFromPost(post *Post) {
+	form.Title = post.Title
+	form.Content = post.Content
+	form.Category = post.Category.Id
+	form.Topic = post.Topic.Id
+}
+
+func (form *PostForm) UpdatePost(post *Post, user *User) error {
+	changes := utils.FormChanges(post, form)
+	if len(changes) == 0 {
+		return nil
+	}
+	post.Title = form.Title
+	post.Content = form.Content
+	post.Category = &Category{Id: form.Category}
+	post.Topic = &Topic{Id: form.Topic}
+	post.ContentCache = RenderPostContent(form.Content)
+	for _, c := range changes {
+		if c == "Content" {
+			changes = append(changes, "ContentCache")
+		}
+	}
+	fmt.Println(changes)
+	return post.Update(changes...)
 }
 
 func (form *PostForm) Placeholders() map[string]string {

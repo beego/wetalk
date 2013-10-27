@@ -13,18 +13,30 @@
             <div id="post-show">
                 <div class="cell first slim">
                     <div class="avatar pull-right">
-                        <a href="{{.Post.User.Link}}" title="{{.Post.User.UserName}}">
+                        <a href="{{.Post.User.Link}}" title="{{.Post.User.NickName}}">
                             <img class="large" src="{{.Post.User.AvatarLink}}?size=48">
                         </a>
                     </div>
                     <h1 class="post-title">
                         {{.Post.Title}}
                     </h1>
-                    <div class="meta">
-                        <a class="tag" href="{{.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a> • <a class="tag" href="{{.Topic.Link}}">{{i18n .Lang (print "topic." .Post.Topic.Name)}}</a> • <span class="time">{{timesince .Lang .Post.Created}}</span>{{if .Post.Replys}} • <span class="last-reply">{{i18n .Lang "post.last_reply_from"}} <a href="{{.Post.User.Link}}">{{.Post.User.UserName}}</a></span>{{end}}
+                    <div class="post-meta">
+                        <a class="tag" href="{{.Post.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a> • <a class="tag" href="{{.Post.Topic.Link}}">{{i18n .Lang (print "topic." .Post.Topic.Name)}}</a> • {{i18n .Lang "post.post_by"}} <a href="{{.Post.User.Link}}">{{.Post.User.NickName}}</a> • <span class="time">{{timesince .Lang .Post.Created}}</span>{{if .Post.Replys}}{{if .Post.LastReply}} • <span class="last-reply">{{i18n .Lang "post.last_reply"}} <a href="{{.Post.LastReply.Link}}">{{.Post.LastReply.NickName}}</a></span>{{end}}{{end}}
                     </div>
                 </div>
-                <div class="cell slim">
+                <div class="cell last slim">
+                    {{if ne (datetime .Post.Updated) (datetime .Post.Created)}}
+                        <p class="post-meta">
+                            {{i18n .Lang "post.modified_on"}} {{timesince .Lang .Post.Updated}} - {{.Post.Updated|datetime}}
+                        </p>
+                    {{end}}
+                    {{if .IsLogin}}
+                        {{if eq .Post.User.Id .User.Id}}
+                            <p>
+                                <a class="color-link" href="{{.Post.Link}}/edit">{{i18n .Lang "post.post_edit"}} <i class="icon-edit"></i></a>
+                            </p>
+                        {{end}}
+                    {{end}}
                     <div class="post-content markdown">
                         {{.Post.GetContentCache|str2html}}
                     </div>
@@ -47,7 +59,7 @@
                         </div>
                         <div class="content">
                             <div class="meta">
-                                <a href="{{.User.Link}}">{{.User.UserName}}</a>
+                                <a href="{{.User.Link}}">{{.User.NickName}}</a>
                                 <span class="time">{{timesince $.Lang .Created}}</span>
                             </div>
                             <div class="markdown">

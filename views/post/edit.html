@@ -1,0 +1,63 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}<title>{{i18n .Lang "post.post_edit"}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-9">
+        <div class="box">
+            <div class="cell first breadcrumb">
+                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i>{{i18n .Lang "post.post_edit"}}
+            </div>
+            <div class="cell last">
+                <form id="post-new" method="POST" action="{{.Post.Link}}/edit">
+                    {{.xsrf_html}}{{.once_html}}
+
+                    <div class="form-group">
+                        {{with .PostFormSets.Fields.Category}}
+                            <div class="post-categories{{if .Error}} has-error{{end}}">
+                                {{.Field}}
+                            </div>
+                        {{end}}
+                        {{with .PostFormSets.Fields.Topic}}
+                            <div class="post-topics{{if .Error}} has-error{{end}}">
+                                {{.Field}}
+                            </div>
+                        {{end}}
+                        <span class="clearfix"></span>
+                    </div>
+
+                    {{with .PostFormSets.Fields.Title}}
+                        <div class="form-group{{if .Error}} has-error{{end}}">
+                            {{.Field}}
+                            {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                            {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                        </div>
+                    {{end}}
+
+                    <div class="markdown-editor"  data-preview-url="{{.Post.Link}}/edit" data-savekey="post/edit">
+                        {{with .PostFormSets.Fields.Content}}
+                            {{template "post/component/editor.html" dict "root" $ "Field" .Field "Error" .Error "Help" .Help}}
+                        {{end}}
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">{{i18n .Lang "submit"}} <i class="icon-chevron-sign-right"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+	</div>
+    <div id="sidebar" class="col-md-3">
+        <div class="box">
+            <div class="cell first">{{i18n .Lang "help"}}</div>
+            <div class="cell last">
+                <ul>
+                    <li><a href="">{{i18n .Lang "markdown_syntax"}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+</script>
+{{end}}
