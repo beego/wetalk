@@ -23,12 +23,12 @@ import (
 type TopicAdminForm struct {
 	Create    bool   `form:"-"`
 	Id        int    `form:"-"`
-	Image     string `valid:"Required"`
 	Name      string `valid:"Required;MaxSize(30)"`
 	Intro     string `form:"type(textarea)" valid:"Required"`
 	Slug      string `valid:"Required;MaxSize(100)"`
 	Followers int    ``
 	Order     int    ``
+	Image     string `valid:""`
 }
 
 func (form *TopicAdminForm) Valid(v *validation.Validation) {

@@ -38,6 +38,7 @@ type Setting struct {
 type User struct {
 	Id          int
 	UserName    string `orm:"size(30);unique"`
+	NickName    string `orm:"size(30)"`
 	Password    string `orm:"size(128)"`
 	Url         string `orm:"size(100)"`
 	Email       string `orm:"size(80);unique"`
