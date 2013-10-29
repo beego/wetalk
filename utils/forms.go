@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"html/template"
+	"math"
 	"net/url"
 	"reflect"
 	"strings"
@@ -93,6 +94,7 @@ type FieldSet struct {
 	Help        string
 	Error       string
 	Type        string
+	Kind        string
 	Placeholder string
 	Attrs       string
 }
@@ -218,8 +220,16 @@ outFor:
 		fSet.Id = fId
 		fSet.Name = fName
 		fSet.Value = value
-		fSet.Type = fTyp
 		fSet.Attrs = attrs
+
+		if i := strings.IndexRune(fTyp, ','); i != -1 {
+			fSet.Type = fTyp[:i]
+			fSet.Kind = fTyp[i+1:]
+			fTyp = fSet.Type
+		} else {
+			fSet.Type = fTyp
+			fSet.Kind = fTyp
+		}
 
 		// get field label text
 		fSet.LabelText = fName
@@ -471,6 +481,47 @@ outFor:
 			// set value if type matched
 			if f.Type().String() == toF.Type().String() {
 				toF.Set(f)
+			} else {
+				fInt := false
+				switch f.Interface().(type) {
+				case int, int8, int16, int32, int64:
+					fInt = true
+				case uint, uint8, uint16, uint32, uint64:
+				default:
+					continue outFor
+				}
+				switch toF.Interface().(type) {
+				case int, int8, int16, int32, int64:
+					var v int64
+					if fInt {
+						v = f.Int()
+					} else {
+						vu := f.Uint()
+						if vu > math.MaxInt64 {
+							continue outFor
+						}
+						v = int64(vu)
+					}
+					if toF.OverflowInt(v) {
+						continue outFor
+					}
+					toF.SetInt(v)
+				case uint, uint8, uint16, uint32, uint64:
+					var v uint64
+					if fInt {
+						vu := f.Int()
+						if vu < 0 {
+							continue outFor
+						}
+						v = uint64(vu)
+					} else {
+						v = f.Uint()
+					}
+					if toF.OverflowUint(v) {
+						continue outFor
+					}
+					toF.SetUint(v)
+				}
 			}
 		}
 	}

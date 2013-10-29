@@ -68,7 +68,7 @@ textarea.form-control {
 
 #content .box,
 #sidebar .box {
-  margin-bottom: 15px
+  margin-bottom: 10px
 }
 
 /* footer */
@@ -570,13 +570,36 @@ a.color-link:hover ,
 
 .markdown > pre {
   line-height: 1.6;
-  white-space: pre;
   overflow: auto;
+  background: #fff;
+  padding: 0;
 }
 
-.markdown > pre > code {
+.markdown > pre > ol.linenums {
+  -webkit-box-shadow: inset 40px 0 0 #f5f5f5, inset 41px 0 0 #ccc;
+  box-shadow: inset 40px 0 0 #f5f5f5, inset 41px 0 0 #ccc;
+}
+
+.markdown > pre > code,
+.markdown > pre > ol.linenums > li > code {
   white-space: pre;
   word-wrap: normal;
+}
+
+.markdown > pre > ol.linenums > li > code {
+  padding: 0 10px;
+}
+
+.markdown > pre > ol.linenums > li:first-child {
+  padding-top: 10px;
+}
+
+.markdown > pre > ol.linenums > li:last-child {
+  padding-bottom: 10px;
+}
+
+.markdown > pre > ol.linenums > li {
+  border-left: 1px solid #ccc;
 }
 
 .markdown hr {
@@ -622,7 +645,7 @@ a.color-link:hover ,
   margin-left: 10px;
 }
 
-#post-show .post-title {
+.post-show .post-title {
   font-size: 22px;
   line-height: 1.3em;
   margin: 5px 0;
@@ -630,22 +653,22 @@ a.color-link:hover ,
   font-weight: 700;
 }
 
-#post-show .post-content {
+.post-show .post-content {
   padding: 0 0 15px;
   margin: 15px 0 0 0;
 }
 
-#post-show .post-meta {
+.post-show .post-meta {
   color: #aaa;
 }
 
-#post-show .post-meta .tag {
+.post-show .post-meta .tag {
   border-radius: 3px;
   padding: 2px 3px;
   background-color: #eee;
 }
 
-#post-show .post-meta .tag:hover {
+.post-show .post-meta .tag:hover {
   background-color: #ddd;
   text-decoration: none;
 }
@@ -670,4 +693,8 @@ a.color-link:hover ,
 
 #post-comments .comment .content {
   margin: 0 0 0 58px;
+}
+
+.article-show .post-title {
+  font-size: 28px;
 }

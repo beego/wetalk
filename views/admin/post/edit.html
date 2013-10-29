@@ -7,7 +7,7 @@
         <div class="col-md-2">
             {{template "admin/sidenav.html" .}}
         </div>
-        <div class="col-md-10">
+        <div class="col-md-8">
             {{if .Error}}
             <div class="alert alert-danger">
                 {{.Error}}
@@ -29,15 +29,11 @@
                     </div>
                     {{end}}
                     <form action="{{.AppUrl}}admin/post/{{.Object.Id}}" method="POST">
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{.xsrf_html}}{{.once_html}}
-                                {{template "base/form/fields.html" .PostAdminFormSets}}
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "update"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
-                                    <a type="submit" href="{{.AppUrl}}admin/post/{{.Object.Id}}/delete" class="btn btn-danger pull-right">{{i18n .Lang "delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></a>
-                                </div>
-                            </div>
+                        {{.xsrf_html}}{{.once_html}}
+                        {{template "admin/component/fields.html" dict "root" $ "FormSets" .PostAdminFormSets}}
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">{{i18n .Lang "update"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                            <a type="submit" href="{{.AppUrl}}admin/post/{{.Object.Id}}/delete" class="btn btn-danger pull-right">{{i18n .Lang "delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></a>
                         </div>
                     </form>
                     <div class="clearfix"></div>

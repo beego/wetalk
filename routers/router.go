@@ -448,9 +448,10 @@ func (this *baseRouter) JsStorage(action, key string, values ...string) {
 // setLang sets site language version.
 func (this *baseRouter) setLang() bool {
 	isNeedRedir := false
+	hasCookie := false
 
 	// get all lang names from i18n
-	langs := i18n.ListLangs()
+	langs := utils.Langs
 
 	// 1. Check URL arguments.
 	lang := this.GetString("lang")
@@ -458,6 +459,7 @@ func (this *baseRouter) setLang() bool {
 	// 2. Get language information from cookies.
 	if len(lang) == 0 {
 		lang = this.Ctx.GetCookie("lang")
+		hasCookie = true
 	} else {
 		isNeedRedir = true
 	}
@@ -466,6 +468,7 @@ func (this *baseRouter) setLang() bool {
 	if !i18n.IsExist(lang) {
 		lang = ""
 		isNeedRedir = false
+		hasCookie = false
 	}
 
 	// 3. Get language information from 'Accept-Language'.
@@ -486,7 +489,9 @@ func (this *baseRouter) setLang() bool {
 	}
 
 	// Save language information in cookies.
-	this.Ctx.SetCookie("lang", lang, 1<<31-1, "/")
+	if !hasCookie {
+		this.Ctx.SetCookie("lang", lang, 1<<31-1, "/")
+	}
 
 	// Set language properties.
 	this.Data["Lang"] = lang

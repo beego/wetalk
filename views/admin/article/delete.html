@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "model.delete_user"}} - {{i18n .Lang "app_name"}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "model.delete_article"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -15,10 +15,10 @@
             {{end}}
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user">{{i18n .Lang "model.admin_user"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/user/{{.Object.Id}}">{{i18n .Lang "model.delete_user"}} {{.Object.UserName}}</a>
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/article">{{i18n .Lang "model.admin_article"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/article/{{.Object.Id}}">{{i18n .Lang "model.delete_article"}} - {{.Object.Title}}</a>
                 </div>
                 <div class="cell last slim">
-                    <form action="{{.AppUrl}}admin/user/{{.Object.Id}}/delete" method="POST">
+                    <form action="{{.AppUrl}}admin/article/{{.Object.Id}}/delete" method="POST">
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
@@ -26,12 +26,8 @@
                                     <td>{{.Object.Id}}</td>
                                 </tr>
                                 <tr>
-                                    <td>{{i18n .Lang "model.user_username"}}:</td>
-                                    <td>{{.Object.UserName}}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{i18n .Lang "model.user_email"}}:</td>
-                                    <td>{{.Object.Email}}</td>
+                                    <td>{{i18n .Lang "model.article_title"}}:</td>
+                                    <td>{{.Object.Title}}</td>
                                 </tr>
                             </tbody>
                         </table>

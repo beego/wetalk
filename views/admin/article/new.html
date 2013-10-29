@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "model.new_post"}} - {{i18n .Lang "app_name"}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "model.new_article"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -15,12 +15,12 @@
             {{end}}
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/post">{{i18n .Lang "model.admin_post"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/post/new">{{i18n .Lang "model.new_post"}}</a>
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/article">{{i18n .Lang "model.admin_article"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/article/new">{{i18n .Lang "model.new_article"}}</a>
                 </div>
                 <div class="cell last slim">
-                    <form action="{{.AppUrl}}admin/post/new" method="POST">
+                    <form action="{{.AppUrl}}admin/article/new" method="POST">
                         {{.xsrf_html}}{{.once_html}}
-                        {{template "admin/component/fields.html" dict "root" $ "FormSets" .PostAdminFormSets}}
+                        {{template "admin/component/fields.html" dict "root" $ "FormSets" .ArticleAdminFormSets}}
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">{{i18n .Lang "save"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
                         </div>

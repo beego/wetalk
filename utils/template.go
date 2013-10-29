@@ -47,6 +47,10 @@ func datetime(t time.Time) string {
 	return beego.Date(t, DateTimeFormat)
 }
 
+func datetimes(t time.Time) string {
+	return beego.Date(t, DateTimeShortFormat)
+}
+
 func loadtimes(t time.Time) int {
 	return int(time.Now().Sub(t).Nanoseconds() / 1e6)
 }
@@ -79,15 +83,17 @@ func dict(values ...interface{}) (map[string]interface{}, error) {
 
 func timesince(lang string, t time.Time) string {
 	now := time.Now()
-	seonds := int(now.Sub(t).Seconds())
-	if seonds < 60 {
-		return i18n.Tr(lang, "seconds_ago", seonds)
-	} else if seonds < 60*60 {
-		return i18n.Tr(lang, "minutes_ago", seonds/60)
-	} else if seonds < 60*60*24 {
-		return i18n.Tr(lang, "hours_ago", seonds/(60*60))
+	seconds := int(now.Sub(t).Seconds())
+	if seconds < 60 {
+		return i18n.Tr(lang, "seconds_ago", seconds)
+	} else if seconds < 60*60 {
+		return i18n.Tr(lang, "minutes_ago", seconds/60)
+	} else if seconds < 60*60*24 {
+		return i18n.Tr(lang, "hours_ago", seconds/(60*60))
+	} else if seconds < 60*60*24*100 {
+		return i18n.Tr(lang, "days_ago", seconds/(60*60*24))
 	} else {
-		return i18n.Tr(lang, "days_ago", seonds/(60*60*24))
+		return beego.Date(t, DateFormat)
 	}
 }
 
@@ -110,6 +116,7 @@ func init() {
 	beego.AddFuncMap("boolicon", boolicon)
 	beego.AddFuncMap("date", date)
 	beego.AddFuncMap("datetime", datetime)
+	beego.AddFuncMap("datetimes", datetimes)
 	beego.AddFuncMap("dict", dict)
 	beego.AddFuncMap("timesince", timesince)
 	beego.AddFuncMap("loadtimes", loadtimes)

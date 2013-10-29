@@ -15,16 +15,13 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/astaxie/beego/validation"
-	"github.com/beego/i18n"
 
 	"github.com/beego/wetalk/utils"
 )
 
 type PostForm struct {
-	Lang       int8       `form:"type(select);attr(rel,select2)"`
+	Lang       int        `form:"type(select);attr(rel,select2)"`
 	Category   int        `form:"type(select);attr(rel,select2)" valid:"Required"`
 	Topic      int        `form:"type(select);attr(rel,select2)" valid:"Required"`
 	Title      string     `form:"attr(autocomplete,off)" valid:"Required;MinSize(5);MaxSize(60)"`
@@ -34,7 +31,7 @@ type PostForm struct {
 }
 
 func (form *PostForm) LangSelectData() [][]string {
-	langs := i18n.ListLangs()
+	langs := utils.Langs
 	data := make([][]string, 0, len(langs))
 	for i, lang := range langs {
 		data = append(data, []string{lang, utils.ToStr(i)})
@@ -81,21 +78,13 @@ func (form *PostForm) Valid(v *validation.Validation) {
 		v.SetError("Category", "error")
 	}
 
-	valid = false
-	for i, _ := range i18n.ListLangs() {
-		if form.Lang == int8(i) {
-			valid = true
-		}
-	}
-
-	if !valid {
+	if form.Lang < 0 || form.Lang >= len(utils.Langs) {
 		v.SetError("Lang", "error")
 	}
 }
 
 func (form *PostForm) SavePost(post *Post, user *User) error {
-	post.Title = form.Title
-	post.Content = form.Content
+	utils.SetFormValues(form, post)
 	post.Category = &Category{Id: form.Category}
 	post.Topic = &Topic{Id: form.Topic}
 	post.User = user
@@ -124,7 +113,6 @@ func (form *PostForm) UpdatePost(post *Post, user *User) error {
 			changes = append(changes, "ContentCache")
 		}
 	}
-	fmt.Println(changes)
 	return post.Update(changes...)
 }
 
@@ -137,18 +125,19 @@ func (form *PostForm) Placeholders() map[string]string {
 }
 
 type PostAdminForm struct {
+	PostForm  `form:"-"`
 	Create    bool   `form:"-"`
-	User      int    `valid:"Required"`
+	User      int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:"Required"`
 	Title     string `valid:"Required;MaxSize(60)"`
-	Content   string `form:"type(textarea)" valid:"Required"`
+	Content   string `form:"type(textarea,markdown)" valid:"Required"`
 	Browsers  int    ``
 	Replys    int    ``
 	Favorites int    ``
-	LastReply int    `valid:"Required"`
-	Topic     int    `valid:"Required"`
-	Category  int    `valid:"Required"`
-	Lang      int8
-	IsBest    bool
+	LastReply int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:"Required"`
+	Topic     int    `form:"type(select);attr(rel,select2)" valid:"Required"`
+	Category  int    `form:"type(select);attr(rel,select2)" valid:"Required"`
+	Lang      int    `form:"type(select);attr(rel,select2)"`
+	IsBest    bool   ``
 }
 
 func (form *PostAdminForm) Valid(v *validation.Validation) {
@@ -170,6 +159,10 @@ func (form *PostAdminForm) Valid(v *validation.Validation) {
 	cat := Category{Id: form.Category}
 	if cat.Read() != nil {
 		v.SetError("Category", "admin.not_found_by_id")
+	}
+
+	if form.Lang < 0 || form.Lang >= len(utils.Langs) {
+		v.SetError("Lang", "Not Found")
 	}
 }
 
@@ -220,7 +213,7 @@ func (form *PostAdminForm) SetToPost(post *Post) {
 }
 
 type CommentForm struct {
-	Message string `form:"type(textarea)" valid:"Required;MinSize(5)"`
+	Message string `form:"type(textarea,markdown)" valid:"Required;MinSize(5)"`
 }
 
 func (form *CommentForm) SaveComment(comment *Comment, user *User, post *Post) error {
@@ -233,7 +226,7 @@ func (form *CommentForm) SaveComment(comment *Comment, user *User, post *Post) e
 
 type CommentAdminForm struct {
 	Create  bool   `form:"-"`
-	User    int    `valid:"Required"`
+	User    int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:"Required"`
 	Post    int    `valid:"Required"`
 	Message string `form:"type(textarea)" valid:"Required"`
 	Status  int8   `valid:"Required"`

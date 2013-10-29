@@ -7,7 +7,7 @@
         <div class="col-md-2">
             {{template "admin/sidenav.html" .}}
         </div>
-        <div class="col-md-10">
+        <div class="col-md-8">
             {{if .Error}}
             <div class="alert alert-danger">
                 {{.Error}}
@@ -19,25 +19,21 @@
                 </div>
                 <div class="cell last slim">
                     <form action="{{.AppUrl}}admin/category/{{.Object.Id}}/delete" method="POST">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr>
-                                            <td>Id:</td>
-                                            <td>{{.Object.Id}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>{{i18n .Lang "model.category"}}:</td>
-                                            <td>{{.Object.Name}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {{.xsrf_html}}{{.once_html}}
-                                <div class="form-group">
-                                    <button class="btn btn-danger">{{i18n .Lang "delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></button>
-                                </div>
-                            </div>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td>Id:</td>
+                                    <td>{{.Object.Id}}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{i18n .Lang "model.category"}}:</td>
+                                    <td>{{.Object.Name}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        {{.xsrf_html}}{{.once_html}}
+                        <div class="form-group">
+                            <button class="btn btn-danger">{{i18n .Lang "delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></button>
                         </div>
                     </form>
                     <div class="clearfix"></div>

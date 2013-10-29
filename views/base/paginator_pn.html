@@ -1,4 +1,4 @@
-{{if .paginator.Nums}}
+{{if gt .paginator.PageNums 1}}
 <ul class="pager">
     {{if .paginator.HasPrev}}
         <li class="previous"><a href="{{.paginator.PageLinkPrev}}">{{i18n .Lang "paginator.prev_page"}}</a></li>

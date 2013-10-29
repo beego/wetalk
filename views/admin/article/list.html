@@ -1,0 +1,62 @@
+{{template "admin/base/base.html" .}}
+{{template "admin/base/base_common.html" .}}
+{{define "meta"}}<title>{{i18n .Lang "model.admin_article"}} - {{i18n .Lang "app_name"}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content">
+        <div class="col-md-2">
+            {{template "admin/sidenav.html" .}}
+        </div>
+        <div class="col-md-10">
+            {{if .Error}}
+            <div class="alert alert-danger">
+                {{.Error}}
+            </div>
+            {{end}}
+            <div class="box">
+                <div class="cell first breadcrumb">
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/article">{{i18n .Lang "model.admin_article"}}</a>
+                </div>
+                <div class="cell last slim">
+                    {{if .flash.DeleteSuccess}}
+                    <div class="alert alert-info">
+                        {{i18n .Lang "admin.success_create"}}
+                    </div>
+                    {{end}}
+                    <p>
+                        <a href="/admin/article/new" class="btn btn-default">{{i18n .Lang "model.new_article"}}</a>
+                    </p>
+                    <table class="table table-hover table-condensed color-link">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>{{i18n .Lang "model.article_title"}}</th>
+                                <th>{{i18n .Lang "model.article_uri"}}</th>
+                                <th>{{i18n .Lang "model.user_username"}}</th>
+                                <th>{{i18n .Lang "model.article_ispublish"}}</th>
+                                <th>{{i18n .Lang "model.created"}}</th>
+                                <th>{{i18n .Lang "model.updated"}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range $article := .Objects}}
+                            <tr>
+                                <td><a href="{{$.AppUrl}}admin/article/{{$article.Id}}">{{$article.Id}}</a></td>
+                                <td><a href="{{$.AppUrl}}admin/article/{{$article.Id}}">{{$article.Title}}</a></td>
+                                <td><a target="_blank" href="{{$article.Link}}">{{$article.Uri}} <i class="icon-external-link"></i></a></td>
+                                <td><a href="{{$.AppUrl}}admin/user/{{$article.User.Id}}">{{$article.User.UserName}}</a></td>
+                                <td>{{$article.IsPublish}}</td>
+                                <td>{{$article.Created|datetime}}</td>
+                                <td>{{$article.Updated|datetime}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                    {{template "base/paginator.html" .}}
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

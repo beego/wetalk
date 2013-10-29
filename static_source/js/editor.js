@@ -241,7 +241,6 @@
             if($textarea.val() === '') {
                 $textarea.val($.jStorage.get(saveKey));
             }
-            $textarea.autosize();
 
             var intervalSave = setInterval(function(){
                 $.jStorage.set(saveKey, $textarea.val());
@@ -250,6 +249,8 @@
             $textarea.parents('form:first').on('submit', function(){
                 clearInterval(intervalSave);
             });
+
+            $textarea.autosize();
 
             $editor.on('click', '[data-meta=preview]', function(){
                 var $e = $(this);

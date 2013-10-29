@@ -1,0 +1,39 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}<title>{{.Article.GetTitle .Lang}} - {{i18n .Lang .AppName}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-9">
+        <div class="box post-show article-show">
+            <div class="cell first slim">
+                <h1 class="post-title">
+                    {{.Article.GetTitle .Lang}}
+                </h1>
+                <div class="post-meta">
+                    {{i18n .Lang "post.post_author"}} <a href="{{.Article.User.Link}}">{{.Article.User.NickName}}</a> • <span class="time">{{timesince .Lang .Article.Created}}</span>
+                </div>
+            </div>
+            <div class="cell last slim">
+                {{if ne (datetime .Article.Updated) (datetime .Article.Created)}}
+                    <p class="post-meta pull-right">
+                        {{i18n .Lang "post.modified_on"}} {{timesince .Lang .Article.Updated}} / {{.Article.Updated|datetimes}}
+                    </p>
+                {{end}}
+                {{if .User.IsAdmin}}
+                    <p>
+                        <a target="_blank" class="color-link" href="/admin/article/{{.Article.Id}}">{{i18n .Lang "post.article_edit"}} <i class="icon-edit"></i></a>
+                    </p>
+                {{end}}
+                <span class="clearfix"></span>
+                <div class="post-content markdown">
+                    {{str2html (.Article.GetContentCache .Lang)}}
+                </div>
+            </div>
+        </div>
+	</div>
+    <div id="sidebar" class="col-md-3">
+        <p>
+        </p>
+    </div>
+</div>
+{{end}}

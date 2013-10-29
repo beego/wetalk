@@ -21,5 +21,8 @@
         <li{{if .categoryAdmin}} class="active"{{end}}>
             <a href="{{.AppUrl}}admin/category">{{i18n .Lang "model.admin_category"}}</a>
         </li>
+        <li{{if .articleAdmin}} class="active"{{end}}>
+            <a href="{{.AppUrl}}admin/article">{{i18n .Lang "model.admin_article"}}</a>
+        </li>
     </ul>
 </div>

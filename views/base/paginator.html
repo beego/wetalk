@@ -1,4 +1,4 @@
-{{if .paginator.Nums}}
+{{if gt .paginator.PageNums 1}}
 <ul class="pagination pagination-sm">
     {{if .paginator.HasPrev}}
         <li><a href="{{.paginator.PageLinkFirst}}">{{i18n .Lang "paginator.first_page"}}</a></li>

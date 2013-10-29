@@ -1,6 +1,6 @@
 {{template "admin/base/base.html" .}}
 {{template "admin/base/base_common.html" .}}
-{{define "meta"}}<title>{{i18n .Lang "model.edit_topic"}} - {{i18n .Lang "app_name"}}</title>{{end}}
+{{define "meta"}}<title>{{i18n .Lang "admin.edit_article"}} - {{i18n .Lang "app_name"}}</title>{{end}}
 {{define "body"}}
 <div class="row">
     <div id="content">
@@ -15,25 +15,25 @@
             {{end}}
             <div class="box">
                 <div class="cell first breadcrumb">
-                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/topic">{{i18n .Lang "model.admin_topic"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/topic/{{.Object.Id}}">{{i18n .Lang "model.edit_topic"}}</a>
+                    <a href="{{.AppUrl}}admin"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/article">{{i18n .Lang "model.admin_article"}}</a><i class="divider icon-angle-right"></i><a href="{{.AppUrl}}admin/article/{{.Object.Id}}">{{i18n .Lang "model.edit_article"}} {{.Object.Title}}</a>
                 </div>
                 <div class="cell last slim">
                     {{if .flash.CreateSuccess}}
                     <div class="alert alert-info">
-                        {{i18n .Lang "admin.success_create"}} {{.Object.Name}}
+                        {{i18n .Lang "admin.success_create"}} {{.Object.Title}}
                     </div>
                     {{end}}
                     {{if .flash.UpdateSuccess}}
                     <div class="alert alert-info">
-                        {{i18n .Lang "admin.success_update"}} {{.Object.Name}}
+                        {{i18n .Lang "admin.success_update"}} {{.Object.Title}}
                     </div>
                     {{end}}
-                    <form action="{{.AppUrl}}admin/topic/{{.Object.Id}}" method="POST">
+                    <form action="{{.AppUrl}}admin/article/{{.Object.Id}}" method="POST">
                         {{.xsrf_html}}{{.once_html}}
-                        {{template "admin/component/fields.html" dict "root" $ "FormSets" .TopicAdminFormSets}}
+                        {{template "admin/component/fields.html" dict "root" $ "FormSets" .ArticleAdminFormSets}}
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">{{i18n .Lang "update"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
-                            <a type="submit" href="{{.AppUrl}}admin/topic/{{.Object.Id}}/delete" class="btn btn-danger pull-right">{{i18n .Lang "delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></a>
+                            <a type="submit" href="{{.AppUrl}}admin/article/{{.Object.Id}}/delete" class="btn btn-danger pull-right">{{i18n .Lang "delete"}}&nbsp;&nbsp;<i class="icon-remove"></i></a>
                         </div>
                     </form>
                     <div class="clearfix"></div>

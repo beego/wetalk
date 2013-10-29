@@ -42,11 +42,9 @@ func (this *UploadRouter) Post() {
 	}()
 
 	// check permition
-	if !this.user.IsActive || this.FormOnceNotMatch() {
+	if !this.user.IsActive {
 		return
 	}
-
-	result["once"] = this.Data["once_token"]
 
 	// get file object
 	file, handler, err := this.Ctx.Request.FormFile("image")

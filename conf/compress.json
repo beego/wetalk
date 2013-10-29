@@ -9,13 +9,16 @@
                 "DistFile": "lib.min.js",
                 "SourceFiles": [
                     "jquery.min.js",
+                    "jquery.extend.js",
                     "bootstrap.js",
                     "lib.min.js",
+                    "prettify.js",
                     "jStorage.js"
                 ],
                 "SkipFiles": [
                     "jquery.min.js",
-                    "lib.min.js"
+                    "lib.min.js",
+                    "prettify.js"
                 ]
             },
             "app": {
@@ -45,6 +48,7 @@
                     "bootstrap.css",
                     "bootstrap-theme.css",
                     "font-awesome.min.css",
+                    "prettify.css",
                     "select2.css"
                 ],
                 "SkipFiles": [

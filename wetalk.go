@@ -85,12 +85,17 @@ func main() {
 	adminDashboard := new(routers.AdminDashboardRouter)
 	beego.Router("/admin", adminDashboard)
 
+	admin := new(routers.AdminRouter)
+	beego.Router("/admin/model/get", admin, "post:ModelGet")
+	beego.Router("/admin/model/select", admin, "post:ModelSelect")
+
 	routes := map[string]beego.ControllerInterface{
 		"user":     new(routers.UserAdminRouter),
 		"post":     new(routers.PostAdminRouter),
 		"comment":  new(routers.CommentAdminRouter),
 		"topic":    new(routers.TopicAdminRouter),
 		"category": new(routers.CategoryAdminRouter),
+		"article":  new(routers.ArticleAdminRouter),
 	}
 	for name, router := range routes {
 		beego.Router(fmt.Sprintf("/admin/:model(%s)", name), router, "get:List")
@@ -101,6 +106,9 @@ func main() {
 
 	// "robot.txt"
 	beego.Router("/robot.txt", &routers.RobotRouter{})
+
+	article := new(routers.ArticleRouter)
+	beego.Router("/:slug([0-9a-z-./]+)", article, "get:Show")
 
 	// For all unknown pages.
 	beego.Run()

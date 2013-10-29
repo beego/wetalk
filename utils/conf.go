@@ -38,29 +38,36 @@ const (
 )
 
 var (
-	AppName            string
-	AppDescription     string
-	AppKeywords        string
-	AppVer             string
-	AppHost            string
-	AppUrl             string
-	AppLogo            string
-	AvatarURL          string
-	SecretKey          string
-	IsProMode          bool
-	MailUser           string
-	MailFrom           string
-	ActiveCodeLives    int
-	ResetPwdCodeLives  int
-	LoginRememberDays  int
-	DateFormat         string
-	DateTimeFormat     string
-	RealtimeRenderMD   bool
-	ImageSizeSmall     int
-	ImageSizeMiddle    int
-	ImageLinkAlphabets []byte
-	ImageXSend         bool
-	ImageXSendHeader   string
+	AppName             string
+	AppDescription      string
+	AppKeywords         string
+	AppVer              string
+	AppHost             string
+	AppUrl              string
+	AppLogo             string
+	AvatarURL           string
+	SecretKey           string
+	IsProMode           bool
+	MailUser            string
+	MailFrom            string
+	ActiveCodeLives     int
+	ResetPwdCodeLives   int
+	LoginRememberDays   int
+	DateFormat          string
+	DateTimeFormat      string
+	DateTimeShortFormat string
+	RealtimeRenderMD    bool
+	ImageSizeSmall      int
+	ImageSizeMiddle     int
+	ImageLinkAlphabets  []byte
+	ImageXSend          bool
+	ImageXSendHeader    string
+	Langs               []string
+)
+
+const (
+	LangEnUS = iota
+	LangZhCN
 )
 
 var (
@@ -149,6 +156,7 @@ func reloadConfig() {
 	AvatarURL = Cfg.MustValue("app", "avatar_url")
 	DateFormat = Cfg.MustValue("app", "date_format")
 	DateTimeFormat = Cfg.MustValue("app", "datetime_format")
+	DateTimeShortFormat = Cfg.MustValue("app", "datetime_short_format")
 
 	MailUser = Cfg.MustValue("app", "mail_user")
 	MailFrom = Cfg.MustValue("app", "mail_from")
@@ -189,7 +197,7 @@ func reloadConfig() {
 
 func settingLocales() {
 	// load locales with locale_LANG.ini files
-	langs := Cfg.MustValue("app", "langs")
+	langs := "en-US|zh-CN"
 	for _, lang := range strings.Split(langs, "|") {
 		lang = strings.TrimSpace(lang)
 		if err := i18n.SetMessage(lang, "conf/"+"locale_"+lang+".ini"); err != nil {
@@ -197,6 +205,7 @@ func settingLocales() {
 			os.Exit(2)
 		}
 	}
+	Langs = i18n.ListLangs()
 }
 
 func settingCompress() {

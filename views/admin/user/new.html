@@ -7,7 +7,7 @@
         <div class="col-md-2">
             {{template "admin/sidenav.html" .}}
         </div>
-        <div class="col-md-10">
+        <div class="col-md-8">
             {{if .Error}}
             <div class="alert alert-danger">
                 {{.Error}}
@@ -19,14 +19,10 @@
                 </div>
                 <div class="cell last slim">
                     <form action="{{.AppUrl}}admin/user/new" method="POST">
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{.xsrf_html}}{{.once_html}}
-                                {{template "base/form/fields.html" .UserAdminFormSets}}
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">{{i18n .Lang "save"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
-                                </div>
-                            </div>
+                        {{.xsrf_html}}{{.once_html}}
+                        {{template "admin/component/fields.html" dict "root" $ "FormSets" .UserAdminFormSets}}
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">{{i18n .Lang "save"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
                         </div>
                     </form>
                     <div class="clearfix"></div>

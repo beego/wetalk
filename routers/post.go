@@ -18,7 +18,6 @@ import (
 	"fmt"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/beego/i18n"
 
 	"github.com/beego/wetalk/models"
 )
@@ -246,7 +245,7 @@ func (this *PostListRouter) TopicSubmit() {
 		action := this.GetString("action")
 		switch action {
 		case "favorite":
-			if !this.FormOnceNotMatch() && this.isLogin {
+			if this.isLogin {
 				qs := models.FollowTopics().Filter("User", &this.user).Filter("Topic", &topic)
 				if qs.Exist() {
 					qs.Delete()
@@ -256,7 +255,6 @@ func (this *PostListRouter) TopicSubmit() {
 				}
 				topic.RefreshFollowers()
 				this.user.RefreshFavTopics()
-				result["once"] = this.Data["once_token"]
 				result["success"] = true
 			}
 		}
@@ -278,11 +276,7 @@ func (this *PostRouter) New() {
 	}
 
 	form := models.PostForm{}
-	for i, lang := range i18n.ListLangs() {
-		if lang == this.Locale.Lang {
-			form.Lang = int8(i)
-		}
-	}
+	form.Lang = this.Locale.Index()
 
 	slug := this.GetString("topic")
 	if len(slug) > 0 {
@@ -308,15 +302,12 @@ func (this *PostRouter) NewSubmit() {
 		result := map[string]interface{}{
 			"success": false,
 		}
-		if !this.FormOnceNotMatch() {
-			action := this.GetString("action")
-			switch action {
-			case "preview":
-				content := this.GetString("content")
-				result["preview"] = models.RenderPostContent(content)
-				result["once"] = this.Data["once_token"]
-				result["success"] = true
-			}
+		action := this.GetString("action")
+		switch action {
+		case "preview":
+			content := this.GetString("content")
+			result["preview"] = models.RenderPostContent(content)
+			result["success"] = true
 		}
 		this.Data["json"] = result
 		this.ServeJson()
@@ -461,15 +452,12 @@ func (this *PostRouter) EditSubmit() {
 		result := map[string]interface{}{
 			"success": false,
 		}
-		if !this.FormOnceNotMatch() {
-			action := this.GetString("action")
-			switch action {
-			case "preview":
-				content := this.GetString("content")
-				result["preview"] = models.RenderPostContent(content)
-				result["once"] = this.Data["once_token"]
-				result["success"] = true
-			}
+		action := this.GetString("action")
+		switch action {
+		case "preview":
+			content := this.GetString("content")
+			result["preview"] = models.RenderPostContent(content)
+			result["success"] = true
 		}
 		this.Data["json"] = result
 		this.ServeJson()
