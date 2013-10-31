@@ -38,7 +38,7 @@ type Image struct {
 	User    *User `orm:"rel(fk)"`
 	Width   int
 	Height  int
-	Ext     int8 `orm:"index"`
+	Ext     int `orm:"index"`
 	Created time.Time
 }
 

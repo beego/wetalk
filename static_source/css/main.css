@@ -375,6 +375,10 @@ h6.underline {
   color: #000;
 }
 
+.nav-side .head .icon {
+  margin-right: 10px;
+}
+
 .color-checked {
   color: green;
 }
@@ -441,7 +445,7 @@ a.color-link:hover ,
 
 .markdown-editor textarea {
   margin-top: 5px;
-  min-height: 300px;
+  min-height: 400px;
   font-size: 14px;
   background-color: #fcfcfc;
   -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
@@ -697,4 +701,14 @@ a.color-link:hover ,
 
 .article-show .post-title {
   font-size: 28px;
+}
+
+/* sidebar */
+
+.sidebar-list {
+  padding-left: 20px;
+}
+
+.sidebar-list li {
+  margin-bottom: 5px;
 }

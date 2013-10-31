@@ -110,6 +110,10 @@ func main() {
 	article := new(routers.ArticleRouter)
 	beego.Router("/:slug([0-9a-z-./]+)", article, "get:Show")
 
+	if beego.RunMode == "dev" {
+		beego.Router("/test/:tmpl(mail/.*)", new(routers.TestRouter))
+	}
+
 	// For all unknown pages.
 	beego.Run()
 }

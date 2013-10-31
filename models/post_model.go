@@ -35,7 +35,7 @@ type Post struct {
 	Favorites    int
 	LastReply    *User  `orm:"rel(fk)"`
 	Topic        *Topic `orm:"rel(fk)"`
-	Lang         int8   `orm:"index"`
+	Lang         int    `orm:"index"`
 	IsBest       bool
 	Images       string
 	Category     *Category `orm:"rel(fk)"`
@@ -103,7 +103,7 @@ type Comment struct {
 	Post         *Post  `orm:"rel(fk)"`
 	Message      string `orm:"type(text)"`
 	MessageCache string `orm:"type(text)"`
-	Status       int8
+	Status       int
 	Created      time.Time `orm:"auto_now_add;index"`
 }
 

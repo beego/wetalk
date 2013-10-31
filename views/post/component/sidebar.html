@@ -1,6 +1,6 @@
 <div class="box">
 	<div class="cell first">{{i18n .Lang "sidebar.community_news"}}</div>
-	<div class="cell last">
+	<div class="cell last slim">
 		{{if eq .Lang "en-US"}}
 		<p>Welcome, gophers!</p>
 		<p>Beego Community is finally here. You can post, share and find awesome Go resources and people in this big family.</p>
@@ -41,7 +41,7 @@
 <div class="box">
 	<div class="cell first">{{i18n .Lang "sidebar.frined_links"}}</div>
 	<div class="cell last">
-		<ul>
+		<ul class="sidebar-list">
 			<li><a target="_blank" href="http://golang.org">The Go Programming Language</a></li>
 			<li><a target="_blank" href="http://studygolang.com">Golang China</a></li>
 			<li><a target="_blank" href="http://golangtc.com">Golang 中国</a></li>

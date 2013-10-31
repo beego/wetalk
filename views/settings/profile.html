@@ -5,13 +5,17 @@
 <div class="row">
     <div id="content">
         <div class="col-md-3">
-        	<div class="box">
-        		<div class="cell first breadcrumb">
-        		</div>
-        		<div class="cell last">
-        			<div class="container">
-        			</div>
-    			</div>
+            <div class="box">
+                <ul class="nav nav-side">
+                    <li class="cell first">
+                        <h4 class="head"><i class="icon icon-cogs"></i> {{i18n .Lang "auth.user_settings"}}</h4>
+                    </li>
+                    <li class="active">
+                        <a href="{{.AppUrl}}settings/profile">{{i18n .Lang "auth.user_profile"}}</a>
+                    </li>
+                    <li class="cell last">
+                    </li>
+                </ul>
             </div>
     	</div>
         <div class="col-md-9">
@@ -103,10 +107,19 @@
                                     {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
                                 </div>
                                 {{end}}
+
                             </div>
 
                             <div class="col-md-6">
                                 {{template "base/form/field_group.html" .ProfileFormSets.Fields.Info}}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.Lang}}
+
+                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.LangAdds}}
                             </div>
                         </div>
 

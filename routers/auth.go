@@ -16,6 +16,7 @@ package routers
 
 import (
 	"github.com/astaxie/beego"
+	"github.com/beego/i18n"
 	"github.com/beego/wetalk/utils"
 	"strings"
 
@@ -81,6 +82,8 @@ func (this *LoginRouter) Login() {
 
 		// login user
 		models.LoginUser(&user, &this.Controller, form.Remember)
+
+		this.setLangCookie(i18n.GetLangByIndex(user.Lang))
 
 		if this.IsAjax() {
 			this.Data["json"] = map[string]interface{}{
@@ -158,6 +161,10 @@ func (this *RegisterRouter) Register() {
 
 	// Create new user.
 	user := new(models.User)
+
+	// set default Lang
+	user.Lang = this.Locale.Index()
+
 	if err := models.RegisterUser(user, form); err == nil {
 		models.SendRegisterMail(this.Locale, user)
 

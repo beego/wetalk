@@ -15,9 +15,11 @@
 package utils
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"net/url"
 	"time"
 
@@ -122,4 +124,21 @@ func init() {
 	beego.AddFuncMap("loadtimes", loadtimes)
 	beego.AddFuncMap("sum", sum)
 	beego.AddFuncMap("loginto", loginto)
+}
+
+func RenderTemplate(TplNames string, Data map[interface{}]interface{}) string {
+	if beego.RunMode == "dev" {
+		beego.BuildTemplate(beego.ViewsPath)
+	}
+
+	ibytes := bytes.NewBufferString("")
+	if _, ok := beego.BeeTemplates[TplNames]; !ok {
+		panic("can't find templatefile in the path:" + TplNames)
+	}
+	err := beego.BeeTemplates[TplNames].ExecuteTemplate(ibytes, TplNames, Data)
+	if err != nil {
+		beego.Trace("template Execute err:", err)
+	}
+	icontent, _ := ioutil.ReadAll(ibytes)
+	return string(icontent)
 }

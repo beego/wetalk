@@ -45,6 +45,7 @@ var (
 	AppHost             string
 	AppUrl              string
 	AppLogo             string
+	EnforceRedirect     bool
 	AvatarURL           string
 	SecretKey           string
 	IsProMode           bool
@@ -98,10 +99,8 @@ func LoadConfig() *goconfig.ConfigFile {
 	// Trim 4th part.
 	AppVer = strings.Join(strings.Split(APP_VER, ".")[:3], ".")
 
-	beego.RunMode = Cfg.MustValue("beego", "run_mode")
-
-	beego.RunMode = Cfg.MustValue("beego", "run_mode")
-	beego.HttpPort = Cfg.MustInt("beego", "http_port_"+beego.RunMode)
+	beego.RunMode = Cfg.MustValue("app", "run_mode")
+	beego.HttpPort = Cfg.MustInt("app", "http_port")
 
 	IsProMode = beego.RunMode == "pro"
 	if IsProMode {
@@ -113,9 +112,9 @@ func LoadConfig() *goconfig.ConfigFile {
 
 	// session settings
 	beego.SessionOn = true
-	beego.SessionProvider = Cfg.MustValue("app", "session_provider")
-	beego.SessionSavePath = Cfg.MustValue("app", "session_path")
-	beego.SessionName = Cfg.MustValue("app", "session_name")
+	beego.SessionProvider = Cfg.MustValue("session", "session_provider")
+	beego.SessionSavePath = Cfg.MustValue("session", "session_path")
+	beego.SessionName = Cfg.MustValue("session", "session_name")
 
 	beego.EnableXSRF = true
 	// xsrf token expire time
@@ -154,12 +153,12 @@ func reloadConfig() {
 	AppDescription = Cfg.MustValue("app", "description")
 	AppKeywords = Cfg.MustValue("app", "keywords")
 	AvatarURL = Cfg.MustValue("app", "avatar_url")
+
+	EnforceRedirect = Cfg.MustBool("app", "enforce_redirect")
+
 	DateFormat = Cfg.MustValue("app", "date_format")
 	DateTimeFormat = Cfg.MustValue("app", "datetime_format")
 	DateTimeShortFormat = Cfg.MustValue("app", "datetime_short_format")
-
-	MailUser = Cfg.MustValue("app", "mail_user")
-	MailFrom = Cfg.MustValue("app", "mail_from")
 
 	SecretKey = Cfg.MustValue("app", "secret_key")
 	ActiveCodeLives = Cfg.MustInt("app", "acitve_code_live_days")
@@ -167,8 +166,8 @@ func reloadConfig() {
 	LoginRememberDays = Cfg.MustInt("app", "login_remember_days")
 	RealtimeRenderMD = Cfg.MustBool("app", "realtime_render_markdown")
 
-	ImageSizeSmall = Cfg.MustInt("app", "image_size_small")
-	ImageSizeMiddle = Cfg.MustInt("app", "image_size_middle")
+	ImageSizeSmall = Cfg.MustInt("image", "image_size_small")
+	ImageSizeMiddle = Cfg.MustInt("image", "image_size_middle")
 
 	if ImageSizeSmall <= 0 {
 		ImageSizeSmall = 300
@@ -178,19 +177,22 @@ func reloadConfig() {
 		ImageSizeMiddle = ImageSizeSmall + 400
 	}
 
-	str := Cfg.MustValue("app", "image_link_alphabets")
+	str := Cfg.MustValue("image", "image_link_alphabets")
 	if len(str) == 0 {
 		str = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	}
 	ImageLinkAlphabets = []byte(str)
 
-	ImageXSend = Cfg.MustBool("app", "image_xsend")
-	ImageXSendHeader = Cfg.MustValue("app", "image_xsend_header")
+	ImageXSend = Cfg.MustBool("image", "image_xsend")
+	ImageXSendHeader = Cfg.MustValue("image", "image_xsend_header")
+
+	MailUser = Cfg.MustValue("mailer", "mail_user")
+	MailFrom = Cfg.MustValue("mailer", "mail_from")
 
 	// set mailer connect args
-	mailer.MailHost = Cfg.MustValue("mailer", "host")
-	mailer.AuthUser = Cfg.MustValue("mailer", "user")
-	mailer.AuthPass = Cfg.MustValue("mailer", "pass")
+	mailer.MailHost = Cfg.MustValue("mailer", "mail_host")
+	mailer.AuthUser = Cfg.MustValue("mailer", "mail_user")
+	mailer.AuthPass = Cfg.MustValue("mailer", "mail_pass")
 
 	orm.Debug = Cfg.MustBool("orm", "debug_log")
 }

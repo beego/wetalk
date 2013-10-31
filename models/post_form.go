@@ -78,7 +78,7 @@ func (form *PostForm) Valid(v *validation.Validation) {
 		v.SetError("Category", "error")
 	}
 
-	if form.Lang < 0 || form.Lang >= len(utils.Langs) {
+	if form.Lang < 1 || form.Lang > len(utils.Langs) {
 		v.SetError("Lang", "error")
 	}
 }
@@ -229,7 +229,7 @@ type CommentAdminForm struct {
 	User    int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:"Required"`
 	Post    int    `valid:"Required"`
 	Message string `form:"type(textarea)" valid:"Required"`
-	Status  int8   `valid:"Required"`
+	Status  int    `valid:"Required"`
 }
 
 func (form *CommentAdminForm) Valid(v *validation.Validation) {

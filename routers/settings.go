@@ -71,7 +71,7 @@ func (this *SettingsRouter) ProfileSave() {
 	profileForm := models.ProfileForm{Locale: this.Locale}
 	profileForm.SetFromUser(&this.user)
 
-	pwdForm := models.PasswordForm{}
+	pwdForm := models.PasswordForm{User: &this.user}
 
 	this.Data["Form"] = profileForm
 
@@ -87,16 +87,12 @@ func (this *SettingsRouter) ProfileSave() {
 
 	case "change-password":
 		if this.ValidFormSets(&pwdForm) {
-			if models.VerifyPassword(pwdForm.PasswordOld, this.user.Password) {
-				// verify success and save new password
-				if err := models.SaveNewPassword(&this.user, pwdForm.Password); err == nil {
-					this.FlashRedirect("/settings/profile", 302, "PasswordSave")
-					return
-				} else {
-					beego.Error("ProfileSave: change-password", err)
-				}
+			// verify success and save new password
+			if err := models.SaveNewPassword(&this.user, pwdForm.Password); err == nil {
+				this.FlashRedirect("/settings/profile", 302, "PasswordSave")
+				return
 			} else {
-				this.SetFormError(&pwdForm, "PasswordOld", "Your old password not correct")
+				beego.Error("ProfileSave: change-password", err)
 			}
 		}
 

@@ -149,7 +149,28 @@ type ProfileForm struct {
 	Email       string      `valid:"Required;Email;MaxSize(100)"`
 	PublicEmail bool        `valid:""`
 	GrEmail     string      `valid:"Required;MaxSize(80)"`
+	Lang        int         `form:"type(select);attr(rel,select2)" valid:"Required"`
+	LangAdds    int         `form:"type(select);attr(rel,select2)" valid:""`
 	Locale      i18n.Locale `form:"-"`
+}
+
+func (form *ProfileForm) LangSelectData() [][]string {
+	langs := utils.Langs
+	data := make([][]string, 0, len(langs))
+	for i, lang := range langs {
+		data = append(data, []string{lang, utils.ToStr(i)})
+	}
+	return data
+}
+
+func (form *ProfileForm) LangAddsSelectData() [][]string {
+	langs := utils.Langs
+	data := make([][]string, 0, len(langs)+1)
+	data = append(data, []string{form.Locale.Tr("all_language"), "-1"})
+	for i, lang := range langs {
+		data = append(data, []string{lang, utils.ToStr(i)})
+	}
+	return data
 }
 
 func (form *ProfileForm) SetFromUser(user *User) {
@@ -178,6 +199,8 @@ func (form *ProfileForm) SaveUserProfile(user *User) error {
 
 func (form *ProfileForm) Labels() map[string]string {
 	return map[string]string{
+		"Lang":        "auth.profile_lang",
+		"LangAdds":    "auth.profile_lang_additional",
 		"NickName":    "model.user_nickname",
 		"PublicEmail": "auth.profile_publicemail",
 		"GrEmail":     "auth.profile_gremail",
@@ -205,6 +228,7 @@ type PasswordForm struct {
 	PasswordOld string `form:"type(password)" valid:"Required"`
 	Password    string `form:"type(password)" valid:"Required;MinSize(4);MaxSize(30)"`
 	PasswordRe  string `form:"type(password)" valid:"Required;MinSize(4);MaxSize(30)"`
+	User        *User  `form:"-"`
 }
 
 func (form *PasswordForm) Valid(v *validation.Validation) {
@@ -214,10 +238,9 @@ func (form *PasswordForm) Valid(v *validation.Validation) {
 		return
 	}
 
-	// if models.VerifyPassword(form.PasswordOld, this.user.Password) == false {
-	// 	this.SetFormError(&form, fieldName, errMsg, ...)
-	// 	return
-	// }
+	if VerifyPassword(form.PasswordOld, form.User.Password) == false {
+		v.SetError("PasswordOld", "auth.old_password_wrong")
+	}
 }
 
 func (form *PasswordForm) Labels() map[string]string {

@@ -251,6 +251,7 @@
             });
 
             $textarea.autosize();
+            $textarea.css('resize', 'none');
 
             $editor.on('click', '[data-meta=preview]', function(){
                 var $e = $(this);

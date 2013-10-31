@@ -51,6 +51,8 @@ type User struct {
 	IsAdmin     bool      `orm:"index"`
 	IsActive    bool      `orm:"index"`
 	IsForbid    bool      `orm:"index"`
+	Lang        int       `orm:"index"`
+	LangAdds    int       `orm:"index"`
 	Rands       string    `orm:"size(10)"`
 	Created     time.Time `orm:"auto_now_add"`
 	Updated     time.Time `orm:"auto_now"`

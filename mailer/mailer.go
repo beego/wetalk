@@ -64,6 +64,10 @@ func Send(msg Message) (int, error) {
 		return 0, fmt.Errorf("empty receive emails")
 	}
 
+	if len(msg.Body) == 0 {
+		return 0, fmt.Errorf("empty email body")
+	}
+
 	if msg.Massive {
 		// send mail to multiple emails one by one
 		num := 0

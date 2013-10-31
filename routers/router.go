@@ -45,10 +45,12 @@ type baseRouter struct {
 
 // Prepare implemented Prepare method for baseRouter.
 func (this *baseRouter) Prepare() {
-	// if the host not matching app settings then redirect to AppUrl
-	if this.Ctx.Request.Host != utils.AppHost {
-		this.Redirect(utils.AppUrl, 302)
-		return
+	if utils.EnforceRedirect {
+		// if the host not matching app settings then redirect to AppUrl
+		if this.Ctx.Request.Host != utils.AppHost {
+			this.Redirect(utils.AppUrl, 302)
+			return
+		}
 	}
 
 	// page start time
@@ -90,8 +92,6 @@ func (this *baseRouter) Prepare() {
 	this.Data["AppLogo"] = utils.AppLogo
 	this.Data["AvatarURL"] = utils.AvatarURL
 	this.Data["IsProMode"] = utils.IsProMode
-	this.Data["DateFormat"] = utils.DateFormat
-	this.Data["DateTimeFormat"] = utils.DateTimeFormat
 
 	// Redirect to make URL clean.
 	if this.setLang() {
@@ -445,6 +445,10 @@ func (this *baseRouter) JsStorage(action, key string, values ...string) {
 	this.Ctx.SetCookie("JsStorage", value, 1<<31-1, "/")
 }
 
+func (this *baseRouter) setLangCookie(lang string) {
+	this.Ctx.SetCookie("lang", lang, 1<<31-1, "/")
+}
+
 // setLang sets site language version.
 func (this *baseRouter) setLang() bool {
 	isNeedRedir := false
@@ -471,7 +475,12 @@ func (this *baseRouter) setLang() bool {
 		hasCookie = false
 	}
 
-	// 3. Get language information from 'Accept-Language'.
+	// 3. check if isLogin then use user setting
+	if len(lang) == 0 && this.isLogin {
+		lang = i18n.GetLangByIndex(this.user.Lang)
+	}
+
+	// 4. Get language information from 'Accept-Language'.
 	if len(lang) == 0 {
 		al := this.Ctx.Input.Header("Accept-Language")
 		if len(al) > 4 {
@@ -490,7 +499,7 @@ func (this *baseRouter) setLang() bool {
 
 	// Save language information in cookies.
 	if !hasCookie {
-		this.Ctx.SetCookie("lang", lang, 1<<31-1, "/")
+		this.setLangCookie(lang)
 	}
 
 	// Set language properties.
