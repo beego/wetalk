@@ -16,6 +16,7 @@ package models
 
 import (
 	"github.com/astaxie/beego/validation"
+	"github.com/beego/i18n"
 
 	"github.com/beego/wetalk/utils"
 )
@@ -78,7 +79,7 @@ func (form *PostForm) Valid(v *validation.Validation) {
 		v.SetError("Category", "error")
 	}
 
-	if form.Lang < 1 || form.Lang > len(utils.Langs) {
+	if len(i18n.GetLangByIndex(form.Lang)) == 0 {
 		v.SetError("Lang", "error")
 	}
 }
@@ -161,7 +162,7 @@ func (form *PostAdminForm) Valid(v *validation.Validation) {
 		v.SetError("Category", "admin.not_found_by_id")
 	}
 
-	if form.Lang < 0 || form.Lang >= len(utils.Langs) {
+	if len(i18n.GetLangByIndex(form.Lang)) == 0 {
 		v.SetError("Lang", "Not Found")
 	}
 }

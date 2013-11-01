@@ -143,15 +143,15 @@ func (form *ResetPwdForm) Placeholders() map[string]string {
 
 // Settings Profile form
 type ProfileForm struct {
-	NickName    string      `valid:"Required;MaxSize(30)"`
-	Url         string      `valid:"MaxSize(100)"`
-	Info        string      `form:"type(textarea)" valid:"MaxSize(255)"`
-	Email       string      `valid:"Required;Email;MaxSize(100)"`
-	PublicEmail bool        `valid:""`
-	GrEmail     string      `valid:"Required;MaxSize(80)"`
-	Lang        int         `form:"type(select);attr(rel,select2)" valid:"Required"`
-	LangAdds    int         `form:"type(select);attr(rel,select2)" valid:""`
-	Locale      i18n.Locale `form:"-"`
+	NickName    string           `valid:"Required;MaxSize(30)"`
+	Url         string           `valid:"MaxSize(100)"`
+	Info        string           `form:"type(textarea)" valid:"MaxSize(255)"`
+	Email       string           `valid:"Required;Email;MaxSize(100)"`
+	PublicEmail bool             `valid:""`
+	GrEmail     string           `valid:"Required;MaxSize(80)"`
+	Lang        int              `form:"type(select);attr(rel,select2)" valid:""`
+	LangAdds    SliceStringField `form:"type(select);attr(rel,select2);attr(multiple,multiple)" valid:""`
+	Locale      i18n.Locale      `form:"-"`
 }
 
 func (form *ProfileForm) LangSelectData() [][]string {
@@ -165,12 +165,34 @@ func (form *ProfileForm) LangSelectData() [][]string {
 
 func (form *ProfileForm) LangAddsSelectData() [][]string {
 	langs := utils.Langs
-	data := make([][]string, 0, len(langs)+1)
-	data = append(data, []string{form.Locale.Tr("all_language"), "-1"})
+	data := make([][]string, 0, len(langs))
 	for i, lang := range langs {
 		data = append(data, []string{lang, utils.ToStr(i)})
 	}
 	return data
+}
+
+func (form *ProfileForm) Valid(v *validation.Validation) {
+	if len(i18n.GetLangByIndex(form.Lang)) == 0 {
+		v.SetError("Lang", "Can not be empty")
+	}
+
+	if len(form.LangAdds) > 0 {
+		adds := make(SliceStringField, 0, len(form.LangAdds))
+		for _, l := range form.LangAdds {
+			if d, err := utils.StrTo(l).Int(); err == nil {
+				if form.Lang == d {
+					continue
+				}
+				if len(i18n.GetLangByIndex(form.Lang)) == 0 {
+					v.SetError("Lang", "Can not be empty")
+					return
+				}
+				adds = append(adds, l)
+			}
+		}
+		form.LangAdds = adds
+	}
 }
 
 func (form *ProfileForm) SetFromUser(user *User) {
@@ -260,20 +282,40 @@ func (form *PasswordForm) Placeholders() map[string]string {
 }
 
 type UserAdminForm struct {
-	Create      bool   `form:"-"`
-	Id          int    `form:"-"`
-	UserName    string `valid:"Required;AlphaDash;MinSize(5);MaxSize(30)"`
-	Email       string `valid:"Required;Email;MaxSize(100)"`
-	PublicEmail bool   ``
-	NickName    string `valid:"Required;MaxSize(30)"`
-	Url         string `valid:"MaxSize(100)"`
-	Info        string `form:"type(textarea)" valid:"MaxSize(255)"`
-	GrEmail     string `valid:"Required;MaxSize(80)"`
-	Followers   int    ``
-	Following   int    ``
-	IsAdmin     bool   ``
-	IsActive    bool   ``
-	IsForbid    bool   ``
+	Create      bool             `form:"-"`
+	Id          int              `form:"-"`
+	UserName    string           `valid:"Required;AlphaDash;MinSize(5);MaxSize(30)"`
+	Email       string           `valid:"Required;Email;MaxSize(100)"`
+	PublicEmail bool             ``
+	NickName    string           `valid:"Required;MaxSize(30)"`
+	Url         string           `valid:"MaxSize(100)"`
+	Info        string           `form:"type(textarea)" valid:"MaxSize(255)"`
+	GrEmail     string           `valid:"Required;MaxSize(80)"`
+	Followers   int              ``
+	Following   int              ``
+	IsAdmin     bool             ``
+	IsActive    bool             ``
+	IsForbid    bool             ``
+	Lang        int              `form:"type(select);attr(rel,select2)" valid:""`
+	LangAdds    SliceStringField `form:"type(select);attr(rel,select2);attr(multiple,multiple)" valid:""`
+}
+
+func (form *UserAdminForm) LangSelectData() [][]string {
+	langs := utils.Langs
+	data := make([][]string, 0, len(langs))
+	for i, lang := range langs {
+		data = append(data, []string{lang, utils.ToStr(i)})
+	}
+	return data
+}
+
+func (form *UserAdminForm) LangAddsSelectData() [][]string {
+	langs := utils.Langs
+	data := make([][]string, 0, len(langs))
+	for i, lang := range langs {
+		data = append(data, []string{lang, utils.ToStr(i)})
+	}
+	return data
 }
 
 func (form *UserAdminForm) Valid(v *validation.Validation) {
@@ -285,6 +327,27 @@ func (form *UserAdminForm) Valid(v *validation.Validation) {
 
 	if CheckIsExist(qs, "Email", form.Email, form.Id) {
 		v.SetError("Email", "auth.email_already_taken")
+	}
+
+	if len(i18n.GetLangByIndex(form.Lang)) == 0 {
+		v.SetError("Lang", "Can not be empty")
+	}
+
+	if len(form.LangAdds) > 0 {
+		adds := make(SliceStringField, 0, len(form.LangAdds))
+		for _, l := range form.LangAdds {
+			if d, err := utils.StrTo(l).Int(); err == nil {
+				if form.Lang == d {
+					continue
+				}
+				if len(i18n.GetLangByIndex(form.Lang)) == 0 {
+					v.SetError("Lang", "Can not be empty")
+					return
+				}
+				adds = append(adds, l)
+			}
+		}
+		form.LangAdds = adds
 	}
 }
 

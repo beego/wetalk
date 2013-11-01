@@ -297,8 +297,17 @@ outFor:
 						v := results[0]
 						if v.CanInterface() {
 							if vu, ok := v.Interface().([][]string); ok {
-								strv := ToStr(value)
-								seted := false
+
+								var vs []string
+								val := reflect.ValueOf(value)
+								if val.Kind() == reflect.Slice {
+									vs = make([]string, 0, val.Len())
+									for i := 0; i < val.Len(); i++ {
+										vs = append(vs, ToStr(val.Index(i).Interface()))
+									}
+								}
+
+								isMulti := len(vs) > 0
 								for _, parts := range vu {
 									var n, v string
 									switch {
@@ -308,9 +317,15 @@ outFor:
 										n, v = locale.Tr(parts[0]), parts[0]
 									}
 									var selected string
-									if !seted && strv == v {
+									if isMulti {
+										for _, e := range vs {
+											if e == v {
+												selected = ` selected="selected"`
+												break
+											}
+										}
+									} else if ToStr(value) == v {
 										selected = ` selected="selected"`
-										seted = true
 									}
 									options += fmt.Sprintf(`<option value="%s"%s>%s</option>`, v, selected, n)
 								}
@@ -402,9 +417,9 @@ outFor:
 		}
 
 		value := ""
-		if v, ok := values[fName]; !ok {
-			continue
-		} else {
+		var vs []string
+		if v, ok := values[fName]; ok {
+			vs = v
 			if len(v) > 0 {
 				value = v[0]
 			}
@@ -441,6 +456,8 @@ outFor:
 			}
 		case reflect.String:
 			f.SetString(value)
+		case reflect.Slice:
+			f.Set(reflect.ValueOf(vs))
 		}
 	}
 }

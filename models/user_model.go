@@ -48,14 +48,14 @@ type User struct {
 	Followers   int
 	Following   int
 	FavTopics   int
-	IsAdmin     bool      `orm:"index"`
-	IsActive    bool      `orm:"index"`
-	IsForbid    bool      `orm:"index"`
-	Lang        int       `orm:"index"`
-	LangAdds    int       `orm:"index"`
-	Rands       string    `orm:"size(10)"`
-	Created     time.Time `orm:"auto_now_add"`
-	Updated     time.Time `orm:"auto_now"`
+	IsAdmin     bool             `orm:"index"`
+	IsActive    bool             `orm:"index"`
+	IsForbid    bool             `orm:"index"`
+	Lang        int              `orm:"index"`
+	LangAdds    SliceStringField `orm:"size(50)"`
+	Rands       string           `orm:"size(10)"`
+	Created     time.Time        `orm:"auto_now_add"`
+	Updated     time.Time        `orm:"auto_now"`
 }
 
 func (m *User) Insert() error {
