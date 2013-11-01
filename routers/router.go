@@ -446,7 +446,7 @@ func (this *baseRouter) JsStorage(action, key string, values ...string) {
 }
 
 func (this *baseRouter) setLangCookie(lang string) {
-	this.Ctx.SetCookie("lang", lang, 1<<31-1, "/")
+	this.Ctx.SetCookie("lang", lang, 60*60*24*365, "/")
 }
 
 // setLang sets site language version.
