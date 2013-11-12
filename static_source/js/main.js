@@ -254,6 +254,7 @@
 				floor = $e.data('floor'),
 				sel = api.getSel(),
 				v = '#'+floor+' @'+user+' ';
+				$('#post-reply').ScrollTo();
 				api.insertText(v, sel.start + v.length);
 			});
 
@@ -267,6 +268,15 @@
 				}
 			});
 			$(window).trigger('hashchange');
+
+			additionMentions = {}||additionMentions;
+			var user = $comments.data('user');
+			$comments.find('.comment').each(function(_,e){
+				var $e = $(this);
+				if(user && user !== $e.data('user')){
+					additionMentions[$e.data('user')] = $e.data('user-nick');
+				}
+			});
 		}
 	});
 

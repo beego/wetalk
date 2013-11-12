@@ -51,7 +51,7 @@
                 </div>
             </div>
         </div>
-        <div class="box post-comments">
+        <div class="box post-comments"{{if .IsLogin}} data-user="{{.User.UserName}}"{{end}}>
             {{if .CommentsNum}}
                 <div class="cell first breadcrumb">
                     {{i18n .Lang "post.total_replies" .CommentsNum}}
@@ -59,7 +59,7 @@
             {{end}}
             {{if .CommentsNum}}
                 {{range .Comments}}
-                    <div id="reply{{.Floor}}" class="cell comment" data-user="{{.User.UserName}}" data-floor="{{.Floor}}">
+                    <div id="reply{{.Floor}}" class="cell comment" data-user="{{.User.UserName}}" data-user-nick="{{.User.NickName}}" data-floor="{{.Floor}}">
                         <div class="avatar">
                             <a href="{{.User.Link}}">
                                 <img src="{{.User.AvatarLink}}?size=48">
@@ -69,9 +69,11 @@
                             <div class="meta">
                                 <a href="{{.User.Link}}">{{.User.NickName}}</a>
                                 <a href="#reply{{.Floor}}">{{i18n $.Lang "post.comment_floor" .Floor}}</a> <span class="time">{{timesince $.Lang .Created}}</span>
+                                {{if $.IsLogin}}
                                 <span class="pull-right">
                                     <a rel="comment-reply" href="javascript:">{{i18n $.Lang "post.comment_reply"}} <i class="icon-reply"></i></a>
                                 </span>
+                                {{end}}
                             </div>
                             <div class="markdown">
                                 {{.GetMessageCache|str2html}}

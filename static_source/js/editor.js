@@ -196,6 +196,7 @@
         return e;
     }
 
+    additionMentions = {}||additionMentions;
     function TextareaComplete($textarea){
         var mentions = [];
         var fetched = false;
@@ -223,9 +224,12 @@
                         $.post('/api/user', {action: "get-follows"}, function(d){
                             if(d.success){
                                 $.each(d.data, function(_,d){
-                                    var elm = d[0];
-                                    if(d[0] != d[1]){
-                                        elm = d[1] + ' (' + d[0] + ')';
+                                    additionMentions[d[1]] = d[0];
+                                });
+                                $.each(additionMentions, function(k,v){
+                                    var elm = k;
+                                    if(k != v){
+                                        elm = k + ' (' + v + ')';
                                     }
                                     mentions.push(elm);
                                 });
