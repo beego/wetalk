@@ -45,7 +45,7 @@
                                 <td><a href="{{$.AppUrl}}admin/article/{{$article.Id}}">{{$article.Title}}</a></td>
                                 <td><a target="_blank" href="{{$article.Link}}">{{$article.Uri}} <i class="icon-external-link"></i></a></td>
                                 <td><a href="{{$.AppUrl}}admin/user/{{$article.User.Id}}">{{$article.User.UserName}}</a></td>
-                                <td>{{$article.IsPublish}}</td>
+                                <td>{{$article.IsPublish|boolicon}}</td>
                                 <td>{{$article.Created|datetime}}</td>
                                 <td>{{$article.Updated|datetime}}</td>
                             </tr>

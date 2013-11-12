@@ -34,6 +34,7 @@ type Article struct {
 	TitleZhCn        string    `orm:"size(60)"`
 	ContentZhCn      string    `orm:"type(text)"`
 	ContentCacheZhCn string    `orm:"type(text)"`
+	LastAuthor       *User     `orm:"rel(fk);null"`
 	IsPublish        bool      `orm:"index"`
 	Created          time.Time `orm:"auto_now_add"`
 	Updated          time.Time `orm:"auto_now"`

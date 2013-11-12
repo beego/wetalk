@@ -20,6 +20,7 @@ import (
 	"github.com/astaxie/beego/orm"
 
 	"github.com/beego/wetalk/models"
+	"github.com/beego/wetalk/utils"
 )
 
 // HomeRouter serves home page.
@@ -37,6 +38,16 @@ func (this *PostListRouter) setTopicsOfCat(topics *[]models.Topic, cat *models.C
 	this.Data["Topics"] = *topics
 }
 
+func (this *PostListRouter) postsFilter(qs orm.QuerySeter) orm.QuerySeter {
+	args := []string{utils.ToStr(this.Locale.Index())}
+	if this.isLogin {
+		args = append(args, this.user.LangAdds...)
+		args = append(args, utils.ToStr(this.user.Lang))
+	}
+	qs = qs.Filter("Lang__in", args)
+	return qs
+}
+
 // Get implemented Get method for HomeRouter.
 func (this *PostListRouter) Home() {
 	this.Data["IsHome"] = true
@@ -47,6 +58,8 @@ func (this *PostListRouter) Home() {
 
 	var posts []models.Post
 	qs := models.Posts().OrderBy("-Created").Limit(25).RelatedSel()
+	qs = this.postsFilter(qs)
+
 	models.ListObjects(qs, &posts)
 	this.Data["Posts"] = posts
 
@@ -76,6 +89,7 @@ func (this *PostListRouter) Category() {
 	pager := this.SetPaginator(pers, cnt)
 
 	qs = qs.OrderBy("-Created").Limit(pers, pager.Offset()).RelatedSel()
+	qs = this.postsFilter(qs)
 
 	var posts []models.Post
 	models.ListObjects(qs, &posts)
@@ -118,6 +132,7 @@ func (this *PostListRouter) Navs() {
 		pager := this.SetPaginator(pers, cnt)
 
 		qs = qs.OrderBy("-Updated").Limit(pers, pager.Offset()+25).RelatedSel()
+		qs = this.postsFilter(qs)
 
 		models.ListObjects(qs, &posts)
 
@@ -131,6 +146,7 @@ func (this *PostListRouter) Navs() {
 		pager := this.SetPaginator(pers, cnt)
 
 		qs = qs.OrderBy("-Created").Limit(pers, pager.Offset()).RelatedSel()
+		qs = this.postsFilter(qs)
 
 		models.ListObjects(qs, &posts)
 
@@ -144,6 +160,7 @@ func (this *PostListRouter) Navs() {
 		pager := this.SetPaginator(pers, cnt)
 
 		qs = qs.OrderBy("-Created").Limit(pers, pager.Offset()).RelatedSel()
+		qs = this.postsFilter(qs)
 
 		models.ListObjects(qs, &posts)
 
@@ -160,17 +177,19 @@ func (this *PostListRouter) Navs() {
 			pager := this.SetPaginator(pers, cnt)
 
 			qs = qs.OrderBy("-Created").Limit(pers, pager.Offset()).RelatedSel()
+			qs = this.postsFilter(qs)
 
 			models.ListObjects(qs, &posts)
 
 			var topics []models.Topic
-			models.Topics().Filter("Id__in", topicIds).Limit(8).All(&topics)
+			nums, _ = models.Topics().Filter("Id__in", topicIds).Limit(8).All(&topics)
 			this.Data["Topics"] = topics
+			this.Data["TopicsMore"] = nums >= 8
 		}
 
 	case "follow":
 		var userIds orm.ParamsList
-		nums, _ := models.Follows().Filter("User", &this.user.Id).OrderBy("-Created").ValuesFlat(&userIds, "FollowUser")
+		nums, _ := this.user.FollowingUsers().OrderBy("-Created").ValuesFlat(&userIds, "FollowUser")
 		if nums > 0 {
 			qs := models.Posts().Filter("User__in", userIds)
 
@@ -178,12 +197,9 @@ func (this *PostListRouter) Navs() {
 			pager := this.SetPaginator(pers, cnt)
 
 			qs = qs.OrderBy("-Created").Limit(pers, pager.Offset()).RelatedSel()
+			qs = this.postsFilter(qs)
 
 			models.ListObjects(qs, &posts)
-
-			var followUsers []models.User
-			models.Users().Filter("Id__in", userIds).Limit(8).All(&followUsers)
-			this.Data["FollowUsers"] = followUsers
 		}
 	}
 
@@ -211,6 +227,7 @@ func (this *PostListRouter) Topic() {
 		pager := this.SetPaginator(pers, cnt)
 
 		qs = qs.OrderBy("-Created").Limit(pers, pager.Offset()).RelatedSel()
+		qs = this.postsFilter(qs)
 
 		var posts []models.Post
 		models.ListObjects(qs, &posts)
@@ -275,7 +292,7 @@ func (this *PostRouter) New() {
 		return
 	}
 
-	form := models.PostForm{}
+	form := models.PostForm{Locale: this.Locale}
 	form.Lang = this.Locale.Index()
 
 	slug := this.GetString("topic")
@@ -307,6 +324,8 @@ func (this *PostRouter) NewSubmit() {
 		case "preview":
 			content := this.GetString("content")
 			result["preview"] = models.RenderPostContent(content)
+
+			models.FilterMentions(&this.user, models.RenderPostContent(content))
 			result["success"] = true
 		}
 		this.Data["json"] = result
@@ -314,7 +333,7 @@ func (this *PostRouter) NewSubmit() {
 		return
 	}
 
-	form := models.PostForm{}
+	form := models.PostForm{Locale: this.Locale}
 	slug := this.GetString("topic")
 	if len(slug) > 0 {
 		topic := models.Topic{Slug: slug}

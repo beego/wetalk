@@ -109,36 +109,36 @@ func PBKDF2(password, salt []byte, iter, keyLen int, h func() hash.Hash) []byte 
 }
 
 // verify time limit code
-func VerifyTimeLimitCode(data string, days int, code string) bool {
-	if len(code) <= 14 {
+func VerifyTimeLimitCode(data string, minutes int, code string) bool {
+	if len(code) <= 18 {
 		return false
 	}
 
 	// split code
 	start := code[:12]
-	lives := code[12:14]
+	lives := code[12:18]
 	if d, err := StrTo(lives).Int(); err == nil {
-		days = d
+		minutes = d
 	}
 
 	// right active code
-	retCode := CreateTimeLimitCode(data, days, start)
-	if retCode == code && days > 0 {
+	retCode := CreateTimeLimitCode(data, minutes, start)
+	if retCode == code && minutes > 0 {
 		// check time is expired or not
 		before, _ := beego.DateParse(start, "YmdHi")
 		now := time.Now()
-		if before.Add(24*time.Hour*time.Duration(days)).Unix() > now.Unix() {
+		if before.Add(time.Minute*time.Duration(minutes)).Unix() > now.Unix() {
 			return true
 		}
 	}
 	return false
 }
 
-const TimeLimitCodeLength = 12 + 2 + 40
+const TimeLimitCodeLength = 12 + 6 + 40
 
 // create a time limit code
-// code format: 12 length date time string + 2 length days + 40 sha1 encoded string
-func CreateTimeLimitCode(data string, days int, startInf interface{}) string {
+// code format: 12 length date time string + 6 minutes string + 40 sha1 encoded string
+func CreateTimeLimitCode(data string, minutes int, startInf interface{}) string {
 	format := "YmdHi"
 
 	var start, end time.Time
@@ -155,15 +155,15 @@ func CreateTimeLimitCode(data string, days int, startInf interface{}) string {
 		startStr = beego.Date(start, format)
 	}
 
-	end = start.Add(24 * time.Hour * time.Duration(days))
+	end = start.Add(time.Minute * time.Duration(minutes))
 	endStr = beego.Date(end, format)
 
 	// create sha1 encode string
 	sh := sha1.New()
-	sh.Write([]byte(data + SecretKey + startStr + endStr + ToStr(days)))
+	sh.Write([]byte(data + SecretKey + startStr + endStr + ToStr(minutes)))
 	encoded := hex.EncodeToString(sh.Sum(nil))
 
-	code := fmt.Sprintf("%s%02d%s", startStr, days, encoded)
+	code := fmt.Sprintf("%s%06d%s", startStr, minutes, encoded)
 	return code
 }
 
@@ -178,6 +178,23 @@ func EncodeMd5(str string) string {
 func EncodePassword(rawPwd string, salt string) string {
 	pwd := PBKDF2([]byte(rawPwd), []byte(salt), 10000, 50, sha256.New)
 	return hex.EncodeToString(pwd)
+}
+
+func TimesReachedTest(key string, times int) (int, bool) {
+	var retries int
+	if v := Cache.Get(key); v != nil {
+		if d, ok := v.(int); ok {
+			if d > times {
+				return d, true
+			}
+			retries = d
+		}
+	}
+	return retries, false
+}
+
+func TimesReachedSet(key string, times int, reloadMinutes int) {
+	Cache.Put(key, times+1, int64(reloadMinutes)*60)
 }
 
 // convert string to specify type

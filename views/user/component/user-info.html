@@ -1,0 +1,58 @@
+<div class="box">
+    <div style="min-height:220px;">
+        <a href="{{.TheUser.Link}}">
+            <img src="{{.TheUser.AvatarLink}}?s=220">
+        </a>
+    </div>
+    <div class="info">
+        <h3>{{.TheUser.NickName}}</h3>
+        <strong>@{{.TheUser.UserName}}</strong>
+        <p>{{if .TheUser.Info}}{{.TheUser.Info}}{{else}}{{i18n .Lang "user.lazy_info"}}{{end}}</p>
+        {{template "user/component/user-socials.html" dict "User" .TheUser}}
+    </div>
+    <div class="detail">
+        <ul class="list-unstyled">
+            {{if .TheUser.Company}}
+                <li>
+                    <i class="icon-group"></i> {{.TheUser.Created|date}}
+                </li>
+            {{end}}
+            {{if .TheUser.Location}}
+                <li>
+                    <i class="icon-map-marker"></i> {{.TheUser.Created|date}}
+                </li>
+            {{end}}
+            {{if .TheUser.PublicEmail}}
+                <li>
+                    <i class="icon-envelope-alt"></i> <a class="color-link" href="mailto:{{.TheUser.Email}}">{{.TheUser.Email}}</a>
+                </li>
+            {{end}}
+            <li>
+                <i class="icon-time"></i> {{i18n .Lang "user.joined_on"}} {{.TheUser.Created|date}}
+            </li>
+        </ul>
+    </div>
+    <div class="stats">
+        <a href="{{.TheUser.Link}}/following" class="color-link-hover">
+            <strong>{{.TheUser.Following}}</strong> {{i18n .Lang "user.following"}}
+        </a>
+        <a href="{{.TheUser.Link}}/followers" class="color-link-hover">
+            <strong>{{.TheUser.Followers}}</strong> {{i18n .Lang "user.followers"}}
+        </a>
+        <a href="{{.TheUser.Link}}/favs" class="color-link-hover">
+            <strong>{{.TheUser.FavTopics}}</strong> {{i18n .Lang "user.favtopics"}}
+        </a>
+        <span class="clearfix"></span>
+    </div>
+</div>
+{{if .IsLogin}}
+{{if ne .User.Id .TheUser.Id}}
+<div class="box nobg">
+    {{if .IsFollowed}}
+        <button rel="user-unfollow" data-user="{{.TheUser.Id}}" class="btn btn-default btn-md active"><i class="icon-minus"></i> {{i18n .Lang "user.follow_remove"}}</button>
+    {{else}}
+        <button rel="user-follow" data-user="{{.TheUser.Id}}" class="btn btn-default btn-md"><i class="icon-plus"></i> {{i18n .Lang "user.follow_user"}}</button>
+    {{end}}
+</div>
+{{end}}
+{{end}}

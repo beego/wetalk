@@ -23,6 +23,7 @@ import (
 type ArticleAdminForm struct {
 	Create      bool   `form:"-"`
 	User        int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:"Required"`
+	LastAuthor  int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:""`
 	Uri         string `valid:"Required;MaxSize(60);Match(/[0-9a-z-./]+/)"`
 	Title       string `valid:"Required;MaxSize(60)"`
 	Content     string `form:"type(textarea,markdown)" valid:"Required"`
@@ -44,6 +45,10 @@ func (form *ArticleAdminForm) SetFromArticle(article *Article) {
 	if article.User != nil {
 		form.User = article.User.Id
 	}
+
+	if article.LastAuthor != nil {
+		form.LastAuthor = article.LastAuthor.Id
+	}
 }
 
 func (form *ArticleAdminForm) SetToArticle(article *Article) {
@@ -53,6 +58,11 @@ func (form *ArticleAdminForm) SetToArticle(article *Article) {
 		article.User = &User{}
 	}
 	article.User.Id = form.User
+
+	if article.LastAuthor == nil {
+		article.LastAuthor = &User{}
+	}
+	article.LastAuthor.Id = form.LastAuthor
 
 	article.ContentCache = RenderPostContent(article.Content)
 	article.ContentCacheZhCn = RenderPostContent(article.ContentZhCn)

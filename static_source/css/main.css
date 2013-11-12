@@ -96,6 +96,13 @@ textarea.form-control {
     box-shadow: 1px 0 4px rgba(0, 0, 0, 0.20);
 }
 
+.box.nobg {
+  background: none;
+  border: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
 .cell {
   padding: 10px 10px;
   border-top: 2px solid #fff;
@@ -115,6 +122,11 @@ textarea.form-control {
 .cell.slim {
   padding-right: 25px;
   padding-left: 25px;
+}
+
+.cell.low {
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 /* nav-cats */
@@ -207,9 +219,17 @@ textarea.form-control {
   font-weight: normal;
 }
 
+.post-list .post.noavatar .title {
+  margin: 0 20px 0 0;
+}
+
+.post-list .post.noavatar .meta {
+  margin: 7px 0 0;
+}
+
 .post-list .post .meta {
   color: #aaa;
-  margin: 9px 0 0 65px;
+  margin: 7px 0 0 65px;
   font-size: 12px;
 }
 
@@ -219,12 +239,14 @@ textarea.form-control {
 }
 
 .post-list .post .meta .tag {
+  color: #999;
   border-radius: 3px;
   padding: 2px 3px;
   background-color: #eee;
 }
 
 .post-list .post .meta .tag:hover {
+  color: #666;
   background-color: #ddd;
   text-decoration: none;
 }
@@ -236,13 +258,6 @@ textarea.form-control {
 .post-list .post .data i {
   margin-left: 5px;
   margin-right: 10px;
-}
-
-.nav-users .avatar {
-  display: inline-block;
-  margin: 3px;
-  width: 32px;
-  height: 32px;
 }
 
 /* breadcrumb */
@@ -380,19 +395,24 @@ h6.underline {
 }
 
 .color-checked {
-  color: green;
+  color: #02A779;
 }
 
-.color-oragne {
-  color: orange;
+.color-orange {
+  color: #F3813A;
+}
+
+.color-red {
+  color: #F24A39;
 }
 
 a.color-link,
-.color-link a {
+.color-link a,
+a.color-link-hover:hover {
   color: #2892BC;
 }
 
-a.color-link:hover ,
+a.color-link:hover,
 .color-link a:hover {
   color: #146B8E;
 }
@@ -682,21 +702,29 @@ a.color-link:hover ,
   min-height: 122px;
 }
 
-#post-comments .comment .avatar {
+.post-comments .comment .avatar {
   float: left;
 }
 
-#post-comments .comment .meta {
+.post-comments .comment .meta {
   margin: 0 0 10px 0;
 }
 
-#post-comments .comment .meta a {
+.post-comments .comment .meta a {
   margin-right: 5px;
   font-weight: bold;
 }
 
-#post-comments .comment .content {
+.post-comments .comment .content {
   margin: 0 0 0 58px;
+}
+
+.post-comments .comment.noavatar .content {
+  margin: 0;
+}
+
+.post-comments .comment.highlight {
+  background: #eee;
 }
 
 .article-show .post-title {
@@ -711,4 +739,118 @@ a.color-link:hover ,
 
 .sidebar-list li {
   margin-bottom: 5px;
+}
+
+/* user home */
+.user-page .detail li {
+  font-size: 14px;
+  padding-top: 5px;
+}
+
+.user-page .detail li:first-child {
+  padding-top: 0;
+}
+
+.user-page .detail li > i {
+  color: #999;
+  padding: 0 7px 0 0;
+}
+
+.user-page .detail ul {
+  margin: 0;
+}
+
+.user-page .info {
+  padding: 10px;
+}
+
+.user-page .info > h3 {
+  margin: 0 0 6px;
+}
+
+.user-page .info > strong {
+  padding-left: 5px;
+  font-size: 14px;
+  color: #777;
+}
+
+.user-page .info > p {
+  padding-left: 5px;
+  margin: 10px 0 0;
+  color: #333;
+}
+
+.user-page .detail,
+.user-page .stats {
+  border-top: 1px solid #ddd;
+  padding: 10px 5px;
+}
+
+.user-page .stats a {
+  float: left;
+  text-align: center;
+  font-size: 11px;
+}
+
+.user-page .stats a:hover {
+  text-decoration: none;
+}
+
+.user-page .stats a strong {
+  display: block;
+  width: 70px;
+  font-size: 18px;
+  padding: 0 0 5px;
+}
+
+.user-page .socials a {
+  font-size: 16px;
+}
+
+.user-page .socials a:hover {
+  text-decoration: none;
+  color: #2892BC;
+}
+
+.user-page .nav-topics {
+  line-height: 24px;
+}
+
+.user-box .avatar {
+  display: block;
+  float: left;
+}
+
+.user-box .info {
+  float: left;
+  padding: 0 0 0 9px;
+}
+
+.user-box .intro {
+  margin: 9px 0 0;
+  height: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-list {
+  padding: 0 0 0 10px;
+}
+
+.user-list .user-box {
+  padding: 9px;
+  margin: 15px 10px 0 0;
+  float: left;
+  width: 170px;
+  height: 90px;
+  overflow: hidden;
+  background: #f5f5f5;
+  border: 1px solid #f5f5f5;
+}
+
+.user-list .user-box:hover {
+  border: 1px solid #ddd;
+  -webkit-box-shadow: 1px 0 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 1px 0 4px rgba(0, 0, 0, 0.05);
 }

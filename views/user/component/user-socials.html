@@ -1,0 +1,35 @@
+{{if or .User.Github .User.Twitter .User.Google .User.Weibo .User.Linkedin .User.Facebook}}
+<span class="socials pull-right">
+    {{if .User.Github}}
+        <a target="_blank" href="https://github.com/{{.User.Github}}">
+            <i class="icon-github-alt"></i>
+        </a>
+    {{end}}
+    {{if .User.Twitter}}
+        <a target="_blank" href="https://twitter.com/{{.User.Twitter}}">
+            <i class="icon-twitter-sign"></i>
+        </a>
+    {{end}}
+    {{if .User.Google}}
+        <a target="_blank" href="https://plus.google.com/{{.User.Google}}">
+            <i class="icon-google-plus-sign"></i>
+        </a>
+    {{end}}
+    {{if .User.Weibo}}
+        <a target="_blank" href="http://weibo.com/{{.User.Weibo}}">
+            <i class="icon-weibo"></i>
+        </a>
+    {{end}}
+    {{if .User.Linkedin}}
+        <a target="_blank" href="http://www.linkedin.com/in/{{.User.Linkedin}}">
+            <i class="icon-linkedin-sign"></i>
+        </a>
+    {{end}}
+    {{if .User.Facebook}}
+        <a target="_blank" href="https://www.facebook.com/{{.User.Facebook}}">
+            <i class="icon-facebook-sign"></i>
+        </a>
+    {{end}}
+</span>
+<span class="clearfix"></span>
+{{end}}

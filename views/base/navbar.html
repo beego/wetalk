@@ -31,6 +31,7 @@
                             <li><a href="{{.AppUrl}}admin">{{i18n .Lang "admin.admin_center"}}</a></li>
                             <li class="divider"></li>
                         {{end}}
+                        <li><a href="{{.AppUrl}}u/{{.User.UserName}}"><span>{{i18n .Lang "user.home"}}</span></a></li>
                         <li><a href="{{.AppUrl}}settings/profile"><span>{{i18n .Lang "auth.user_profile"}}</span></a></li>
                         <li><a href="{{.AppUrl}}logout">{{i18n .Lang "auth.logout"}}</a></li>
                     </ul>
@@ -54,7 +55,7 @@
                                 <input type="hidden" name="Remember" value="0">
                                 <button type="button" data-toggle="button" data-name="Remember" value="0" class="btn btn-default btn-xs btn-checked"><i class="icon icon-ok"></i></button>{{i18n .Lang "auth.login_remember_me"}}
                             </label>
-                            <span class="pull-right"><a href="http://i.wapp.lab/login/lost/"><i class="icon-question-sign"></i> {{i18n .Lang "auth.forgot_password"}}</a></span>
+                            <span class="pull-right"><a href="{{$.AppUrl}}forgot"><i class="icon-question-sign"></i> {{i18n .Lang "auth.forgot_password"}}</a></span>
                         </p>
                         <button class="btn btn-primary btn-block" type="submit">{{i18n .Lang "auth.login"}}</button>
                     </form>

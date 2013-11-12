@@ -22,13 +22,14 @@ import (
 )
 
 type PostForm struct {
-	Lang       int        `form:"type(select);attr(rel,select2)"`
-	Category   int        `form:"type(select);attr(rel,select2)" valid:"Required"`
-	Topic      int        `form:"type(select);attr(rel,select2)" valid:"Required"`
-	Title      string     `form:"attr(autocomplete,off)" valid:"Required;MinSize(5);MaxSize(60)"`
-	Content    string     `form:"type(textarea)" valid:"Required;MinSize(10)"`
-	Categories []Category `form:"-"`
-	Topics     []Topic    `form:"-"`
+	Lang       int         `form:"type(select);attr(rel,select2)"`
+	Category   int         `form:"type(select);attr(rel,select2)" valid:"Required"`
+	Topic      int         `form:"type(select);attr(rel,select2)" valid:"Required"`
+	Title      string      `form:"attr(autocomplete,off)" valid:"Required;MinSize(5);MaxSize(60)"`
+	Content    string      `form:"type(textarea)" valid:"Required;MinSize(10)"`
+	Categories []Category  `form:"-"`
+	Topics     []Topic     `form:"-"`
+	Locale     i18n.Locale `form:"-"`
 }
 
 func (form *PostForm) LangSelectData() [][]string {
@@ -51,7 +52,7 @@ func (form *PostForm) CategorySelectData() [][]string {
 func (form *PostForm) TopicSelectData() [][]string {
 	data := make([][]string, 0, len(form.Topics))
 	for _, topic := range form.Topics {
-		data = append(data, []string{"topic." + topic.Name, utils.ToStr(topic.Id)})
+		data = append(data, []string{topic.GetName(form.Locale.Lang), utils.ToStr(topic.Id)})
 	}
 	return data
 }
@@ -90,7 +91,12 @@ func (form *PostForm) SavePost(post *Post, user *User) error {
 	post.Topic = &Topic{Id: form.Topic}
 	post.User = user
 	post.LastReply = user
+	post.LastAuthor = user
 	post.ContentCache = RenderPostContent(form.Content)
+
+	// mentioned follow users
+	FilterMentions(user, post.ContentCache)
+
 	return post.Insert()
 }
 
@@ -114,6 +120,15 @@ func (form *PostForm) UpdatePost(post *Post, user *User) error {
 			changes = append(changes, "ContentCache")
 		}
 	}
+
+	// update last edit author
+	if post.LastAuthor != nil && post.LastAuthor.Id != user.Id {
+		post.LastAuthor = user
+		changes = append(changes, "LastAuthor")
+	}
+
+	changes = append(changes, "Updated")
+
 	return post.Update(changes...)
 }
 
@@ -126,19 +141,20 @@ func (form *PostForm) Placeholders() map[string]string {
 }
 
 type PostAdminForm struct {
-	PostForm  `form:"-"`
-	Create    bool   `form:"-"`
-	User      int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:"Required"`
-	Title     string `valid:"Required;MaxSize(60)"`
-	Content   string `form:"type(textarea,markdown)" valid:"Required"`
-	Browsers  int    ``
-	Replys    int    ``
-	Favorites int    ``
-	LastReply int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:"Required"`
-	Topic     int    `form:"type(select);attr(rel,select2)" valid:"Required"`
-	Category  int    `form:"type(select);attr(rel,select2)" valid:"Required"`
-	Lang      int    `form:"type(select);attr(rel,select2)"`
-	IsBest    bool   ``
+	PostForm   `form:"-"`
+	Create     bool   `form:"-"`
+	User       int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:"Required"`
+	Title      string `valid:"Required;MaxSize(60)"`
+	Content    string `form:"type(textarea,markdown)" valid:"Required"`
+	Browsers   int    ``
+	Replys     int    ``
+	Favorites  int    ``
+	LastReply  int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:""`
+	LastAuthor int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:""`
+	Topic      int    `form:"type(select);attr(rel,select2)" valid:"Required"`
+	Category   int    `form:"type(select);attr(rel,select2)" valid:"Required"`
+	Lang       int    `form:"type(select);attr(rel,select2)"`
+	IsBest     bool   ``
 }
 
 func (form *PostAdminForm) Valid(v *validation.Validation) {
@@ -148,6 +164,11 @@ func (form *PostAdminForm) Valid(v *validation.Validation) {
 	}
 
 	user.Id = form.LastReply
+	if user.Read() != nil {
+		v.SetError("LastReply", "admin.not_found_by_id")
+	}
+
+	user.Id = form.LastAuthor
 	if user.Read() != nil {
 		v.SetError("LastReply", "admin.not_found_by_id")
 	}
@@ -178,6 +199,10 @@ func (form *PostAdminForm) SetFromPost(post *Post) {
 		form.LastReply = post.LastReply.Id
 	}
 
+	if post.LastAuthor != nil {
+		form.LastAuthor = post.LastAuthor.Id
+	}
+
 	if post.Topic != nil {
 		form.Topic = post.Topic.Id
 	}
@@ -199,6 +224,11 @@ func (form *PostAdminForm) SetToPost(post *Post) {
 		post.LastReply = &User{}
 	}
 	post.LastReply.Id = form.LastReply
+
+	if post.LastAuthor == nil {
+		post.LastAuthor = &User{}
+	}
+	post.LastAuthor.Id = form.LastAuthor
 
 	if post.Topic == nil {
 		post.Topic = &Topic{}
@@ -222,7 +252,13 @@ func (form *CommentForm) SaveComment(comment *Comment, user *User, post *Post) e
 	comment.MessageCache = RenderPostContent(form.Message)
 	comment.User = user
 	comment.Post = post
-	return comment.Insert()
+	if err := comment.Insert(); err == nil {
+		cnt, _ := post.Comments().Filter("Id__lte", comment.Id).Count()
+		comment.Floor = int(cnt)
+		return comment.Update("Floor")
+	} else {
+		return err
+	}
 }
 
 type CommentAdminForm struct {
@@ -230,6 +266,7 @@ type CommentAdminForm struct {
 	User    int    `form:"attr(rel,select2-admin-model);attr(data-model,User)" valid:"Required"`
 	Post    int    `valid:"Required"`
 	Message string `form:"type(textarea)" valid:"Required"`
+	Floor   int    `valid:"Required"`
 	Status  int    `valid:"Required"`
 }
 

@@ -173,13 +173,15 @@
                 $t.focus();
             },
             save: function(repl){
-                if(repl){
-                    stacks[cur] = getStack();
-                } else if(e.last() !== $t.val()){
-                    stacks.push(getStack());
-                }
-                cur = stacks.length - 1;
-                cbk();
+                setTimeout(function(){
+                    if(repl){
+                        stacks[cur] = getStack();
+                    } else if(e.last() !== $t.val()){
+                        stacks.push(getStack());
+                    }
+                    cur = stacks.length - 1;
+                    cbk();
+                },10);
             },
             last: function(){
                 if(stacks.length) {
@@ -192,6 +194,63 @@
         cur++;
 
         return e;
+    }
+
+    function TextareaComplete($textarea){
+        var mentions = [];
+        var fetched = false;
+        $textarea.textcomplete([
+            {
+                match: /\B@([\d\w-_]*)$/,
+                search: function (term, callback){
+
+                    var cbk = function(){
+                        var nums = 0;
+                        callback($.map(mentions, function (mention) {
+                            if(nums < 5 && mention.indexOf(term) === 0){
+                                nums++;
+                            }else{
+                                mention = null;
+                            }
+                            return mention;
+                        }));
+                    };
+
+                    if(fetched){
+                        cbk();
+                    } else {
+                        fetched = true;
+                        $.post('/api/user', {action: "get-follows"}, function(d){
+                            if(d.success){
+                                $.each(d.data, function(_,d){
+                                    var elm = d[0];
+                                    if(d[0] != d[1]){
+                                        elm = d[1] + ' (' + d[0] + ')';
+                                    }
+                                    mentions.push(elm);
+                                });
+                                cbk();
+                            }
+                        });
+                    }
+                },
+                index: 1,
+                replace: function (mention) {
+                    var idx = mention.indexOf(' ');
+                    if(idx != -1) {
+                        mention = mention.substr(0, idx);
+                    }
+                    return '@' + mention + ' ';
+                }
+            }
+        ]).overlay([
+            {
+                match: /\B[@#]([\d\w-_]*)/g,
+                css: {
+                    'background-color': '#ddd'
+                }
+            }
+        ]);
     }
 
     $(function(){
@@ -232,11 +291,31 @@
             function insertText(v, start, end){
                 var sel = getSelection(te);
                 var value = $textarea.val();
+                var vStart = value.substr(0, sel.start).lastIndexOf('\n') + 1;
+                var vv = value.substring(vStart, sel.start);
+                if($.trim(vv)){
+                    v = '\n' + v;
+                    if(start){
+                        start += 1;
+                    }
+                    if(end){
+                        end += 1;
+                    }
+                }
                 value = value.substr(0, sel.end) + v + value.substr(sel.end);
                 $textarea.val(value);
                 setSelectRange(te, start, end);
                 undoManager.save();
             }
+
+            var api = {
+                 'insertText': insertText,
+                 'getSel': function(){
+                    return getSelection(te);
+                 }
+            };
+
+            $editor.data('editor', api);
 
             if($textarea.val() === '') {
                 $textarea.val($.jStorage.get(saveKey));
@@ -252,6 +331,7 @@
 
             $textarea.autosize();
             $textarea.css('resize', 'none');
+            TextareaComplete($textarea);
 
             $editor.on('click', '[data-meta=preview]', function(){
                 var $e = $(this);
@@ -423,11 +503,11 @@
                 if(sel.start != sel.end){
                     var value = $textarea.val();
                     var selv = value.substring(sel.start, sel.end);
-                    value = value.substr(0, sel.start) + "```go\n"+selv+"\n```";
+                    value = value.substr(0, sel.start) + "\n```go\n"+selv+"\n```";
                     $textarea.val(value);
                     undoManager.save();
                 } else {
-                    insertText("```go\n\n```", sel.start+6);
+                    insertText("\n```go\n\n```", sel.start+7);
                 }
             });
 

@@ -36,7 +36,11 @@
                         {{end}}
                         {{if .Error}}
                             <div class="alert alert-danger">
-                                <p>{{i18n .Lang "auth.login_error"}}</p>
+                                {{if .ErrorReached}}
+                                    <p>{{i18n .Lang "auth.login_error_times_reached"}}</p>
+                                {{else}}
+                                    <p>{{i18n .Lang "auth.login_error"}}</p>
+                                {{end}}
                             </div>
                         {{end}}
     					<form method="POST" action="{{.AppUrl}}login"{{if .Error}} class="has-error"{{end}}>

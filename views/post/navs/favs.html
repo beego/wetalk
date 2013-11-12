@@ -11,7 +11,9 @@
             {{if .Topics}}
             <div class="cell nav-topics last">
                 {{template "post/component/nav-topics.html" .}}
+                {{if .TopicsMore}}
                 <div class="pull-right"><a target="_blank" href="{{.User.Link}}/favs">{{i18n .Lang "more"}} <i class="icon-double-angle-right"></i></a></div>
+                {{end}}
             </div>
             {{end}}
         </div>

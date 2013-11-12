@@ -5,19 +5,16 @@
 <div class="row">
     <div id="content" class="col-md-8">
         <div class="box">
-            <div class="cell nav-cats breadcrumb first{{if not .FollowUsers}} last{{end}}">
+            <div class="cell nav-cats breadcrumb first last">
                 {{template "post/component/nav-list.html" .}}
             </div>
-            {{if .FollowUsers}}
-            <div class="cell nav-users last">
-                {{template "post/component/nav-users.html" dict "root" . "Users" .FollowUsers}}
-                <span class="pull-right"><a target="_blank" href="{{.User.Link}}/follow">{{i18n .Lang "More"}} <i class="icon-double-angle-right"></i></a></span>
-            </div>
-            {{end}}
         </div>
         <div class="box">
             <div class="cell first breadcrumb">
                 <i class="divider icon-angle-down"></i><a href="{{.AppUrl}}follow">{{i18n .Lang "postnav.posts_of_your_follow"}}</a>
+                <span class="pull-right">
+                    <a href="{{.User.Link}}/following">{{i18n .Lang "user.you_following_users"}} <i class="icon-double-angle-right"></i></a>
+                </span>
             </div>
             {{if .paginator.Nums}}
                 <div class="post-list">

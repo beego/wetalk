@@ -6,7 +6,7 @@
     <div id="content" class="col-md-9">
         <div class="box">
             <div class="cell first breadcrumb last">
-                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.Post.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a><i class="divider icon-angle-right"></i><a href="{{.Post.Topic.Link}}">{{i18n .Lang (print "topic." .Post.Topic.Name)}}</a>
+                <a href="{{.AppUrl}}"><i class="icon icon-home"></i></a><i class="divider icon-angle-right"></i><a href="{{.Post.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a><i class="divider icon-angle-right"></i><a href="{{.Post.Topic.Link}}">{{.Post.Topic.GetName .Lang}}</a>
                 <span class="pull-right">
                 </span>
             </div>
@@ -18,24 +18,31 @@
                         </a>
                     </div>
                     <h1 class="post-title">
-                        {{.Post.Title}}
+                        {{.Post.Title}}{{if .Post.IsBest}} <i class="icon-bookmark color-red"></i>{{end}}
                     </h1>
                     <div class="post-meta">
-                        <a class="tag" href="{{.Post.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a> • <a class="tag" href="{{.Post.Topic.Link}}">{{i18n .Lang (print "topic." .Post.Topic.Name)}}</a> • {{i18n .Lang "post.post_author"}} <a href="{{.Post.User.Link}}">{{.Post.User.NickName}}</a> • <span class="time">{{timesince .Lang .Post.Created}}</span>{{if .Post.Replys}}{{if .Post.LastReply}} • <span class="last-reply">{{i18n .Lang "post.last_reply"}} <a href="{{.Post.LastReply.Link}}">{{.Post.LastReply.NickName}}</a></span>{{end}}{{end}}
+                        <a target="_blank" class="tag" href="{{.Post.Category.Link}}">{{i18n .Lang (print "category." .Post.Category.Name)}}</a> • <a target="_blank" class="tag" href="{{.Post.Topic.Link}}">{{.Post.Topic.GetName .Lang}}</a> • {{i18n .Lang .Post.GetLang}} • {{i18n .Lang "post.post_author"}} <a target="_blank" href="{{.Post.User.Link}}">{{.Post.User.NickName}}</a> • <span class="time">{{timesince .Lang .Post.Created}}</span>{{if .Post.Replys}}{{if .Post.LastReply}} • <span class="last-reply">{{i18n .Lang "post.last_reply"}} <a href="{{.Post.LastReply.Link}}">{{.Post.LastReply.NickName}}</a></span>{{end}}{{end}}
                     </div>
                 </div>
                 <div class="cell last slim">
                     {{if ne (datetime .Post.Updated) (datetime .Post.Created)}}
                         <p class="post-meta pull-right">
-                            {{i18n .Lang "post.modified_on"}} {{timesince .Lang .Post.Updated}} / {{.Post.Updated|datetimes}}
+                            {{if .Post.LastAuthor}}<a target="_blank" href="{{.Post.LastAuthor.Link}}">{{.Post.LastAuthor.NickName}}</a> • {{end}}{{i18n .Lang "post.modified_on"}} {{timesince .Lang .Post.Updated}} / {{.Post.Updated|datetimes}}
                         </p>
                     {{end}}
                     {{if .IsLogin}}
+                        <p>
                         {{if eq .Post.User.Id .User.Id}}
-                            <p>
-                                <a class="color-link" href="{{.Post.Link}}/edit">{{i18n .Lang "post.post_edit"}} <i class="icon-edit"></i></a>
-                            </p>
+                            <a class="color-link" href="{{.Post.Link}}/edit">{{i18n .Lang "post.post_edit"}}</a>
                         {{end}}
+                        {{if .User.IsAdmin}}
+                            - 
+                            <a rel="toggle-post-best" class="color-link" href="javascript:">
+                                {{if .Post.IsBest}}{{i18n .Lang "post.remove_best"}}{{else}}
+                                {{i18n .Lang "post.set_best"}}{{end}}
+                            </a>
+                        {{end}}
+                        </p>
                     {{end}}
                     <span class="clearfix"></span>
                     <div class="post-content markdown">
@@ -44,7 +51,7 @@
                 </div>
             </div>
         </div>
-        <div id="post-comments" class="box">
+        <div class="box post-comments">
             {{if .CommentsNum}}
                 <div class="cell first breadcrumb">
                     {{i18n .Lang "post.total_replies" .CommentsNum}}
@@ -52,7 +59,7 @@
             {{end}}
             {{if .CommentsNum}}
                 {{range .Comments}}
-                    <div class="cell comment">
+                    <div id="reply{{.Floor}}" class="cell comment" data-user="{{.User.UserName}}" data-floor="{{.Floor}}">
                         <div class="avatar">
                             <a href="{{.User.Link}}">
                                 <img src="{{.User.AvatarLink}}?size=48">
@@ -61,7 +68,10 @@
                         <div class="content">
                             <div class="meta">
                                 <a href="{{.User.Link}}">{{.User.NickName}}</a>
-                                <span class="time">{{timesince $.Lang .Created}}</span>
+                                <a href="#reply{{.Floor}}">{{i18n $.Lang "post.comment_floor" .Floor}}</a> <span class="time">{{timesince $.Lang .Created}}</span>
+                                <span class="pull-right">
+                                    <a rel="comment-reply" href="javascript:">{{i18n $.Lang "post.comment_reply"}} <i class="icon-reply"></i></a>
+                                </span>
                             </div>
                             <div class="markdown">
                                 {{.GetMessageCache|str2html}}
@@ -81,7 +91,7 @@
                 {{if .IsLogin}}
                     <form id="post-reply" method="POST" action="{{.Post.Link}}#post-reply">
                         {{.xsrf_html}}{{.once_html}}
-                        <div class="markdown-editor"  data-preview-url="{{$.AppUrl}}new" data-savekey="post/comment">
+                        <div id="md-editor" class="markdown-editor"  data-preview-url="{{$.AppUrl}}new" data-savekey="post/comment">
                             {{with .CommentFormSets.Fields.Message}}
                                 {{template "post/component/editor.html" dict "root" $ "Field" .Field "Error" .Error "Help" .Help}}
                             {{end}}
@@ -95,19 +105,31 @@
                 {{end}}
             </div>
         </div>
-	</div>
+    </div>
     <div id="sidebar" class="col-md-3">
         <p>
             <a href="{{.AppUrl}}new?topic={{.Post.Topic.Slug}}" class="btn btn-success">
                 <i class="icon-double-angle-right"></i>
-                {{i18n .Lang "post.post_new_with_topic" (i18n .Lang (print "topic." .Post.Topic.Name))}}
+                {{i18n .Lang "post.post_new_with_topic" (.Post.Topic.GetName .Lang)}}
             </a>
         </p>
     </div>
 </div>
+{{if .User.IsAdmin}}
 <script type="text/javascript">
     (function($){
-
+        $(document).on('click', '[rel=toggle-post-best]', function(){
+            var $btn = $(this);
+            $.post('/api/post', {action: 'toggle-best', post: '{{.Post.Id}}'}).complete(function(){
+                window.location.reload();
+            });
+        });
     })(jQuery);
 </script>
 {{end}}
+{{end}}
+<script type="text/javascript">
+    (function($){
+        $.postPage();
+    })(jQuery);
+</script>

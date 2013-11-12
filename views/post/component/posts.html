@@ -6,10 +6,10 @@
 		</a>
 	</div>
 	<h3 class="title">
-		<a href="{{.Link}}">{{.Title}}</a>
+		<a href="{{.Link}}">{{.Title}}</a>{{if .IsBest}} <i class="icon-bookmark color-red"></i>{{end}}
 	</h3>
 	<div class="meta">
-		{{if not $.root.IsCategory}}<a class="tag" href="{{.Category.Link}}">{{i18n $.root.Lang (print "category." .Category.Name)}}</a> • {{end}}{{if not $.root.IsTopic}}<a class="tag" href="{{.Topic.Link}}">{{i18n $.root.Lang (print "topic." .Topic.Name)}}</a> • {{end}}<a href="{{.User.Link}}">{{.User.NickName}}</a> • <span class="time">{{timesince $.root.Lang .Created}}</span>{{if .Replys}}{{if .LastReply}} • <span class="last-reply">{{i18n $.root.Lang "post.last_reply"}} <a href="{{.User.Link}}">{{.LastReply.NickName}}</a></span>{{end}}{{end}}
+		{{if not $.root.IsCategory}}<a class="tag" href="{{.Category.Link}}">{{i18n $.root.Lang (print "category." .Category.Name)}}</a> • {{end}}{{if not $.root.IsTopic}}<a class="tag" href="{{.Topic.Link}}">{{.Topic.GetName $.root.Lang}}</a> • {{end}}<a href="{{.User.Link}}">{{.User.NickName}}</a> • <span class="time">{{timesince $.root.Lang .Created}}</span>{{if .Replys}}{{if .LastReply}} • <span class="last-reply">{{i18n $.root.Lang "post.last_reply"}} <a href="{{.User.Link}}">{{.LastReply.NickName}}</a></span>{{end}}{{end}}
 		<div class="data hidden-xs pull-right">
 			 {{if .Replys}}{{.Replys}}<i class="icon-comment"></i>{{end}} {{if .Favorites}}{{.Favorites}}<i class="icon-heart"></i>{{end}}
 		</div>

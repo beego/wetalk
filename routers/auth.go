@@ -62,6 +62,8 @@ func (this *LoginRouter) Login() {
 	}
 
 	var user models.User
+	var key string
+	ajaxErrMsg := "auth.login_error_ajax"
 
 	form := models.LoginForm{}
 	// valid form and put errors to template context
@@ -72,7 +74,15 @@ func (this *LoginRouter) Login() {
 		return
 	}
 
-	if models.VerifyUser(&user, form.UserName, form.Password) {
+	key = "auth.login." + form.UserName + this.Ctx.Input.IP()
+	if times, ok := utils.TimesReachedTest(key, utils.LoginMaxRetries); ok {
+		if this.IsAjax() {
+			ajaxErrMsg = "auth.login_error_times_reached"
+			goto ajaxError
+		}
+		this.Data["ErrorReached"] = true
+
+	} else if models.VerifyUser(&user, form.UserName, form.Password) {
 		loginRedirect := strings.TrimSpace(this.Ctx.GetCookie("login_to"))
 		if utils.IsMatchHost(loginRedirect) == false {
 			loginRedirect = "/"
@@ -98,6 +108,7 @@ func (this *LoginRouter) Login() {
 		this.Redirect(loginRedirect, 302)
 		return
 	} else {
+		utils.TimesReachedSet(key, times, utils.LoginFailedBlocks)
 		if this.IsAjax() {
 			goto ajaxError
 		}
@@ -108,7 +119,7 @@ func (this *LoginRouter) Login() {
 ajaxError:
 	this.Data["json"] = map[string]interface{}{
 		"success": false,
-		"message": this.Tr("auth.login_error_ajax"),
+		"message": this.Tr(ajaxErrMsg),
 		"once":    this.Data["once_token"],
 	}
 	this.ServeJson()

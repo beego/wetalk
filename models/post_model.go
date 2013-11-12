@@ -16,6 +16,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/beego/i18n"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -26,18 +27,18 @@ import (
 // post content
 type Post struct {
 	Id           int
-	User         *User  `orm:"rel(fk)"`
-	Title        string `orm:"size(60)"`
-	Content      string `orm:"type(text)"`
-	ContentCache string `orm:"type(text)"`
-	Browsers     int
-	Replys       int
-	Favorites    int
-	LastReply    *User  `orm:"rel(fk)"`
-	Topic        *Topic `orm:"rel(fk)"`
-	Lang         int    `orm:"index"`
-	IsBest       bool
-	Images       string
+	User         *User     `orm:"rel(fk)"`
+	Title        string    `orm:"size(60)"`
+	Content      string    `orm:"type(text)"`
+	ContentCache string    `orm:"type(text)"`
+	Browsers     int       `orm:"index"`
+	Replys       int       `orm:"index"`
+	Favorites    int       `orm:"index"`
+	LastReply    *User     `orm:"rel(fk);null"`
+	LastAuthor   *User     `orm:"rel(fk);null"`
+	Topic        *Topic    `orm:"rel(fk)"`
+	Lang         int       `orm:"index"`
+	IsBest       bool      `orm:"index"`
 	Category     *Category `orm:"rel(fk)"`
 	Created      time.Time `orm:"auto_now_add"`
 	Updated      time.Time `orm:"auto_now;index"`
@@ -58,7 +59,6 @@ func (m *Post) Read(fields ...string) error {
 }
 
 func (m *Post) Update(fields ...string) error {
-	fields = append(fields, "Updated")
 	if _, err := orm.NewOrm().Update(m, fields...); err != nil {
 		return err
 	}
@@ -92,6 +92,10 @@ func (m *Post) Comments() orm.QuerySeter {
 	return Comments().Filter("Post", m.Id)
 }
 
+func (m *Post) GetLang() string {
+	return i18n.GetLangByIndex(m.Lang)
+}
+
 func Posts() orm.QuerySeter {
 	return orm.NewOrm().QueryTable("post").OrderBy("-Id")
 }
@@ -103,6 +107,7 @@ type Comment struct {
 	Post         *Post  `orm:"rel(fk)"`
 	Message      string `orm:"type(text)"`
 	MessageCache string `orm:"type(text)"`
+	Floor        int
 	Status       int
 	Created      time.Time `orm:"auto_now_add;index"`
 }

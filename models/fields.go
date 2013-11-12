@@ -49,12 +49,14 @@ func (e *SliceStringField) SetRaw(value interface{}) error {
 	case []string:
 		e.Set(d)
 	case string:
-		parts := strings.Split(d, ",")
-		v := make([]string, 0, len(parts))
-		for _, p := range parts {
-			v = append(v, strings.TrimSpace(p))
+		if len(d) > 0 {
+			parts := strings.Split(d, ",")
+			v := make([]string, 0, len(parts))
+			for _, p := range parts {
+				v = append(v, strings.TrimSpace(p))
+			}
+			e.Set(v)
 		}
-		e.Set(v)
 	default:
 		return fmt.Errorf("<SliceStringField.SetRaw> unknown value `%v`", value)
 	}

@@ -117,9 +117,95 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.Lang}}
+                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.Company}}
+                            </div>
 
+                            <div class="col-md-6">
+                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.Location}}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{template "base/form/field_group.html" .ProfileFormSets.Fields.Lang}}
+                            </div>
+
+                            <div class="col-md-6">
                                 {{template "base/form/field_group.html" .ProfileFormSets.Fields.LangAdds}}
+                            </div>
+                        </div>
+
+                        <h3 class="underline">{{i18n .Lang "auth.social_info"}}</h3>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{with .ProfileFormSets.Fields.Github}}
+                                    <div class="form-group{{if .Error}} has-error{{end}}">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="icon-github-alt"></i></span>
+                                            {{.Field}}
+                                        </div>
+                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                                    </div>
+                                {{end}}
+
+                                {{with .ProfileFormSets.Fields.Weibo}}
+                                    <div class="form-group{{if .Error}} has-error{{end}}">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="icon-weibo"></i></span>
+                                            {{.Field}}
+                                        </div>
+                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                                    </div>
+                                {{end}}
+
+                                {{with .ProfileFormSets.Fields.Linkedin}}
+                                    <div class="form-group{{if .Error}} has-error{{end}}">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="icon-linkedin"></i></span>
+                                            {{.Field}}
+                                        </div>
+                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                                    </div>
+                                {{end}}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{with .ProfileFormSets.Fields.Google}}
+                                    <div class="form-group{{if .Error}} has-error{{end}}">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="icon-google-plus"></i></span>
+                                            {{.Field}}
+                                        </div>
+                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                                    </div>
+                                {{end}}
+
+                                {{with .ProfileFormSets.Fields.Twitter}}
+                                    <div class="form-group{{if .Error}} has-error{{end}}">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="icon-twitter"></i></span>
+                                            {{.Field}}
+                                        </div>
+                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                                    </div>
+                                {{end}}
+
+                                {{with .ProfileFormSets.Fields.Facebook}}
+                                    <div class="form-group{{if .Error}} has-error{{end}}">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="icon-facebook"></i></span>
+                                            {{.Field}}
+                                        </div>
+                                        {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                                        {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                                    </div>
+                                {{end}}
                             </div>
                         </div>
 
@@ -133,7 +219,7 @@
                         </div>
                     </form>
 
-                    <h3 class="underline">Reset Password</h3>
+                    <h3 class="underline">{{i18n .Lang "auth.reset_password"}}</h3>
                     <div class="row">
                         <div class="col-md-6">
                             <form method="POST" action="{{.AppUrl}}settings/profile">

@@ -25,6 +25,8 @@ type TopicAdminForm struct {
 	Id        int    `form:"-"`
 	Name      string `valid:"Required;MaxSize(30)"`
 	Intro     string `form:"type(textarea)" valid:"Required"`
+	NameZhCn  string `valid:"Required;MaxSize(30)"`
+	IntroZhCn string `form:"type(textarea)" valid:"Required"`
 	Slug      string `valid:"Required;MaxSize(100)"`
 	Followers int    ``
 	Order     int    ``
@@ -36,6 +38,10 @@ func (form *TopicAdminForm) Valid(v *validation.Validation) {
 
 	if CheckIsExist(qs, "Name", form.Name, form.Id) {
 		v.SetError("Name", "admin.field_need_unique")
+	}
+
+	if CheckIsExist(qs, "NameZhCn", form.NameZhCn, form.Id) {
+		v.SetError("NameZhCn", "admin.field_need_unique")
 	}
 
 	if CheckIsExist(qs, "Slug", form.Slug, form.Id) {

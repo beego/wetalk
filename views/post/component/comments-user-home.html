@@ -1,0 +1,16 @@
+{{range .Comments}}
+    <div class="cell comment noavatar">
+        <div class="content">
+            <div class="meta">
+                <a href="{{.User.Link}}">{{.User.NickName}}</a>
+                <span class="time">{{timesince $.root.Lang .Created}}</span>
+                •
+                <span class="title"><a class="color-link" target="_blank" href="{{.Post.Link}}">{{.Post.Title}}</a></span>
+            </div>
+            <div class="markdown">
+                {{.GetMessageCache|str2html}}
+            </div>
+        </div>
+        <span class="clearfix"></span>
+    </div>
+{{end}}

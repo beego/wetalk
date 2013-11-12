@@ -29,8 +29,8 @@
                 {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
             </div>
 
-            <div class="cell last">
-                <i class="icon-rss-sign color-oragne"></i> <a href="#">{{i18n .Lang "atom_feed_subscribe"}}</a>
+            <div class="cell last low">
+                <i class="icon-rss-sign color-orange"></i> <a href="#">{{i18n .Lang "atom_feed_subscribe"}}</a>
                 <span class="pull-right"><a href="{{.AppUrl}}recent"><i class="icon-caret-right"></i> {{i18n .Lang "postnav.recent_posts"}}</a></span>
             </div>
         </div>

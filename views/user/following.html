@@ -1,0 +1,33 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}
+    <title>{{.TheUser.NickName}} - {{i18n .Lang "app_name"}}</title>
+{{end}}
+{{define "body"}}
+<div id="content" class="user-page">
+    <div class="row">
+        <div class="col-md-3">
+            {{template "user/component/user-info.html" .}}
+        </div>
+        <div id="content" class="col-md-7">
+            <div class="box">
+                <div class="cell breadcrumb first">
+                    <a href="{{.TheUser.Link}}"><i class="icon-user"></i></a><i class="divider icon-angle-right"></i>{{i18n .Lang "user.following_users" .TheUser.NickName}}
+                </div>
+                {{if .TheUserFollowing}}
+                <div class="user-list">
+                    {{template "user/component/user-list.html" dict "root" . "Users" .TheUserFollowing}}
+                </div>
+                <div class="cell last low">
+                    {{template "base/paginator_pn.html" .}}
+                </div>
+                {{else}}
+                <div class="cell last">
+                    {{i18n .Lang "user.lazy_info"}}
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

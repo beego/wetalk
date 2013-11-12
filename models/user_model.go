@@ -37,17 +37,25 @@ type Setting struct {
 // IsForbid: forbid user login
 type User struct {
 	Id          int
-	UserName    string `orm:"size(30);unique"`
-	NickName    string `orm:"size(30)"`
-	Password    string `orm:"size(128)"`
-	Url         string `orm:"size(100)"`
-	Email       string `orm:"size(80);unique"`
-	GrEmail     string `orm:"size(32)"`
-	Info        string
-	PublicEmail bool
-	Followers   int
-	Following   int
-	FavTopics   int
+	UserName    string           `orm:"size(30);unique"`
+	NickName    string           `orm:"size(30)"`
+	Password    string           `orm:"size(128)"`
+	Url         string           `orm:"size(100)"`
+	Company     string           `orm:"size(30)"`
+	Location    string           `orm:"size(30)"`
+	Email       string           `orm:"size(80);unique"`
+	GrEmail     string           `orm:"size(32)"`
+	Info        string           ``
+	Github      string           `orm:"size(30)"`
+	Twitter     string           `orm:"size(30)"`
+	Google      string           `orm:"size(30)"`
+	Weibo       string           `orm:"size(30)"`
+	Linkedin    string           `orm:"size(30)"`
+	Facebook    string           `orm:"size(30)"`
+	PublicEmail bool             ``
+	Followers   int              ``
+	Following   int              ``
+	FavTopics   int              ``
 	IsAdmin     bool             `orm:"index"`
 	IsActive    bool             `orm:"index"`
 	IsForbid    bool             `orm:"index"`
@@ -109,6 +117,22 @@ func (m *User) AvatarLink() string {
 	return fmt.Sprintf("%s%s", utils.AvatarURL, m.GrEmail)
 }
 
+func (m *User) FollowingUsers() orm.QuerySeter {
+	return Follows().Filter("User", m.Id)
+}
+
+func (m *User) FollowerUsers() orm.QuerySeter {
+	return Follows().Filter("FollowUser", m.Id)
+}
+
+func (m *User) RecentPosts() orm.QuerySeter {
+	return Posts().Filter("User", m.Id)
+}
+
+func (m *User) RecentComments() orm.QuerySeter {
+	return Comments().Filter("User", m.Id)
+}
+
 func Users() orm.QuerySeter {
 	return orm.NewOrm().QueryTable("user").OrderBy("-Id")
 }
@@ -157,7 +181,7 @@ func (m *Follow) Delete() error {
 }
 
 func Follows() orm.QuerySeter {
-	return orm.NewOrm().QueryTable("follow").OrderBy("-Id")
+	return orm.NewOrm().QueryTable("follow")
 }
 
 func init() {

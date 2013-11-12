@@ -61,6 +61,11 @@ func main() {
 	beego.Router("/p/:post([0-9]+)/edit", post, "get:Edit;post:EditSubmit")
 
 	user := new(routers.UserRouter)
+	beego.Router("/u/:username/comments", user, "get:Comments")
+	beego.Router("/u/:username/posts", user, "get:Posts")
+	beego.Router("/u/:username/following", user, "get:Following")
+	beego.Router("/u/:username/followers", user, "get:Followers")
+	beego.Router("/u/:username/favs", user, "get:Favs")
 	beego.Router("/u/:username", user, "get:Home")
 
 	login := new(routers.LoginRouter)
@@ -81,6 +86,10 @@ func main() {
 
 	upload := new(routers.UploadRouter)
 	beego.Router("/upload", upload, "post:Post")
+
+	api := new(routers.ApiRouter)
+	beego.Router("/api/user", api, "post:User")
+	beego.Router("/api/post", api, "post:Post")
 
 	adminDashboard := new(routers.AdminDashboardRouter)
 	beego.Router("/admin", adminDashboard)

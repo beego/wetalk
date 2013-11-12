@@ -64,6 +64,8 @@ var (
 	ImageXSend          bool
 	ImageXSendHeader    string
 	Langs               []string
+	LoginMaxRetries     int
+	LoginFailedBlocks   int
 )
 
 const (
@@ -161,9 +163,27 @@ func reloadConfig() {
 	DateTimeShortFormat = Cfg.MustValue("app", "datetime_short_format")
 
 	SecretKey = Cfg.MustValue("app", "secret_key")
-	ActiveCodeLives = Cfg.MustInt("app", "acitve_code_live_days")
-	ResetPwdCodeLives = Cfg.MustInt("app", "resetpwd_code_live_days")
+	ActiveCodeLives = Cfg.MustInt("app", "acitve_code_live_hours")
+	if ActiveCodeLives <= 0 {
+		ActiveCodeLives = 12
+	}
+	ResetPwdCodeLives = Cfg.MustInt("app", "resetpwd_code_live_hours")
+	if ResetPwdCodeLives <= 0 {
+		ResetPwdCodeLives = 12
+	}
+
 	LoginRememberDays = Cfg.MustInt("app", "login_remember_days")
+
+	LoginMaxRetries = Cfg.MustInt("app", "login_max_retries")
+	if LoginMaxRetries <= 0 {
+		LoginMaxRetries = 1
+	}
+
+	LoginFailedBlocks = Cfg.MustInt("app", "login_failed_blocks")
+	if LoginFailedBlocks <= 0 {
+		LoginFailedBlocks = 1
+	}
+
 	RealtimeRenderMD = Cfg.MustBool("app", "realtime_render_markdown")
 
 	ImageSizeSmall = Cfg.MustInt("image", "image_size_small")
@@ -186,7 +206,7 @@ func reloadConfig() {
 	ImageXSend = Cfg.MustBool("image", "image_xsend")
 	ImageXSendHeader = Cfg.MustValue("image", "image_xsend_header")
 
-	MailUser = Cfg.MustValue("mailer", "mail_user")
+	MailUser = Cfg.MustValue("mailer", "mail_name")
 	MailFrom = Cfg.MustValue("mailer", "mail_from")
 
 	// set mailer connect args

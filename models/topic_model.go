@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/orm"
+	"github.com/beego/i18n"
 
 	"github.com/beego/wetalk/utils"
 )
@@ -27,8 +28,10 @@ import (
 type Topic struct {
 	Id        int
 	Name      string    `orm:"size(30);unique"`
-	Image     *Image    `orm:"rel(one);null"`
 	Intro     string    `orm:"type(text)"`
+	NameZhCn  string    `orm:"size(30);unique"`
+	IntroZhCn string    `orm:"type(text)"`
+	Image     *Image    `orm:"rel(one);null"`
 	Slug      string    `orm:"size(100);unique"`
 	Followers int       `orm:"index"`
 	Order     int       `orm:"index"`
@@ -80,6 +83,28 @@ func (m *Topic) String() string {
 
 func (m *Topic) Link() string {
 	return fmt.Sprintf("%stopic/%s", utils.AppUrl, m.Slug)
+}
+
+func (m *Topic) GetName(lang string) string {
+	var name string
+	switch i18n.IndexLang(lang) {
+	case utils.LangZhCN:
+		name = m.NameZhCn
+	default:
+		name = m.Name
+	}
+	return name
+}
+
+func (m *Topic) GetIntro(lang string) string {
+	var intro string
+	switch i18n.IndexLang(lang) {
+	case utils.LangZhCN:
+		intro = m.IntroZhCn
+	default:
+		intro = m.Intro
+	}
+	return intro
 }
 
 func Topics() orm.QuerySeter {

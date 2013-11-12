@@ -1,0 +1,24 @@
+{{range .Users}}
+	<div class="user-box">
+		<a class="avatar" href="{{.User.Link}}">
+			<img style="width:48px;height:48px;" src="{{.User.AvatarLink}}?s=48">
+		</a>
+		<ul class="info list-unstyled">
+			<li class="name">{{.User.NickName}}</li>
+			<li class="name">
+				{{if $.root.IsLogin}}
+				{{if ne $.root.User.Id .User.Id}}
+					{{if .IsFollowed}}
+				        <a href="javascript:" rel="user-unfollow" data-user="{{.User.Id}}" class="color-link"><i class="icon-minus"></i> {{i18n $.root.Lang "user.follow_remove"}}</a>
+			        {{else}}
+				        <a href="javascript:" rel="user-follow" data-user="{{.User.Id}}" class="color-link"><i class="icon-plus"></i> {{i18n $.root.Lang "user.follow_user"}}</a>
+			        {{end}}
+		        {{end}}
+		        {{end}}
+	        </li>
+        </ul>
+        <span class="clearfix"></span>
+        <div class="intro">{{.User.Info}}</div>
+	</div>
+{{end}}
+<span class="clearfix"></span>

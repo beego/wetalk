@@ -16,6 +16,8 @@ package models
 
 import (
 	"fmt"
+	"regexp"
+
 	"github.com/slene/blackfriday"
 
 	"github.com/astaxie/beego"
@@ -41,6 +43,9 @@ func RenderPostContent(mdStr string) string {
 	htmlFlags |= blackfriday.HTML_SKIP_HTML
 	htmlFlags |= blackfriday.HTML_SKIP_STYLE
 	htmlFlags |= blackfriday.HTML_SKIP_SCRIPT
+	htmlFlags |= blackfriday.HTML_GITHUB_BLOCKCODE
+	htmlFlags |= blackfriday.HTML_OMIT_CONTENTS
+	htmlFlags |= blackfriday.HTML_COMPLETE_PAGE
 	renderer := blackfriday.HtmlRenderer(htmlFlags, "", "")
 
 	// set up the parser
@@ -50,10 +55,38 @@ func RenderPostContent(mdStr string) string {
 	extensions |= blackfriday.EXTENSION_FENCED_CODE
 	extensions |= blackfriday.EXTENSION_AUTOLINK
 	extensions |= blackfriday.EXTENSION_STRIKETHROUGH
+	extensions |= blackfriday.EXTENSION_HARD_LINE_BREAK
 	extensions |= blackfriday.EXTENSION_SPACE_HEADERS
+	extensions |= blackfriday.EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK
 
 	body := blackfriday.Markdown([]byte(mdStr), renderer, extensions)
+
+	// skirt := goskirt.Goskirt{
+	// 	goskirt.EXT_AUTOLINK | goskirt.EXT_STRIKETHROUGH | goskirt.EXT_FENCED_CODE | goskirt.HTML_HARD_WRAP,
+	// 	goskirt.HTML_SMARTYPANTS | goskirt.HTML_USE_XHTML,
+	// }
+
+	// body := bytes.NewBufferString("")
+	// skirt.WriteHTML(body, []byte(mdStr))
+
 	return string(body)
+}
+
+var mentionRegexp = regexp.MustCompile(`\B@([\d\w-_]*)`)
+
+func FilterMentions(user *User, content string) {
+	matches := mentionRegexp.FindAllStringSubmatch(content, -1)
+	mentions := make([]string, 0, len(matches))
+	for _, m := range matches {
+		if len(m) > 1 {
+			mentions = append(mentions, m[1])
+		}
+	}
+	// var users []*User
+	// num, err := Users().Filter("UserName__in", mentions).Filter("Follow__User", user.Id).All(&users)
+	// if err == nil && num > 0 {
+	// TODO mention email to user
+	// }
 }
 
 func PostBrowsersAdd(uid int, ip string, post *Post) {
@@ -63,7 +96,7 @@ func PostBrowsersAdd(uid int, ip string, post *Post) {
 	} else {
 		key = utils.ToStr(uid)
 	}
-	key = fmt.Sprintf("PCA%d%s", post.Id, key)
+	key = fmt.Sprintf("PCA.%d.%s", post.Id, key)
 	if utils.Cache.Get(key) != nil {
 		return
 	}

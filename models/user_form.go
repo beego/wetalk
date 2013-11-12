@@ -145,10 +145,18 @@ func (form *ResetPwdForm) Placeholders() map[string]string {
 type ProfileForm struct {
 	NickName    string           `valid:"Required;MaxSize(30)"`
 	Url         string           `valid:"MaxSize(100)"`
+	Company     string           `valid:"MaxSize(30)"`
+	Location    string           `valid:"MaxSize(30)"`
 	Info        string           `form:"type(textarea)" valid:"MaxSize(255)"`
 	Email       string           `valid:"Required;Email;MaxSize(100)"`
 	PublicEmail bool             `valid:""`
 	GrEmail     string           `valid:"Required;MaxSize(80)"`
+	Github      string           `valid:"MaxSize(30)"`
+	Twitter     string           `valid:"MaxSize(30)"`
+	Google      string           `valid:"MaxSize(30)"`
+	Weibo       string           `valid:"MaxSize(30)"`
+	Linkedin    string           `valid:"MaxSize(30)"`
+	Facebook    string           `valid:"MaxSize(30)"`
 	Lang        int              `form:"type(select);attr(rel,select2)" valid:""`
 	LangAdds    SliceStringField `form:"type(select);attr(rel,select2);attr(multiple,multiple)" valid:""`
 	Locale      i18n.Locale      `form:"-"`
@@ -226,14 +234,17 @@ func (form *ProfileForm) Labels() map[string]string {
 		"NickName":    "model.user_nickname",
 		"PublicEmail": "auth.profile_publicemail",
 		"GrEmail":     "auth.profile_gremail",
-		"Url":         "auth.profile_url",
+		"Info":        "auth.profile_info",
+		"Company":     "model.user_company",
+		"Location":    "model.user_location",
+		"Google":      ".Google+",
 	}
 }
 
 func (form *ProfileForm) Helps() map[string]string {
 	return map[string]string{
 		"GrEmail": "auth.profile_gremail_help",
-		"Info":    form.Locale.Tr("Max-length is %d", 255),
+		"Info":    "auth.plz_enter_your_info",
 	}
 }
 
@@ -241,7 +252,6 @@ func (form *ProfileForm) Placeholders() map[string]string {
 	return map[string]string{
 		"GrEmail": "auth.plz_enter_gremail",
 		"Url":     "auth.plz_enter_website",
-		"Info":    "auth.plz_enter_your_info",
 	}
 }
 
@@ -289,8 +299,16 @@ type UserAdminForm struct {
 	PublicEmail bool             ``
 	NickName    string           `valid:"Required;MaxSize(30)"`
 	Url         string           `valid:"MaxSize(100)"`
+	Company     string           `valid:"MaxSize(30)"`
+	Location    string           `valid:"MaxSize(30)"`
 	Info        string           `form:"type(textarea)" valid:"MaxSize(255)"`
 	GrEmail     string           `valid:"Required;MaxSize(80)"`
+	Github      string           `valid:"MaxSize(30)"`
+	Twitter     string           `valid:"MaxSize(30)"`
+	Google      string           `valid:"MaxSize(30)"`
+	Weibo       string           `valid:"MaxSize(30)"`
+	Linkedin    string           `valid:"MaxSize(30)"`
+	Facebook    string           `valid:"MaxSize(30)"`
 	Followers   int              ``
 	Following   int              ``
 	IsAdmin     bool             ``
