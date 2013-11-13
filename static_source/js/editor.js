@@ -222,19 +222,20 @@
                     } else {
                         fetched = true;
                         $.post('/api/user', {action: "get-follows"}, function(d){
-                            if(d.success){
+                            if(d.success && d.data){
                                 $.each(d.data, function(_,d){
                                     additionMentions[d[1]] = d[0];
                                 });
-                                $.each(additionMentions, function(k,v){
-                                    var elm = k;
-                                    if(k != v){
-                                        elm = k + ' (' + v + ')';
-                                    }
-                                    mentions.push(elm);
-                                });
-                                cbk();
                             }
+                        }).complete(function(){
+                            $.each(additionMentions, function(k,v){
+                                var elm = k;
+                                if(k != v){
+                                    elm = k + ' (' + v + ')';
+                                }
+                                mentions.push(elm);
+                            });
+                            cbk();
                         });
                     }
                 },
