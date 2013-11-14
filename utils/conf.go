@@ -20,6 +20,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/Unknwon/goconfig"
 	"github.com/howeyc/fsnotify"
@@ -34,7 +35,7 @@ import (
 )
 
 const (
-	APP_VER = "0.0.9.1030"
+	APP_VER = "0.1.0.1114"
 )
 
 var (
@@ -247,6 +248,8 @@ func settingCompress() {
 	beego.AddFuncMap("compress_css", setting.Css.CompressCss)
 }
 
+var eventTime = make(map[string]int64)
+
 func configWatcher() {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -259,6 +262,9 @@ func configWatcher() {
 			case event := <-watcher.Event:
 				switch filepath.Ext(event.Name) {
 				case ".ini":
+					if checkEventTime(event.Name) {
+						continue
+					}
 					beego.Info(event)
 
 					if err := Cfg.Reload(); err != nil {
@@ -273,6 +279,9 @@ func configWatcher() {
 					beego.Info("Config Reloaded")
 
 				case ".json":
+					if checkEventTime(event.Name) {
+						continue
+					}
 					if event.Name == CompressConfPath {
 						settingCompress()
 						beego.Info("Beego Compress Reloaded")
@@ -285,6 +294,36 @@ func configWatcher() {
 	if err := watcher.WatchFlags("conf", fsnotify.FSN_MODIFY); err != nil {
 		beego.Error(err)
 	}
+}
+
+// checkEventTime returns true if FileModTime does not change.
+func checkEventTime(name string) bool {
+	mt := getFileModTime(name)
+	if eventTime[name] == mt {
+		return true
+	}
+
+	eventTime[name] = mt
+	return false
+}
+
+// getFileModTime retuens unix timestamp of `os.File.ModTime` by given path.
+func getFileModTime(path string) int64 {
+	path = strings.Replace(path, "\\", "/", -1)
+	f, err := os.Open(path)
+	if err != nil {
+		beego.Error("Fail to open file[ %s ]\n", err)
+		return time.Now().Unix()
+	}
+	defer f.Close()
+
+	fi, err := f.Stat()
+	if err != nil {
+		beego.Error("Fail to get file information[ %s ]\n", err)
+		return time.Now().Unix()
+	}
+
+	return fi.ModTime().Unix()
 }
 
 func IsMatchHost(uri string) bool {
