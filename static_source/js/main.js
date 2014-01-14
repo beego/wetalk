@@ -214,7 +214,8 @@
 				});
 			});
 
-			$e.find('pre > code').parent().addClass("prettyprint linenums");
+			var $pre = $e.find('pre > code').parent();
+			$pre.addClass("prettyprint");
 			prettyPrint();
 		};
 

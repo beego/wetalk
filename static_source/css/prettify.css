@@ -121,15 +121,6 @@
     color: #006600;
   }
 }
-/* Style */
-pre.prettyprint {
-  background: white;
-  font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace;
-  font-size: 12px;
-  line-height: 1.5;
-  border: 1px solid #cccccc;
-  padding: 10px 5px;
-}
 
 /* Specify class=linenums on a pre to get line numbering */
 ol.linenums {

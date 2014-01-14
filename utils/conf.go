@@ -16,10 +16,12 @@
 package utils
 
 import (
+	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/Unknwon/goconfig"
 	"github.com/howeyc/fsnotify"
@@ -57,6 +59,7 @@ var (
 	DateFormat          string
 	DateTimeFormat      string
 	DateTimeShortFormat string
+	TimeZone            string
 	RealtimeRenderMD    bool
 	ImageSizeSmall      int
 	ImageSizeMiddle     int
@@ -93,9 +96,19 @@ func LoadConfig() *goconfig.ConfigFile {
 
 	// Load configuration, set app version and log level.
 	Cfg, err = goconfig.LoadConfigFile(AppConfPath)
-	Cfg.BlockMode = false
 	if err != nil {
-		panic("Fail to load configuration file: " + err.Error())
+		fmt.Println("Fail to load configuration file: " + err.Error())
+		os.Exit(2)
+	}
+	Cfg.BlockMode = false
+
+	// set time zone of wetalk system
+	TimeZone = Cfg.MustValue("app", "time_zone", "UTC")
+	if _, err := time.LoadLocation(TimeZone); err == nil {
+		os.Setenv("TZ", TimeZone)
+	} else {
+		fmt.Println("Wrong time_zone: " + TimeZone + " " + err.Error())
+		os.Exit(2)
 	}
 
 	// Trim 4th part.
@@ -114,9 +127,11 @@ func LoadConfig() *goconfig.ConfigFile {
 
 	// session settings
 	beego.SessionOn = true
-	beego.SessionProvider = Cfg.MustValue("session", "session_provider")
-	beego.SessionSavePath = Cfg.MustValue("session", "session_path")
-	beego.SessionName = Cfg.MustValue("session", "session_name")
+	beego.SessionProvider = Cfg.MustValue("session", "session_provider", "file")
+	beego.SessionSavePath = Cfg.MustValue("session", "session_path", "sessions")
+	beego.SessionName = Cfg.MustValue("session", "session_name", "wetalk_sess")
+	beego.SessionCookieLifeTime = Cfg.MustInt("session", "session_life_time", 86400*30)
+	beego.SessionGCMaxLifetime = 86400 * 365
 
 	beego.EnableXSRF = true
 	// xsrf token expire time
@@ -163,11 +178,11 @@ func reloadConfig() {
 	DateTimeShortFormat = Cfg.MustValue("app", "datetime_short_format")
 
 	SecretKey = Cfg.MustValue("app", "secret_key")
-	ActiveCodeLives = Cfg.MustInt("app", "acitve_code_live_hours")
+	ActiveCodeLives = Cfg.MustInt("app", "acitve_code_live_minutes")
 	if ActiveCodeLives <= 0 {
 		ActiveCodeLives = 12
 	}
-	ResetPwdCodeLives = Cfg.MustInt("app", "resetpwd_code_live_hours")
+	ResetPwdCodeLives = Cfg.MustInt("app", "resetpwd_code_live_minutes")
 	if ResetPwdCodeLives <= 0 {
 		ResetPwdCodeLives = 12
 	}

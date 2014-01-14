@@ -5,7 +5,8 @@
 		"controllers": "routers",
 		"models": "",
 		"others": [
-			"utils"
+			"utils",
+			"$GOPATH/src/github.com/astaxie/beego"
 		]
 	},
 	"bale": {

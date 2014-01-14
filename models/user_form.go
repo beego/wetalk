@@ -15,6 +15,7 @@
 package models
 
 import (
+	"github.com/dchest/captcha"
 	"strings"
 
 	"github.com/astaxie/beego/validation"
@@ -29,6 +30,8 @@ type RegisterForm struct {
 	Email      string      `valid:"Required;Email;MaxSize(80)"`
 	Password   string      `form:"type(password)" valid:"Required;MinSize(4);MaxSize(30)"`
 	PasswordRe string      `form:"type(password)" valid:"Required;MinSize(4);MaxSize(30)"`
+	Captcha    string      `form:"type(captcha)" valid:"Required"`
+	CaptchaId  string      `form:"type(empty)"`
 	Locale     i18n.Locale `form:"-"`
 }
 
@@ -49,6 +52,10 @@ func (form *RegisterForm) Valid(v *validation.Validation) {
 	if !e2 {
 		v.SetError("Email", "auth.email_already_taken")
 	}
+
+	if !captcha.VerifyString(form.CaptchaId, form.Captcha) {
+		v.SetError("Captcha", "auth.captcha_wrong")
+	}
 }
 
 func (form *RegisterForm) Labels() map[string]string {
@@ -57,12 +64,14 @@ func (form *RegisterForm) Labels() map[string]string {
 		"Email":      "auth.login_email",
 		"Password":   "auth.login_password",
 		"PasswordRe": "auth.retype_password",
+		"Captcha":    "auth.captcha",
 	}
 }
 
 func (form *RegisterForm) Helps() map[string]string {
 	return map[string]string{
 		"UserName": form.Locale.Tr("valid.min_length_is", 5) + ", " + form.Locale.Tr("valid.only_contains", "a-z 0-9 - _"),
+		"Captcha":  "auth.captcha_click_refresh",
 	}
 }
 
@@ -72,6 +81,7 @@ func (form *RegisterForm) Placeholders() map[string]string {
 		"Email":      "auth.plz_enter_email",
 		"Password":   "auth.plz_enter_password",
 		"PasswordRe": "auth.plz_reenter_password",
+		"Captcha":    "auth.plz_enter_captcha",
 	}
 }
 

@@ -9,7 +9,7 @@
 {{end}}
 {{define "body"}}
 	{{if eq .Lang "zh-CN"}}
-		<p style="margin:0;padding:0 0 9px 0;">点击链接验证email，{{.ActiveCodeLives}} 小时内有效</p>
+		<p style="margin:0;padding:0 0 9px 0;">点击链接验证email，{{.ActiveCodeLives}} 分钟内有效</p>
 		<p style="margin:0;padding:0 0 9px 0;">
 			<a href="{{.AppUrl}}active/{{.Code}}">{{.AppUrl}}active/{{.Code}}</a>
 		</p>

@@ -90,7 +90,11 @@
         </div>
         <div class="box">
             <div class="cell first last">
-                {{if .IsLogin}}
+                {{if not .IsLogin}}
+                    <div class="text-center"><a href="{{loginto .Post.Link}}" class="btn btn-primary">{{i18n .Lang "auth.need_login_to_reply"}}</a></div>
+                {{else if not .User.IsActive}}
+                    <div class="text-center"><a href="{{.AppUrl}}settings/profile" class="btn btn-info">{{i18n .Lang "auth.need_active_to_reply"}}</a></div>
+                {{else}}
                     <form id="post-reply" method="POST" action="{{.Post.Link}}#post-reply">
                         {{.xsrf_html}}{{.once_html}}
                         <div id="md-editor" class="markdown-editor"  data-preview-url="{{$.AppUrl}}new" data-savekey="post/comment">
@@ -102,8 +106,6 @@
                             <button class="btn btn-primary">{{i18n .Lang "submit"}}</button>
                         </div>
                     </form>
-                {{else}}
-                    <div class="text-center"><a href="{{loginto .Post.Link}}" class="btn btn-primary">{{i18n .Lang "auth.need_login_to_reply"}}</a></div>
                 {{end}}
             </div>
         </div>

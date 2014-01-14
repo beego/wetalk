@@ -37,9 +37,9 @@ func ListPostsOfTopic(topic *Topic, posts *[]Post) (int64, error) {
 func RenderPostContent(mdStr string) string {
 	htmlFlags := 0
 	htmlFlags |= blackfriday.HTML_USE_XHTML
-	htmlFlags |= blackfriday.HTML_USE_SMARTYPANTS
-	htmlFlags |= blackfriday.HTML_SMARTYPANTS_FRACTIONS
-	htmlFlags |= blackfriday.HTML_SMARTYPANTS_LATEX_DASHES
+	// htmlFlags |= blackfriday.HTML_USE_SMARTYPANTS
+	// htmlFlags |= blackfriday.HTML_SMARTYPANTS_FRACTIONS
+	// htmlFlags |= blackfriday.HTML_SMARTYPANTS_LATEX_DASHES
 	htmlFlags |= blackfriday.HTML_SKIP_HTML
 	htmlFlags |= blackfriday.HTML_SKIP_STYLE
 	htmlFlags |= blackfriday.HTML_SKIP_SCRIPT
@@ -60,14 +60,6 @@ func RenderPostContent(mdStr string) string {
 	extensions |= blackfriday.EXTENSION_NO_EMPTY_LINE_BEFORE_BLOCK
 
 	body := blackfriday.Markdown([]byte(mdStr), renderer, extensions)
-
-	// skirt := goskirt.Goskirt{
-	// 	goskirt.EXT_AUTOLINK | goskirt.EXT_STRIKETHROUGH | goskirt.EXT_FENCED_CODE | goskirt.HTML_HARD_WRAP,
-	// 	goskirt.HTML_SMARTYPANTS | goskirt.HTML_USE_XHTML,
-	// }
-
-	// body := bytes.NewBufferString("")
-	// skirt.WriteHTML(body, []byte(mdStr))
 
 	return string(body)
 }

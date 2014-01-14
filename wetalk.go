@@ -17,6 +17,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/astaxie/beego/orm"
+	"github.com/beego/wetalk/models"
+	"net/url"
+	"strings"
+	"time"
 
 	"github.com/astaxie/beego"
 
@@ -31,8 +36,139 @@ func initialize() {
 	utils.LoadConfig()
 }
 
+func filter(content string) string {
+	return content
+}
+
+func mainx() {
+	initialize()
+
+	// db, _ := sql.Open("mysql", "root:root@/mygolang?charset=utf8&loc="+url.QueryEscape("Asia/shanghai"))
+	// db.Query("select * from gocnbbs_common_member", ...)
+	orm.RegisterDataBase("bbs", "mysql", "root:root@/mygolang?charset=utf8&loc="+url.QueryEscape("Asia/shanghai"))
+	o := orm.NewOrm()
+	o.Using("bbs")
+	type BUser struct {
+		Uid      int
+		Email    string
+		Username string
+		Regdate  int
+		User     *models.User
+	}
+	var busers []*BUser
+	o.Raw("select * from gocnbbs_common_member").QueryRows(&busers)
+	type BPost struct {
+		Authorid int
+		First    bool
+		Dateline int64
+		Subject  string
+		Message  string
+		Fid      int
+	}
+	byUsers := make(map[int]*BUser)
+	for _, u := range busers {
+		byUsers[u.Uid] = u
+	}
+
+	for _, u := range busers {
+		uu := models.User{Email: strings.ToLower(u.Email)}
+		if err := orm.NewOrm().Read(&uu, "Email"); err == nil {
+			u.User = &uu
+		} else {
+			var name []rune
+			u.Username = strings.ToLower(u.Username)
+			for _, r := range u.Username {
+				if r >= 'a' && r <= 'z' || r >= '0' && r <= '9' || r == '-' || r == '_' {
+					name = append(name, r)
+				}
+			}
+			uu.NickName = u.Username
+			if len(name) >= 5 {
+				uu.UserName = string(name)
+			} else {
+				uu.UserName = string(name) + strings.Split(uu.Email, "@")[0]
+				if len(uu.UserName) < 5 {
+					uu.UserName = uu.UserName + "2014"
+				}
+			}
+			uu.GrEmail = utils.EncodeMd5(uu.Email)
+			if uu.UserName == "golang" || uu.UserName == "gopher" {
+				uu.UserName = uu.UserName + "2014"
+			}
+			if err := uu.Insert(); err != nil {
+				uu.UserName = uu.UserName + "2014"
+				if err := uu.Insert(); err != nil {
+					fmt.Println(err)
+				}
+			}
+			u.User = &uu
+		}
+	}
+
+	mapper := map[int]int{47: 5, 51: 3, 46: 4, 43: 5, 45: 6, 44: 7, 2: 8, 37: 8, 49: 8}
+
+	var bposts []*BPost
+	o.Raw("select * from gocnbbs_forum_post where fid in (47,51,46,43,45,44,2,37,49) order by tid asc, first desc, dateline asc").QueryRows(&bposts)
+	c := 0
+	var lPost *models.Post
+	var lComment *models.Comment
+	var replys int
+	for _, p := range bposts {
+		if byUsers[p.Authorid] == nil {
+			continue
+		}
+		u := byUsers[p.Authorid]
+		if p.First {
+			if lPost != nil && replys > 0 {
+				lPost.LastReply = lComment.User
+				lPost.Replys = replys
+				if err := lPost.Update("LastReply", "Replys"); err != nil {
+					fmt.Println(err)
+				}
+			}
+
+			post := new(models.Post)
+			post.Title = p.Subject
+			post.User = u.User
+			post.LastAuthor = u.User
+			post.Content = filter(p.Message)
+			post.Created = time.Unix(p.Dateline, 0)
+			post.Updated = post.Created
+			post.Topic = &models.Topic{Id: mapper[p.Fid]}
+			post.Category = &models.Category{Id: 1}
+			post.Lang = 1
+			if post.Topic.Id == 0 {
+				fmt.Println(post.Title)
+				post.Topic.Id = 8
+			}
+			if err := post.Insert(); err != nil {
+				fmt.Println(err)
+			}
+
+			lPost = post
+			replys = 0
+			c++
+		} else {
+			comment := new(models.Comment)
+			comment.Post = lPost
+			comment.Message = filter(p.Message)
+			comment.Created = time.Unix(p.Dateline, 0)
+			comment.Floor = replys + 1
+			comment.User = u.User
+			if err := comment.Insert(); err != nil {
+				fmt.Println(err)
+			}
+			lComment = comment
+			replys++
+		}
+	}
+	fmt.Println(c)
+}
+
 func main() {
 	initialize()
+
+	beego.Info("AppPath:", beego.AppPath)
 
 	if utils.IsProMode {
 		beego.Info("Product mode enabled")
@@ -43,10 +179,12 @@ func main() {
 
 	if !utils.IsProMode {
 		beego.SetStaticPath("/static_source", "static_source")
+		beego.DirectoryIndex = true
 	}
 
 	// Add Filters
-	beego.AddFilter("^/img/:", "AfterStatic", routers.ImageFilter)
+	beego.AddFilter("^/img/:", "BeforRouter", routers.ImageFilter)
+	beego.AddFilter("^/captcha/:", "BeforeRouter", routers.CaptchaFilter)
 
 	// Register routers.
 	posts := new(routers.PostListRouter)
@@ -69,11 +207,11 @@ func main() {
 	beego.Router("/u/:username", user, "get:Home")
 
 	login := new(routers.LoginRouter)
-	beego.Router("/login", login, "post:Login")
+	beego.Router("/login", login, "get:Get;post:Login")
 	beego.Router("/logout", login, "get:Logout")
 
 	register := new(routers.RegisterRouter)
-	beego.Router("/register", register, "post:Register")
+	beego.Router("/register", register, "get:Get;post:Register")
 	beego.Router("/active/success", register, "get:ActiveSuccess")
 	beego.Router("/active/:code([0-9a-zA-Z]+)", register, "get:Active")
 

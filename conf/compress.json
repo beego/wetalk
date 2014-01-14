@@ -70,6 +70,8 @@
                 "Name": "app",
                 "DistFile": "app.min.css",
                 "SourceFiles": [
+                    "base.css",
+                    "markdown.css",
                     "main.css"
                 ]
             }

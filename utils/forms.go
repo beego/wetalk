@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dchest/captcha"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/validation"
 )
@@ -39,6 +41,26 @@ func init() {
 			field = strings.Replace(field, "<option", "<option></option><option", 1)
 			fSet.Field = template.HTML(field)
 		}
+	})
+
+	// a example to create a captcha field
+	RegisterFieldCreater("captcha", func(fSet *FieldSet) {
+		cid := captcha.New()
+		fSet.Label = template.HTML(fmt.Sprintf(`
+					<label class="control-label" for="%s">%s</label>`, fSet.Id, fSet.LabelText))
+
+		fSet.Field = template.HTML(fmt.Sprintf(`
+            <input type="hidden" name="%sId" value="%s" >
+            <a class="captcha" href="javascript:">
+            	<img onclick="this.src=('/captcha/%s.png?reload='+(new Date()).getTime())" class="captcha-img" src="/captcha/%s.png">
+            </a>
+			<input id="%s" name="%s" type="text" value="" class="form-control" autocomplete="off" placeholder="%s" %s>`,
+			fSet.Name, cid, cid, cid, fSet.Id, fSet.Name, fSet.Placeholder, fSet.Attrs))
+	})
+
+	RegisterFieldCreater("empty", func(fSet *FieldSet) {
+		fSet.Label = ""
+		fSet.Field = ""
 	})
 }
 
