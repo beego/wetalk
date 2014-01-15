@@ -104,7 +104,7 @@ func SendAsync(msg Message) {
 				info = ", info: " + msg.Info
 			}
 			// log failed
-			beego.Error(fmt.Sprintf("Async send email %d succeed, not send emails: %s%s", num, tos, info))
+			beego.Error(fmt.Sprintf("Async send email %d succeed, not send emails: %s%s err: %s", num, tos, info, err))
 		}
 	}()
 }

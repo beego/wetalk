@@ -304,6 +304,8 @@ func (this *ForgotRouter) ResetPost() {
 		}
 
 		user.IsActive = true
+		user.Rands = models.GetUserSalt()
+
 		if err := models.SaveNewPassword(&user, form.Password); err != nil {
 			beego.Error("ResetPost Save New Password: ", err)
 		}

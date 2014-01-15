@@ -103,7 +103,6 @@ func RegisterUser(user *User, form RegisterForm) error {
 func SaveNewPassword(user *User, password string) error {
 	salt := GetUserSalt()
 	user.Password = fmt.Sprintf("%s$%s", salt, utils.EncodePassword(password, salt))
-	user.Rands = GetUserSalt()
 	return user.Update("Password", "Rands")
 }
 
@@ -142,12 +141,26 @@ func VerifyUser(user *User, username, password string) (success bool) {
 	if VerifyPassword(password, user.Password) {
 		// success
 		success = true
+
+		// re-save discuz password
+		if len(user.Password) == 39 {
+			if err := SaveNewPassword(user, password); err != nil {
+				beego.Error("SaveNewPassword err: ", err.Error())
+			}
+		}
 	}
 	return
 }
 
 // compare raw password and encoded password
 func VerifyPassword(rawPwd, encodedPwd string) bool {
+
+	// for discuz accounts
+	if len(encodedPwd) == 39 {
+		salt := encodedPwd[:6]
+		encoded := encodedPwd[7:]
+		return encoded == utils.EncodeMd5(utils.EncodeMd5(rawPwd)+salt)
+	}
 
 	// split
 	var salt, encoded string
