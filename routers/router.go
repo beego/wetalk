@@ -84,8 +84,6 @@ func (this *baseRouter) Prepare() {
 	}
 
 	// Setting properties.
-	this.Data["AppDescription"] = utils.AppDescription
-	this.Data["AppKeywords"] = utils.AppKeywords
 	this.Data["AppName"] = utils.AppName
 	this.Data["AppVer"] = utils.AppVer
 	this.Data["AppUrl"] = utils.AppUrl

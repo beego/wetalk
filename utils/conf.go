@@ -41,8 +41,6 @@ const (
 
 var (
 	AppName             string
-	AppDescription      string
-	AppKeywords         string
 	AppVer              string
 	AppHost             string
 	AppUrl              string
@@ -82,6 +80,7 @@ var (
 )
 
 var (
+	GlobalConfPath   = "conf/global/app.ini"
 	AppConfPath      = "conf/app.ini"
 	CompressConfPath = "conf/compress.json"
 )
@@ -95,11 +94,19 @@ func LoadConfig() *goconfig.ConfigFile {
 	}
 
 	// Load configuration, set app version and log level.
-	Cfg, err = goconfig.LoadConfigFile(AppConfPath)
-	if err != nil {
-		fmt.Println("Fail to load configuration file: " + err.Error())
-		os.Exit(2)
+	Cfg, err = goconfig.LoadConfigFile(GlobalConfPath)
+
+	if Cfg == nil {
+		Cfg, err = goconfig.LoadConfigFile(AppConfPath)
+		if err != nil {
+			fmt.Println("Fail to load configuration file: " + err.Error())
+			os.Exit(2)
+		}
+
+	} else {
+		Cfg.AppendFiles(AppConfPath)
 	}
+
 	Cfg.BlockMode = false
 
 	// set time zone of wetalk system
@@ -137,10 +144,10 @@ func LoadConfig() *goconfig.ConfigFile {
 	// xsrf token expire time
 	beego.XSRFExpire = 86400 * 365
 
-	driverName := Cfg.MustValue("orm", "driver_name")
-	dataSource := Cfg.MustValue("orm", "data_source")
-	maxIdle := Cfg.MustInt("orm", "max_idle_conn")
-	maxOpen := Cfg.MustInt("orm", "max_open_conn")
+	driverName := Cfg.MustValue("orm", "driver_name", "mysql")
+	dataSource := Cfg.MustValue("orm", "data_source", "root:root@/wetalk?charset=utf8&loc=UTC")
+	maxIdle := Cfg.MustInt("orm", "max_idle_conn", 30)
+	maxOpen := Cfg.MustInt("orm", "max_open_conn", 50)
 
 	// set default database
 	orm.RegisterDataBase("default", driverName, dataSource, maxIdle, maxOpen)
@@ -161,14 +168,12 @@ func LoadConfig() *goconfig.ConfigFile {
 }
 
 func reloadConfig() {
-	AppName = Cfg.MustValue("app", "app_name")
+	AppName = Cfg.MustValue("app", "app_name", "WeTalk Community")
 	beego.AppName = AppName
 
-	AppHost = Cfg.MustValue("app", "app_host")
-	AppUrl = Cfg.MustValue("app", "app_url")
-	AppLogo = Cfg.MustValue("app", "app_logo")
-	AppDescription = Cfg.MustValue("app", "description")
-	AppKeywords = Cfg.MustValue("app", "keywords")
+	AppHost = Cfg.MustValue("app", "app_host", "127.0.0.1:8092")
+	AppUrl = Cfg.MustValue("app", "app_url", "http://127.0.0.1:8092/")
+	AppLogo = Cfg.MustValue("app", "app_logo", "/static/img/logo.gif")
 	AvatarURL = Cfg.MustValue("app", "avatar_url")
 
 	EnforceRedirect = Cfg.MustBool("app", "enforce_redirect")
@@ -178,26 +183,16 @@ func reloadConfig() {
 	DateTimeShortFormat = Cfg.MustValue("app", "datetime_short_format")
 
 	SecretKey = Cfg.MustValue("app", "secret_key")
-	ActiveCodeLives = Cfg.MustInt("app", "acitve_code_live_minutes")
-	if ActiveCodeLives <= 0 {
-		ActiveCodeLives = 12
-	}
-	ResetPwdCodeLives = Cfg.MustInt("app", "resetpwd_code_live_minutes")
-	if ResetPwdCodeLives <= 0 {
-		ResetPwdCodeLives = 12
+	if len(SecretKey) == 0 {
+		fmt.Println("Please set your secret_key in app.ini file, I created one for you:\n" + GetRandomString(70))
 	}
 
-	LoginRememberDays = Cfg.MustInt("app", "login_remember_days")
+	ActiveCodeLives = Cfg.MustInt("app", "acitve_code_live_minutes", 180)
+	ResetPwdCodeLives = Cfg.MustInt("app", "resetpwd_code_live_minutes", 180)
 
-	LoginMaxRetries = Cfg.MustInt("app", "login_max_retries")
-	if LoginMaxRetries <= 0 {
-		LoginMaxRetries = 1
-	}
-
-	LoginFailedBlocks = Cfg.MustInt("app", "login_failed_blocks")
-	if LoginFailedBlocks <= 0 {
-		LoginFailedBlocks = 1
-	}
+	LoginRememberDays = Cfg.MustInt("app", "login_remember_days", 7)
+	LoginMaxRetries = Cfg.MustInt("app", "login_max_retries", 5)
+	LoginFailedBlocks = Cfg.MustInt("app", "login_failed_blocks", 10)
 
 	RealtimeRenderMD = Cfg.MustBool("app", "realtime_render_markdown")
 
@@ -218,16 +213,16 @@ func reloadConfig() {
 	}
 	ImageLinkAlphabets = []byte(str)
 
-	ImageXSend = Cfg.MustBool("image", "image_xsend")
-	ImageXSendHeader = Cfg.MustValue("image", "image_xsend_header")
+	ImageXSend = Cfg.MustBool("image", "image_xsend", false)
+	ImageXSendHeader = Cfg.MustValue("image", "image_xsend_header", "X-Accel-Redirect")
 
-	MailUser = Cfg.MustValue("mailer", "mail_name")
-	MailFrom = Cfg.MustValue("mailer", "mail_from")
+	MailUser = Cfg.MustValue("mailer", "mail_name", "WeTalk Community")
+	MailFrom = Cfg.MustValue("mailer", "mail_from", "example@example.com")
 
 	// set mailer connect args
-	mailer.MailHost = Cfg.MustValue("mailer", "mail_host")
-	mailer.AuthUser = Cfg.MustValue("mailer", "mail_user")
-	mailer.AuthPass = Cfg.MustValue("mailer", "mail_pass")
+	mailer.MailHost = Cfg.MustValue("mailer", "mail_host", "127.0.0.1:25")
+	mailer.AuthUser = Cfg.MustValue("mailer", "mail_user", "example@example.com")
+	mailer.AuthPass = Cfg.MustValue("mailer", "mail_pass", "******")
 
 	orm.Debug = Cfg.MustBool("orm", "debug_log")
 }
@@ -237,7 +232,13 @@ func settingLocales() {
 	langs := "en-US|zh-CN"
 	for _, lang := range strings.Split(langs, "|") {
 		lang = strings.TrimSpace(lang)
-		if err := i18n.SetMessage(lang, "conf/"+"locale_"+lang+".ini"); err != nil {
+		files := []string{"conf/" + "locale_" + lang + ".ini"}
+		if fh, err := os.Open(files[0]); err == nil {
+			fh.Close()
+		} else {
+			files = nil
+		}
+		if err := i18n.SetMessage(lang, "conf/global/"+"locale_"+lang+".ini", files...); err != nil {
 			beego.Error("Fail to set message file: " + err.Error())
 			os.Exit(2)
 		}

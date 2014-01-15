@@ -20,8 +20,6 @@ import (
 
 func GetMailTmplData(lang string, user *User) map[interface{}]interface{} {
 	data := make(map[interface{}]interface{}, 10)
-	data["AppDescription"] = utils.AppDescription
-	data["AppKeywords"] = utils.AppKeywords
 	data["AppName"] = utils.AppName
 	data["AppVer"] = utils.AppVer
 	data["AppUrl"] = utils.AppUrl
