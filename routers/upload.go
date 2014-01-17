@@ -17,6 +17,7 @@ package routers
 import (
 	"github.com/beego/wetalk/utils"
 	"net/http"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -73,19 +74,14 @@ func (this *UploadRouter) Post() {
 }
 
 func ImageFilter(ctx *context.Context) {
-	uri := ctx.Request.URL.Path
-	parts := strings.Split(uri, "/")
-	if len(parts) < 3 {
-		return
-	}
+	token := path.Base(ctx.Request.RequestURI)
 
 	// split token and file ext
-	var path string
-	token := parts[2]
+	var filePath string
 	if i := strings.IndexRune(token, '.'); i == -1 {
 		return
 	} else {
-		path = token[i+1:]
+		filePath = token[i+1:]
 		token = token[:i]
 	}
 
@@ -97,17 +93,17 @@ func ImageFilter(ctx *context.Context) {
 	}
 
 	// file real path
-	path = models.GenImagePath(&image) + path
+	filePath = models.GenImagePath(&image) + filePath
 
 	// if x-send on then set header and http status
 	// fall back use proxy serve file
 	if utils.ImageXSend {
-		ext := filepath.Ext(path)
+		ext := filepath.Ext(filePath)
 		ctx.Output.ContentType(ext)
-		ctx.Output.Header(utils.ImageXSendHeader, "/"+path)
+		ctx.Output.Header(utils.ImageXSendHeader, "/"+filePath)
 		ctx.Output.SetStatus(200)
 	} else {
 		// direct serve file use go
-		http.ServeFile(ctx.ResponseWriter, ctx.Request, path)
+		http.ServeFile(ctx.ResponseWriter, ctx.Request, filePath)
 	}
 }

@@ -49,7 +49,7 @@ func main() {
 	}
 
 	// Add Filters
-	beego.AddFilter("^/img/:", "BeforRouter", routers.ImageFilter)
+	beego.AddFilter("^/img/:", "BeforeRouter", routers.ImageFilter)
 	beego.AddFilter("^/captcha/:", "BeforeRouter", routers.CaptchaFilter)
 
 	// Register routers.
