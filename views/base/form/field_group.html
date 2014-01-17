@@ -1,5 +1,5 @@
 {{if eq .Type "hidden"}}
-    {{.Field}}
+    {{call .Field}}
 {{else}}
     <div class="form-group{{if .Error}} has-error{{end}}">
     	{{template "base/form/field.html" .}}

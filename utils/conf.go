@@ -29,6 +29,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
 	"github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego/utils/captcha"
 	"github.com/beego/compress"
 	"github.com/beego/i18n"
 
@@ -75,8 +76,9 @@ const (
 )
 
 var (
-	Cfg   *goconfig.ConfigFile
-	Cache cache.Cache
+	Cfg     *goconfig.ConfigFile
+	Cache   cache.Cache
+	Captcha *captcha.Captcha
 )
 
 var (
@@ -131,6 +133,10 @@ func LoadConfig() *goconfig.ConfigFile {
 
 	// cache system
 	Cache, err = cache.NewCache("memory", `{"interval":360}`)
+
+	Captcha = captcha.NewCaptcha("/captcha/", Cache)
+	Captcha.FieldIdName = "CaptchaId"
+	Captcha.FieldCaptchaName = "Captcha"
 
 	// session settings
 	beego.SessionOn = true

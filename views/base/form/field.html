@@ -1,8 +1,8 @@
 {{if eq .Type "hidden"}}
-    {{.Field}}
+    {{call .Field}}
 {{else}}
 	{{.Label}}
-	{{.Field}}
+	{{call .Field}}
 	{{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
 	{{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
 {{end}}

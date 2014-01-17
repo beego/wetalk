@@ -15,17 +15,17 @@
                     <div class="form-group">
                         {{with .PostFormSets.Fields.Lang}}
                             <div class="post-langs{{if .Error}} has-error{{end}}">
-                                {{.Field}}
+                                {{call .Field}}
                             </div>
                         {{end}}
                         {{with .PostFormSets.Fields.Category}}
                             <div class="post-categories{{if .Error}} has-error{{end}}">
-                                {{.Field}}
+                                {{call .Field}}
                             </div>
                         {{end}}
                         {{with .PostFormSets.Fields.Topic}}
                             <div class="post-topics{{if .Error}} has-error{{end}}">
-                                {{.Field}}
+                                {{call .Field}}
                             </div>
                         {{end}}
                         <span class="clearfix"></span>
@@ -33,7 +33,7 @@
 
                     {{with .PostFormSets.Fields.Title}}
                         <div class="form-group{{if .Error}} has-error{{end}}">
-                            {{.Field}}
+                            {{call .Field}}
                             {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
                             {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
                         </div>

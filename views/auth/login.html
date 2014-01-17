@@ -52,7 +52,7 @@
                             <div class="form-group{{if .Error}} has-error{{end}}">
                                 {{.Label}}
                                 <a href="{{$.AppUrl}}forgot" class="pull-right"><i class="icon-question-sign"></i> {{i18n $.Lang "auth.forgot_password"}}</a>
-                                {{.Field}}
+                                {{call .Field}}
                                 {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
                                 {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
                             </div>

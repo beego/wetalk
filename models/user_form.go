@@ -15,7 +15,6 @@
 package models
 
 import (
-	"github.com/dchest/captcha"
 	"strings"
 
 	"github.com/astaxie/beego/validation"
@@ -53,7 +52,7 @@ func (form *RegisterForm) Valid(v *validation.Validation) {
 		v.SetError("Email", "auth.email_already_taken")
 	}
 
-	if !captcha.VerifyString(form.CaptchaId, form.Captcha) {
+	if !utils.Captcha.Verify(form.CaptchaId, form.Captcha) {
 		v.SetError("Captcha", "auth.captcha_wrong")
 	}
 }

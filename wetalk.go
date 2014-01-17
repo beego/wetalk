@@ -49,8 +49,9 @@ func main() {
 	}
 
 	// Add Filters
-	beego.AddFilter("^/img/:", "BeforeRouter", routers.ImageFilter)
-	beego.AddFilter("^/captcha/:", "BeforeRouter", routers.CaptchaFilter)
+	beego.AddFilter("/img/:", "BeforeRouter", routers.ImageFilter)
+
+	beego.AddFilter("/captcha/:", "BeforeRouter", utils.Captcha.Handler)
 
 	// Register routers.
 	posts := new(routers.PostListRouter)

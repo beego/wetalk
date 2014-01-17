@@ -68,7 +68,7 @@
                                 {{with .ProfileFormSets.Fields.Email}}
                                 <div class="form-group{{if .Error}} has-error{{end}}{{if not $.User.IsActive}} has-warning{{end}}">
                                     {{.Label}}
-                                    {{.Field}}
+                                    {{call .Field}}
                                     <p class="error-block">
                                         {{if .Error}}{{.Error}}{{else}}
                                             {{if not $.User.IsActive}}{{i18n $.Lang "auth.please_verify_email"}}{{end}}
@@ -102,7 +102,7 @@
                                         <img src="{{$.AvatarURL}}{{.Value}}" class="middle">
                                         <img src="{{$.AvatarURL}}{{.Value}}" class="small">
                                     </div>
-                                    {{.Field}}
+                                    {{call .Field}}
                                     {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
                                     {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
                                 </div>
@@ -143,7 +143,7 @@
                                     <div class="form-group{{if .Error}} has-error{{end}}">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-github-alt"></i></span>
-                                            {{.Field}}
+                                            {{call .Field}}
                                         </div>
                                         {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
                                         {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
@@ -154,7 +154,7 @@
                                     <div class="form-group{{if .Error}} has-error{{end}}">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-weibo"></i></span>
-                                            {{.Field}}
+                                            {{call .Field}}
                                         </div>
                                         {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
                                         {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
@@ -165,7 +165,7 @@
                                     <div class="form-group{{if .Error}} has-error{{end}}">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-linkedin"></i></span>
-                                            {{.Field}}
+                                            {{call .Field}}
                                         </div>
                                         {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
                                         {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
@@ -178,7 +178,7 @@
                                     <div class="form-group{{if .Error}} has-error{{end}}">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-google-plus"></i></span>
-                                            {{.Field}}
+                                            {{call .Field}}
                                         </div>
                                         {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
                                         {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
@@ -189,7 +189,7 @@
                                     <div class="form-group{{if .Error}} has-error{{end}}">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-twitter"></i></span>
-                                            {{.Field}}
+                                            {{call .Field}}
                                         </div>
                                         {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
                                         {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
@@ -200,7 +200,7 @@
                                     <div class="form-group{{if .Error}} has-error{{end}}">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-facebook"></i></span>
-                                            {{.Field}}
+                                            {{call .Field}}
                                         </div>
                                         {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
                                         {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
