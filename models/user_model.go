@@ -110,7 +110,7 @@ func (m *User) String() string {
 }
 
 func (m *User) Link() string {
-	return fmt.Sprintf("%su/%s", utils.AppUrl, m.UserName)
+	return fmt.Sprintf("%suser/%s", utils.AppUrl, m.UserName)
 }
 
 func (m *User) AvatarLink() string {

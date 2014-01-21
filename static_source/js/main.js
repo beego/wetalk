@@ -203,7 +203,7 @@
 					return $(e).html().replace(/\B([@#])([\d\w-_]*)/g, function(_,p1,p2){
 						var link, attrs;
 						if(p1 == '@'){
-							link = '/u/'+p2;
+							link = '/user/'+p2;
 							attrs = 'target="_blank"';
 						} else {
 							link = '#reply'+p2;

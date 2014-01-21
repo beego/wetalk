@@ -31,7 +31,7 @@
                             <li><a href="{{.AppUrl}}admin">{{i18n .Lang "admin.admin_center"}}</a></li>
                             <li class="divider"></li>
                         {{end}}
-                        <li><a href="{{.AppUrl}}u/{{.User.UserName}}"><span>{{i18n .Lang "user.home"}}</span></a></li>
+                        <li><a href="{{.User.Link}}"><span>{{i18n .Lang "user.home"}}</span></a></li>
                         <li><a href="{{.AppUrl}}settings/profile"><span>{{i18n .Lang "auth.user_profile"}}</span></a></li>
                         <li><a href="{{.AppUrl}}logout">{{i18n .Lang "auth.logout"}}</a></li>
                     </ul>

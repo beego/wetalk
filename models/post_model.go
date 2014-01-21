@@ -77,7 +77,7 @@ func (m *Post) String() string {
 }
 
 func (m *Post) Link() string {
-	return fmt.Sprintf("%sp/%d", utils.AppUrl, m.Id)
+	return fmt.Sprintf("%spost/%d", utils.AppUrl, m.Id)
 }
 
 func (m *Post) GetContentCache() string {
