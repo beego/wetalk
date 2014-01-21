@@ -103,7 +103,7 @@ func RegisterUser(user *User, form RegisterForm) error {
 func SaveNewPassword(user *User, password string) error {
 	salt := GetUserSalt()
 	user.Password = fmt.Sprintf("%s$%s", salt, utils.EncodePassword(password, salt))
-	return user.Update("Password", "Rands")
+	return user.Update("Password", "Rands", "Updated")
 }
 
 // login user

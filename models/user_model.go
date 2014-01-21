@@ -82,7 +82,6 @@ func (m *User) Read(fields ...string) error {
 }
 
 func (m *User) Update(fields ...string) error {
-	fields = append(fields, "Updated")
 	if _, err := orm.NewOrm().Update(m, fields...); err != nil {
 		return err
 	}
