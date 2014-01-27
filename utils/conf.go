@@ -68,6 +68,12 @@ var (
 	Langs               []string
 	LoginMaxRetries     int
 	LoginFailedBlocks   int
+	SearchEnabled       bool
+	NativeSearch        bool
+	SphinxEnabled       bool
+	SphinxHost          string
+	SphinxIndex         string
+	SphinxMaxConn       int
 )
 
 const (
@@ -156,7 +162,10 @@ func LoadConfig() *goconfig.ConfigFile {
 	maxOpen := Cfg.MustInt("orm", "max_open_conn", 50)
 
 	// set default database
-	orm.RegisterDataBase("default", driverName, dataSource, maxIdle, maxOpen)
+	err = orm.RegisterDataBase("default", driverName, dataSource, maxIdle, maxOpen)
+	if err != nil {
+		beego.Error(err)
+	}
 	orm.RunCommand()
 
 	err = orm.RunSyncdb("default", false, false)
@@ -164,11 +173,23 @@ func LoadConfig() *goconfig.ConfigFile {
 		beego.Error(err)
 	}
 
-	configWatcher()
 	reloadConfig()
+
+	if SphinxEnabled {
+		// for search config
+		SphinxHost = Cfg.MustValue("search", "sphinx_host", "127.0.0.1:9306")
+		SphinxMaxConn = Cfg.MustInt("search", "sphinx_max_conn", 5)
+		orm.RegisterDriver("sphinx", orm.DR_MySQL)
+
+		if err := initSphinxPools(); err != nil {
+			beego.Error(fmt.Sprint("sphinx init pool", err))
+		}
+	}
 
 	settingLocales()
 	settingCompress()
+
+	configWatcher()
 
 	return Cfg
 }
@@ -231,6 +252,17 @@ func reloadConfig() {
 	mailer.AuthPass = Cfg.MustValue("mailer", "mail_pass", "******")
 
 	orm.Debug = Cfg.MustBool("orm", "debug_log")
+
+	SphinxIndex = Cfg.MustValue("search", "sphinx_index", "wetalk, wetalk_delta")
+
+	SearchEnabled = Cfg.MustBool("search", "enabled")
+	SphinxEnabled = Cfg.MustBool("search", "sphinx_enabled")
+	NativeSearch = Cfg.MustBool("search", "native_search")
+	if !SearchEnabled {
+		SphinxEnabled = false
+		NativeSearch = false
+	}
+
 }
 
 func settingLocales() {

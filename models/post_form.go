@@ -254,7 +254,7 @@ func (form *CommentForm) SaveComment(comment *Comment, user *User, post *Post) e
 	comment.Post = post
 	if err := comment.Insert(); err == nil {
 		post.LastReply = user
-		post.Update("LastReply")
+		post.Update("LastReply", "Updated")
 
 		cnt, _ := post.Comments().Filter("Id__lte", comment.Id).Count()
 		comment.Floor = int(cnt)

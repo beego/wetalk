@@ -60,6 +60,11 @@ func main() {
 	beego.Router("/category/:slug", posts, "get:Category")
 	beego.Router("/topic/:slug", posts, "get:Topic;post:TopicSubmit")
 
+	if utils.NativeSearch || utils.SphinxEnabled {
+		search := new(routers.SearchRouter)
+		beego.Router("/search", search, "get:Get")
+	}
+
 	post := new(routers.PostRouter)
 	beego.Router("/new", post, "get:New;post:NewSubmit")
 	beego.Router("/post/:post([0-9]+)", post, "get:Single;post:SingleSubmit")

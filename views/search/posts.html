@@ -1,0 +1,45 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}
+    <title>{{i18n .Lang "app_name"}} - {{i18n .Lang "app_intro"}}</title>
+    <meta name="description" content="{{i18n .Lang "app_desc"}}" />
+    <meta name="keywords" content="{{i18n .Lang "app_keywords"}}">
+{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-8">
+        <!-- Post list -->
+        <div class="box">
+            <div class="cell breadcrumb first">
+                <i class="icon-level-up"></i> {{i18n .Lang "postnav.search_result"}}
+                {{if not .SearchError}}
+                    - {{i18n .Lang "postnav.search_words"}}: {{.Q}} {{i18n .Lang "postnav.search_time"}}: {{.Meta.Time}}s
+                {{end}}
+            </div>
+
+            {{if .paginator.Nums}}
+                <div class="post-list">
+                    {{template "post/component/posts.html" dict "root" . "Posts" .Posts}}
+                </div>
+                <div class="cell last">
+                    {{template "base/paginator.html" .}}
+                </div>
+            {{else}}
+                <div class="cell last">
+                    <div class="text-center">
+                    {{if .SearchError}}
+                        {{i18n .Lang "postnav.search_error"}}
+                    {{else}}
+                        {{i18n .Lang "postnav.not_found_posts"}}
+                    {{end}}
+                    </div>
+                </div>
+            {{end}}
+        </div>
+	</div>
+
+    <div id="sidebar" class="col-md-4">
+        {{template "post/component/sidebar.html" .}}
+    </div>
+</div>
+{{end}}

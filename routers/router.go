@@ -90,6 +90,9 @@ func (this *baseRouter) Prepare() {
 	this.Data["AppLogo"] = utils.AppLogo
 	this.Data["AvatarURL"] = utils.AvatarURL
 	this.Data["IsProMode"] = utils.IsProMode
+	this.Data["SearchEnabled"] = utils.SearchEnabled
+	this.Data["NativeSearch"] = utils.NativeSearch
+	this.Data["SphinxEnabled"] = utils.SphinxEnabled
 
 	// Redirect to make URL clean.
 	if this.setLang() {

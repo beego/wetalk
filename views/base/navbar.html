@@ -11,11 +11,13 @@
                 <img src="{{.AppLogo}}">
             </a>
         </div>
-        <!-- <form id="navbar-search" class="navbar-form navbar-left" role="search">
+        {{if .SearchEnabled}}
+        <form id="navbar-search" class="navbar-form navbar-left {{if or .NativeSearch .SphinxEnabled}}{{else}}google{{end}}" role="search" action="{{.AppUrl}}search">
             <div class="form-group">
-                <input class="form-control" type="text" placeholder="{{i18n .Lang "search"}}" name="q">
+                <input class="form-control" type="text" placeholder="{{i18n .Lang "search"}}" name="q" {{if or .NativeSearch .SphinxEnabled}}value="{{.Q}}"{{end}}>
             </div>
-        </form> -->
+        </form>
+        {{end}}
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
                 <li {{if .IsHome}}class="active"{{end}}><a href="{{.AppUrl}}">{{i18n .Lang "home"}}</a></li>

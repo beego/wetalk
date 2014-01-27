@@ -171,7 +171,7 @@
 	})();
 
 	(function(){
-		$(document).on('submit', '#navbar-search', function(){
+		$(document).on('submit', '#navbar-search.google', function(){
 			var q = $(this).find('[name=q]').val();
 			if($.trim(q) !== ''){
 				var host = window.location.hostname + ":" + window.location.port;
