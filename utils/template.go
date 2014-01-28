@@ -54,7 +54,7 @@ func datetimes(t time.Time) string {
 }
 
 func loadtimes(t time.Time) int {
-	return int(time.Now().Sub(t).Nanoseconds() / 1e6)
+	return int(time.Since(t).Nanoseconds() / 1e6)
 }
 
 func sum(base interface{}, value interface{}, params ...interface{}) (s string) {
@@ -84,17 +84,17 @@ func dict(values ...interface{}) (map[string]interface{}, error) {
 }
 
 func timesince(lang string, t time.Time) string {
-	now := time.Now()
-	seconds := int(now.Sub(t).Seconds())
-	if seconds < 60 {
+	seconds := int(time.Since(t).Seconds())
+	switch {
+	case seconds < 60:
 		return i18n.Tr(lang, "seconds_ago", seconds)
-	} else if seconds < 60*60 {
+	case seconds < 60*60:
 		return i18n.Tr(lang, "minutes_ago", seconds/60)
-	} else if seconds < 60*60*24 {
+	case seconds < 60*60*24:
 		return i18n.Tr(lang, "hours_ago", seconds/(60*60))
-	} else if seconds < 60*60*24*100 {
+	case seconds < 60*60*24*100:
 		return i18n.Tr(lang, "days_ago", seconds/(60*60*24))
-	} else {
+	default:
 		return beego.Date(t, DateFormat)
 	}
 }
