@@ -296,7 +296,20 @@ func (this *PostRouter) New() {
 	}
 
 	form := post.PostForm{Locale: this.Locale}
-	form.Lang = this.Locale.Index()
+
+	if v := this.Ctx.GetCookie("post_topic"); len(v) > 0 {
+		form.Topic, _ = utils.StrTo(v).Int()
+	}
+
+	if v := this.Ctx.GetCookie("post_cat"); len(v) > 0 {
+		form.Category, _ = utils.StrTo(v).Int()
+	}
+
+	if v := this.Ctx.GetCookie("post_lang"); len(v) > 0 {
+		form.Lang, _ = utils.StrTo(v).Int()
+	} else {
+		form.Lang = this.Locale.Index()
+	}
 
 	slug := this.GetString("topic")
 	if len(slug) > 0 {
@@ -335,6 +348,11 @@ func (this *PostRouter) NewSubmit() {
 
 	var post models.Post
 	if err := form.SavePost(&post, &this.User); err == nil {
+
+		this.Ctx.SetCookie("post_topic", utils.ToStr(form.Topic), 1<<31-1, "/")
+		this.Ctx.SetCookie("post_cat", utils.ToStr(form.Category), 1<<31-1, "/")
+		this.Ctx.SetCookie("post_lang", utils.ToStr(form.Lang), 1<<31-1, "/")
+
 		this.JsStorage("deleteKey", "post/new")
 		this.Redirect(post.Link(), 302)
 	}
