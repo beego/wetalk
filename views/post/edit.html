@@ -39,7 +39,7 @@
                         </div>
                     {{end}}
 
-                    <div class="markdown-editor"  data-preview-url="{{.Post.Link}}api/md" data-savekey="post/edit">
+                    <div class="markdown-editor"  data-preview-url="{{.AppUrl}}api/md" data-savekey="post/edit">
                         {{with .PostFormSets.Fields.Content}}
                             {{template "post/component/editor.html" dict "root" $ "Field" .Field "Error" .Error "Help" .Help}}
                         {{end}}
