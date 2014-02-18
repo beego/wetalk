@@ -45,6 +45,12 @@
 			});
 		};
 
+		jQuery.fn.outerHTML = function(s) {
+		    return s
+		        ? this.before(s).remove()
+		        : jQuery("<p>").append(this.eq(0).clone()).html();
+		};
+
 	})();
 
 	// btn checked box toggle
@@ -198,9 +204,15 @@
 				}
 			});
 
-			$e.children('p, ol, ul, blockquote').each(function(_,e){
+			$e.children('p, ol, ul, blockquote').each(function(i,e){
 				$(e).html(function(){
-					return $(e).html().replace(/\B([@#])([\d\w-_]*)/g, function(_,p1,p2){
+					var links = {};
+					var elms = $($(e).outerHTML());
+					elms.find('a').each(function(i,e){
+						links[i] = $(e).outerHTML();
+						$(e).replaceWith('start-ph-a-'+i+'-end');
+					});
+					var html = elms.outerHTML().replace(/\B([@#])([\d\w-_]*)/g, function(_,p1,p2){
 						var link, attrs;
 						if(p1 == '@'){
 							link = '/user/'+p2;
@@ -211,6 +223,10 @@
 						}
 						return '<a href="'+link+'" '+attrs+'>'+p1+p2+'</a>';
 					});
+					html = html.replace(/start-ph-a-(\d)-end/g, function(_,i){
+						return links[i]
+					});
+					return html
 				});
 			});
 
