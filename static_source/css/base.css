@@ -316,6 +316,20 @@ a.color-link:hover,
   width: 280px;
 }
 
+#dropdown-login .auth-socials {
+  text-align: right;
+  margin: 10px 0 0 0;
+}
+
+#dropdown-login .auth-socials a {
+  font-size: 18px;
+  margin: 0 0 0 5px;
+}
+
+#dropdown-login .auth-socials a:hover {
+  color: red;
+}
+
 /* sidebar */
 
 .sidebar-list {

@@ -19,16 +19,34 @@ import (
 	"fmt"
 
 	"github.com/astaxie/beego"
+	"github.com/beego/social-oauth"
+	"github.com/beego/wetalk/modules/utils"
 
-	"github.com/beego/wetalk/routers"
-	"github.com/beego/wetalk/utils"
+	"github.com/beego/wetalk/routers/admin"
+	"github.com/beego/wetalk/routers/api"
+	"github.com/beego/wetalk/routers/article"
+	"github.com/beego/wetalk/routers/attachment"
+	"github.com/beego/wetalk/routers/auth"
+	"github.com/beego/wetalk/routers/base"
+	"github.com/beego/wetalk/routers/post"
+	"github.com/beego/wetalk/setting"
 )
 
 // We have to call a initialize function manully
 // because we use `bee bale` to pack static resources
 // and we cannot make sure that which init() execute first.
 func initialize() {
-	utils.LoadConfig()
+	setting.LoadConfig()
+
+	if err := utils.InitSphinxPools(); err != nil {
+		beego.Error(fmt.Sprint("sphinx init pool", err))
+	}
+
+	setting.SocialAuth = social.NewSocial("/login/", auth.SocialAuther)
+	setting.SocialAuth.ConnectSuccessURL = "/settings/profile"
+	setting.SocialAuth.ConnectFailedURL = "/settings/profile"
+	setting.SocialAuth.ConnectRegisterURL = "/register/connect"
+	setting.SocialAuth.LoginURL = "/login"
 }
 
 func main() {
@@ -36,41 +54,41 @@ func main() {
 
 	beego.Info("AppPath:", beego.AppPath)
 
-	if utils.IsProMode {
+	if setting.IsProMode {
 		beego.Info("Product mode enabled")
 	} else {
 		beego.Info("Develment mode enabled")
 	}
-	beego.Info(beego.AppName, utils.APP_VER, utils.AppUrl)
+	beego.Info(beego.AppName, setting.APP_VER, setting.AppUrl)
 
-	if !utils.IsProMode {
+	if !setting.IsProMode {
 		beego.SetStaticPath("/static_source", "static_source")
 		beego.DirectoryIndex = true
 	}
 
 	// Add Filters
-	beego.AddFilter("/img/:", "BeforeRouter", routers.ImageFilter)
+	beego.AddFilter("/img/:", "BeforeRouter", attachment.ImageFilter)
 
-	beego.AddFilter("/captcha/:", "BeforeRouter", utils.Captcha.Handler)
+	beego.AddFilter("/captcha/:", "BeforeRouter", setting.Captcha.Handler)
 
 	// Register routers.
-	posts := new(routers.PostListRouter)
+	posts := new(post.PostListRouter)
 	beego.Router("/", posts, "get:Home")
 	beego.Router("/:slug(recent|best|cold|favs|follow)", posts, "get:Navs")
 	beego.Router("/category/:slug", posts, "get:Category")
 	beego.Router("/topic/:slug", posts, "get:Topic;post:TopicSubmit")
 
-	if utils.NativeSearch || utils.SphinxEnabled {
-		search := new(routers.SearchRouter)
-		beego.Router("/search", search, "get:Get")
+	postR := new(post.PostRouter)
+	beego.Router("/new", postR, "get:New;post:NewSubmit")
+	beego.Router("/post/:post([0-9]+)", postR, "get:Single;post:SingleSubmit")
+	beego.Router("/post/:post([0-9]+)/edit", postR, "get:Edit;post:EditSubmit")
+
+	if setting.NativeSearch || setting.SphinxEnabled {
+		searchR := new(post.SearchRouter)
+		beego.Router("/search", searchR, "get:Get")
 	}
 
-	post := new(routers.PostRouter)
-	beego.Router("/new", post, "get:New;post:NewSubmit")
-	beego.Router("/post/:post([0-9]+)", post, "get:Single;post:SingleSubmit")
-	beego.Router("/post/:post([0-9]+)/edit", post, "get:Edit;post:EditSubmit")
-
-	user := new(routers.UserRouter)
+	user := new(auth.UserRouter)
 	beego.Router("/user/:username/comments", user, "get:Comments")
 	beego.Router("/user/:username/posts", user, "get:Posts")
 	beego.Router("/user/:username/following", user, "get:Following")
@@ -78,43 +96,49 @@ func main() {
 	beego.Router("/user/:username/favs", user, "get:Favs")
 	beego.Router("/user/:username", user, "get:Home")
 
-	login := new(routers.LoginRouter)
+	login := new(auth.LoginRouter)
 	beego.Router("/login", login, "get:Get;post:Login")
 	beego.Router("/logout", login, "get:Logout")
 
-	register := new(routers.RegisterRouter)
+	beego.AddFilter("/login/:/access", "BeforeRouter", auth.OAuthAccess)
+	beego.AddFilter("/login/:", "BeforeRouter", auth.OAuthRedirect)
+
+	socialR := new(auth.SocialAuthRouter)
+	beego.Router("/register/connect", socialR, "get:Connect;post:ConnectPost")
+
+	register := new(auth.RegisterRouter)
 	beego.Router("/register", register, "get:Get;post:Register")
 	beego.Router("/active/success", register, "get:ActiveSuccess")
 	beego.Router("/active/:code([0-9a-zA-Z]+)", register, "get:Active")
 
-	settings := new(routers.SettingsRouter)
+	settings := new(auth.SettingsRouter)
 	beego.Router("/settings/profile", settings, "get:Profile;post:ProfileSave")
 
-	forgot := new(routers.ForgotRouter)
+	forgot := new(auth.ForgotRouter)
 	beego.Router("/forgot", forgot)
 	beego.Router("/reset/:code([0-9a-zA-Z]+)", forgot, "get:Reset;post:ResetPost")
 
-	upload := new(routers.UploadRouter)
+	upload := new(attachment.UploadRouter)
 	beego.Router("/upload", upload, "post:Post")
 
-	api := new(routers.ApiRouter)
-	beego.Router("/api/user", api, "post:User")
-	beego.Router("/api/post", api, "post:Post")
+	apiR := new(api.ApiRouter)
+	beego.Router("/api/user", apiR, "post:Users")
+	beego.Router("/api/md", apiR, "post:Markdown")
 
-	adminDashboard := new(routers.AdminDashboardRouter)
+	adminDashboard := new(admin.AdminDashboardRouter)
 	beego.Router("/admin", adminDashboard)
 
-	admin := new(routers.AdminRouter)
-	beego.Router("/admin/model/get", admin, "post:ModelGet")
-	beego.Router("/admin/model/select", admin, "post:ModelSelect")
+	adminR := new(admin.AdminRouter)
+	beego.Router("/admin/model/get", adminR, "post:ModelGet")
+	beego.Router("/admin/model/select", adminR, "post:ModelSelect")
 
 	routes := map[string]beego.ControllerInterface{
-		"user":     new(routers.UserAdminRouter),
-		"post":     new(routers.PostAdminRouter),
-		"comment":  new(routers.CommentAdminRouter),
-		"topic":    new(routers.TopicAdminRouter),
-		"category": new(routers.CategoryAdminRouter),
-		"article":  new(routers.ArticleAdminRouter),
+		"user":     new(admin.UserAdminRouter),
+		"post":     new(admin.PostAdminRouter),
+		"comment":  new(admin.CommentAdminRouter),
+		"topic":    new(admin.TopicAdminRouter),
+		"category": new(admin.CategoryAdminRouter),
+		"article":  new(admin.ArticleAdminRouter),
 	}
 	for name, router := range routes {
 		beego.Router(fmt.Sprintf("/admin/:model(%s)", name), router, "get:List")
@@ -124,13 +148,13 @@ func main() {
 	}
 
 	// "robot.txt"
-	beego.Router("/robot.txt", &routers.RobotRouter{})
+	beego.Router("/robot.txt", &base.RobotRouter{})
 
-	article := new(routers.ArticleRouter)
-	beego.Router("/:slug([0-9a-z-./]+)", article, "get:Show")
+	articleR := new(article.ArticleRouter)
+	beego.Router("/:slug([0-9a-z-./]+)", articleR, "get:Show")
 
 	if beego.RunMode == "dev" {
-		beego.Router("/test/:tmpl(mail/.*)", new(routers.TestRouter))
+		beego.Router("/test/:tmpl(mail/.*)", new(base.TestRouter))
 	}
 
 	// For all unknown pages.

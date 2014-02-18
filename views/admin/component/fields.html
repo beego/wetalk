@@ -1,6 +1,6 @@
 {{range $field := .FormSets.FieldList}}
 	{{if eq $field.Kind "markdown"}}
-	    <div class="markdown-editor"  data-preview-url="{{$.root.AppUrl}}new" data-savekey="admin/{{$field.Id}}">
+	    <div class="markdown-editor"  data-preview-url="{{$.root.AppUrl}}api/md" data-savekey="admin/{{$field.Id}}">
 	    	{{$field.Label}}
             {{template "post/component/editor.html" dict "root" $.root "Field" $field.Field "Error" $field.Error "Help" $field.Help}}
 	    </div>

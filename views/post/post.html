@@ -97,7 +97,7 @@
                 {{else}}
                     <form id="post-reply" method="POST" action="{{.Post.Link}}#post-reply">
                         {{.xsrf_html}}{{.once_html}}
-                        <div id="md-editor" class="markdown-editor"  data-preview-url="{{$.AppUrl}}new" data-savekey="post/comment">
+                        <div id="md-editor" class="markdown-editor"  data-preview-url="{{$.AppUrl}}api/md" data-savekey="post/comment">
                             {{with .CommentFormSets.Fields.Message}}
                                 {{template "post/component/editor.html" dict "root" $ "Field" .Field "Error" .Error "Help" .Help}}
                             {{end}}

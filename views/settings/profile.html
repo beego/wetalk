@@ -29,21 +29,26 @@
                         <h4>{{i18n .Lang "auth.need_active"}}</h4>
                         {{i18n .Lang "auth.need_active_message"}}
                     </div>
-                    {{end}}
-                    {{if .flash.RegSuccess}}
+                    {{else if .flash.RegSuccess}}
                     <div class="alert alert-success">
                         <h4>{{i18n .Lang "auth.register_success"}}</h4>
                         {{i18n .Lang "auth.register_success_message"}}
                     </div>
-                    {{end}}
-                    {{if .flash.ProfileSave}}
+                    {{else if .flash.ProfileSave}}
                     <div class="alert alert-success">
                         {{i18n .Lang "auth.profile_saved"}}
                     </div>
-                    {{end}}
-                    {{if .flash.PasswordSave}}
+                    {{else if .flash.PasswordSave}}
                     <div class="alert alert-success">
                         {{i18n .Lang "auth.password_changed"}}
+                    </div>
+                    {{else if .flash.ConnectSuccess}}
+                    <div class="alert alert-success">
+                        {{i18n .Lang "auth.sign_connect_success_to" .flash.ConnectSuccess}}
+                    </div>
+                    {{else if .flash.ConnectFailed}}
+                    <div class="alert alert-success">
+                        {{i18n .Lang "auth.sign_connect_error_to" .flash.ConnectFailed}}
                     </div>
                     {{end}}
                     <h3 class="underline">{{i18n .Lang "auth.base_profile"}}</h3>

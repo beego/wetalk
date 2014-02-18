@@ -1,0 +1,81 @@
+{{template "base/base.html" .}}
+{{template "base/base_common.html" .}}
+{{define "meta"}}<title>{{i18n .Lang "auth.login"}} - {{i18n .Lang "app_name"}}</title>{{end}}
+{{define "body"}}
+<div class="row">
+    <div id="content" class="col-md-6 col-md-offset-3">
+    	<div class="box">
+    		<div class="cell first breadcrumb">
+    			<i class="ahead icon-home"></i> <a href="{{.AppUrl}}">{{i18n .Lang "app_name"}}</a>
+    		</div>
+            <div class="cell last">
+                <i class="icon-{{.Social.NameLower}}"></i> {{.Social.Name}} {{i18n .Lang "auth.sign_with_social"}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 nav-box">
+                <ul class="nav nav-tabs">
+                    <li{{if ne .Action "connect"}} class="active"{{end}}><a href="#social-register" data-toggle="tab"><i class="icon-lock"></i>&nbsp;<span>{{i18n .Lang "auth.sign_register"}}</span></a></li>
+                    <li{{if eq .Action "connect"}} class="active"{{end}}><a href="#social-connect" data-toggle="tab"><i class="icon-user"></i>&nbsp;<span>{{i18n .Lang "auth.sign_connect"}}</span></a></li>
+                </ul>
+                <div class="box tab-content">
+                    <div id="social-register" class="tab-pane{{if ne .Action "connect"}} active{{end}} auth-page">
+                        <h3 class="title">
+                            {{i18n .Lang "auth.sign_register_title"}}
+                        </h3>
+                        <form method="POST" action="{{.AppUrl}}register/connect"{{if .Error}} class="has-error"{{end}}>
+                            {{.xsrf_html}}{{.once_html}}
+                            <input type="hidden" name="action" value="register">
+
+                            {{if .Error}}
+                                <div class="alert alert-danger">
+                                    <p>{{i18n .Lang "auth.register_error"}}</p>
+                                </div>
+                            {{end}}
+
+                            {{template "base/form/fields.html" .OAuthRegisterFormSets}}
+
+                            <button type="submit" class="btn btn-primary">{{i18n .Lang "submit"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+                        </form>
+                    </div>
+                    <div id="social-connect" class="tab-pane{{if eq .Action "connect"}} active{{end}} auth-page">
+                        <h3 class="title">
+                            {{i18n .Lang "auth.sign_connect_title"}}
+                        </h3>
+    					<form method="POST" action="{{.AppUrl}}register/connect"{{if .Error}} class="has-error"{{end}}>
+                            {{.xsrf_html}}{{.once_html}}
+                            <input type="hidden" name="action" value="connect">
+
+                            {{if .Error}}
+                                <div class="alert alert-danger">
+                                    {{if .ErrorReached}}
+                                        <p>{{i18n .Lang "auth.login_error_times_reached"}}</p>
+                                    {{else if .ErrorRepeatConnect}}
+                                        <p>{{i18n .Lang "auth.sign_connect_error_repeat" .Social.Name}}</p>
+                                    {{else}}
+                                        <p>{{i18n .Lang "auth.sign_connect_error"}}</p>
+                                    {{end}}
+                                </div>
+                            {{end}}
+
+                            {{template "base/form/field_group.html" .OAuthLoginFormSets.Fields.UserName}}
+
+                            {{with .OAuthLoginFormSets.Fields.Password}}
+                            <div class="form-group{{if .Error}} has-error{{end}}">
+                                {{.Label}}
+                                <a href="{{$.AppUrl}}forgot" class="pull-right"><i class="icon-question-sign"></i> {{i18n $.Lang "auth.forgot_password"}}</a>
+                                {{call .Field}}
+                                {{if .Error}}<p class="error-block">{{.Error}}</p>{{end}}
+                                {{if .Help}}<p class="help-block">{{.Help}}</p>{{end}}
+                            </div>
+                            {{end}}
+
+				      		<button type="submit" class="btn btn-primary">{{i18n .Lang "submit"}}&nbsp;&nbsp;<i class="icon-chevron-sign-right"></i></button>
+    					</form>
+    				</div>
+                </div>
+            </div>
+    	</div>
+	</div>
+</div>
+{{end}}

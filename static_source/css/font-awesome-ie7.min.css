@@ -382,3 +382,18 @@ a [class^="icon-"],a [class*=" icon-"]{cursor:pointer;}
 .icon-vk{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf189;');}
 .icon-weibo{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf18a;');}
 .icon-renren{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf18b;');}
+/* added */
+.icon-weixin-round{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe000';}
+.icon-tencent-weibo-round{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe001';}
+.icon-sina-weibo-round{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe002';}
+.icon-renren-round{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe003';}
+.icon-qq-round{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe004';}
+.icon-douban-round{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe005';}
+.icon-suitcase{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe006';}
+.icon-mobile{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe007';}
+.icon-douban{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe008';}
+.icon-qq{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe009';}
+.icon-renren-2{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe00a';}
+.icon-sina-weibo{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe00b';}
+.icon-tencent-weibo{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe00c';}
+.icon-weixin{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe00d";}
