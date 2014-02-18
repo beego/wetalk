@@ -48,6 +48,10 @@
                     <div class="post-content markdown">
                         {{.Post.GetContentCache|str2html}}
                     </div>
+                    <div class="pull-right">
+                        {{template "post/component/share.html"}}
+                    </div>
+                    <span class="clearfix"></span>
                 </div>
             </div>
         </div>
