@@ -20,10 +20,8 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego"
-)
 
-var (
-	AuthUser, AuthPass, MailHost string
+	"github.com/beego/wetalk/setting"
 )
 
 type Message struct {
@@ -53,12 +51,12 @@ func (m Message) Content() string {
 
 // Direct Send mail message
 func Send(msg Message) (int, error) {
-	host := strings.Split(MailHost, ":")
+	host := strings.Split(setting.MailHost, ":")
 
 	// get message body
 	content := msg.Content()
 
-	auth := smtp.PlainAuth("", AuthUser, AuthPass, host[0])
+	auth := smtp.PlainAuth("", setting.MailAuthUser, setting.MailAuthPass, host[0])
 
 	if len(msg.To) == 0 {
 		return 0, fmt.Errorf("empty receive emails")
@@ -73,7 +71,7 @@ func Send(msg Message) (int, error) {
 		num := 0
 		for _, to := range msg.To {
 			body := []byte("To: " + to + "\r\n" + content)
-			err := smtp.SendMail(MailHost, auth, msg.From, []string{to}, body)
+			err := smtp.SendMail(setting.MailHost, auth, msg.From, []string{to}, body)
 			if err != nil {
 				return num, err
 			}
@@ -84,7 +82,7 @@ func Send(msg Message) (int, error) {
 		body := []byte("To: " + strings.Join(msg.To, ";") + "\r\n" + content)
 
 		// send to multiple emails in one message
-		err := smtp.SendMail(MailHost, auth, msg.From, msg.To, body)
+		err := smtp.SendMail(setting.MailHost, auth, msg.From, msg.To, body)
 		if err != nil {
 			return 0, err
 		} else {

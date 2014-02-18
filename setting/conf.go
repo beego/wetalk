@@ -35,8 +35,6 @@ import (
 	"github.com/beego/i18n"
 	"github.com/beego/social-oauth"
 	"github.com/beego/social-oauth/apps"
-
-	"github.com/beego/wetalk/mailer"
 )
 
 const (
@@ -53,8 +51,6 @@ var (
 	AvatarURL           string
 	SecretKey           string
 	IsProMode           bool
-	MailUser            string
-	MailFrom            string
 	ActiveCodeLives     int
 	ResetPwdCodeLives   int
 	LoginRememberDays   int
@@ -81,6 +77,13 @@ var (
 	SphinxHost    string
 	SphinxIndex   string
 	SphinxMaxConn int
+
+	// mail setting
+	MailUser     string
+	MailFrom     string
+	MailHost     string
+	MailAuthUser string
+	MailAuthPass string
 )
 
 var (
@@ -291,9 +294,9 @@ func reloadConfig() {
 	MailFrom = Cfg.MustValue("mailer", "mail_from", "example@example.com")
 
 	// set mailer connect args
-	mailer.MailHost = Cfg.MustValue("mailer", "mail_host", "127.0.0.1:25")
-	mailer.AuthUser = Cfg.MustValue("mailer", "mail_user", "example@example.com")
-	mailer.AuthPass = Cfg.MustValue("mailer", "mail_pass", "******")
+	MailHost = Cfg.MustValue("mailer", "mail_host", "127.0.0.1:25")
+	MailAuthUser = Cfg.MustValue("mailer", "mail_user", "example@example.com")
+	MailAuthPass = Cfg.MustValue("mailer", "mail_pass", "******")
 
 	orm.Debug = Cfg.MustBool("orm", "debug_log")
 
