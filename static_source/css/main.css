@@ -258,6 +258,10 @@
   min-height: 122px;
 }
 
+.markdown-editor .md-preview {
+  padding-bottom: 15px;
+}
+
 .post-comments .comment .avatar {
   float: left;
 }

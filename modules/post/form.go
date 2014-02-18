@@ -272,7 +272,7 @@ type CommentAdminForm struct {
 	Post    int    `valid:"Required"`
 	Message string `form:"type(textarea)" valid:"Required"`
 	Floor   int    `valid:"Required"`
-	Status  int    `valid:"Required"`
+	Status  int    `valid:""`
 }
 
 func (form *CommentAdminForm) Valid(v *validation.Validation) {
