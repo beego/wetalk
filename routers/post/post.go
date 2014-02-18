@@ -41,11 +41,12 @@ func (this *PostListRouter) setTopicsOfCat(topics *[]models.Topic, cat *models.C
 }
 
 func (this *PostListRouter) postsFilter(qs orm.QuerySeter) orm.QuerySeter {
-	args := []string{utils.ToStr(this.Locale.Index())}
-	if this.IsLogin {
-		args = append(args, this.User.LangAdds...)
-		args = append(args, utils.ToStr(this.User.Lang))
+	if !this.IsLogin {
+		return qs
 	}
+	args := []string{utils.ToStr(this.Locale.Index())}
+	args = append(args, this.User.LangAdds...)
+	args = append(args, utils.ToStr(this.User.Lang))
 	qs = qs.Filter("Lang__in", args)
 	return qs
 }
