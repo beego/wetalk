@@ -33,8 +33,8 @@ import (
 	"github.com/astaxie/beego/utils/captcha"
 	"github.com/beego/compress"
 	"github.com/beego/i18n"
-	"github.com/beego/social-oauth"
-	"github.com/beego/social-oauth/apps"
+	"github.com/beego/social-auth"
+	"github.com/beego/social-auth/apps"
 )
 
 const (

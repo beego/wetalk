@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"github.com/astaxie/beego"
-	"github.com/beego/social-oauth"
+	"github.com/beego/social-auth"
 	"github.com/beego/wetalk/modules/utils"
 
 	"github.com/beego/wetalk/routers/admin"

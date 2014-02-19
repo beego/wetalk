@@ -18,7 +18,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 
-	"github.com/beego/social-oauth"
+	"github.com/beego/social-auth"
 
 	"github.com/beego/wetalk/modules/auth"
 	"github.com/beego/wetalk/modules/models"
