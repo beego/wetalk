@@ -11,12 +11,12 @@ cd $GOPATH/src/github.com/beego/wetalk
 
 I suggest you [update all Dependencies](#dependencies)
 
-Edit `conf/global/app.ini` and copy to `conf/`. All configure has comment in it.
+Copy `conf/global/app.ini` to `conf/app.ini` and edit it. All configure has comment in it.
 
 The files in `conf/` can overwrite `conf/global/` in runtime.
 
 
-***Run WeTalk***
+**Run WeTalk**
 
 ```
 bee run watchall
