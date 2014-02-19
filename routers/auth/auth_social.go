@@ -48,7 +48,7 @@ func (p *socialAuther) LoginUser(ctx *context.Context, uid int) (string, error) 
 var SocialAuther social.SocialAuther = new(socialAuther)
 
 func OAuthRedirect(ctx *context.Context) {
-	redirect, err := setting.SocialAuth.OAuthRedirect(ctx, true)
+	redirect, err := setting.SocialAuth.OAuthRedirect(ctx)
 	if err != nil {
 		beego.Error("OAuthRedirect", err)
 	}
@@ -59,7 +59,7 @@ func OAuthRedirect(ctx *context.Context) {
 }
 
 func OAuthAccess(ctx *context.Context) {
-	redirect, err := setting.SocialAuth.OAuthAccess(ctx, true)
+	redirect, _, err := setting.SocialAuth.OAuthAccess(ctx)
 	if err != nil {
 		beego.Error("OAuthAccess", err)
 	}
@@ -74,7 +74,7 @@ type SocialAuthRouter struct {
 }
 
 func (this *SocialAuthRouter) canConnect(socialType *social.SocialType) bool {
-	if st, ok := setting.SocialAuth.CanConnect(this.Ctx); !ok {
+	if st, ok := setting.SocialAuth.ReadyConnect(this.Ctx); !ok {
 		return false
 	} else {
 		*socialType = st
@@ -193,7 +193,7 @@ failed:
 	return
 
 connect:
-	if loginRedirect, err := setting.SocialAuth.ConnectAndLogin(this.Ctx, socialType, user.Id); err != nil {
+	if loginRedirect, _, err := setting.SocialAuth.ConnectAndLogin(this.Ctx, socialType, user.Id); err != nil {
 		beego.Error("ConnectAndLogin:", err)
 		goto failed
 	} else {
