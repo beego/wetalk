@@ -79,13 +79,6 @@ func (this *SocialAuthRouter) canConnect(socialType *social.SocialType) bool {
 	} else {
 		*socialType = st
 	}
-
-	if this.IsLogin {
-		if _, exist := setting.SocialAuth.HasConnected(this.User.Id, *socialType); exist {
-			return false
-		}
-	}
-
 	return true
 }
 
@@ -162,16 +155,7 @@ func (this *SocialAuthRouter) ConnectPost() {
 		if times, ok := utils.TimesReachedTest(key, setting.LoginMaxRetries); ok {
 			this.Data["ErrorReached"] = true
 		} else if auth.VerifyUser(&user, formL.UserName, formL.Password) {
-			if userSocial, exist := setting.SocialAuth.HasConnected(user.Id, socialType); exist {
-				if !p.VerifyAccessToken(userSocial.Data.Token) {
-					userSocial.Delete()
-					goto connect
-				} else {
-					this.Data["ErrorRepeatConnect"] = true
-				}
-			} else {
-				goto connect
-			}
+			goto connect
 		} else {
 			utils.TimesReachedSet(key, times, setting.LoginFailedBlocks)
 		}
