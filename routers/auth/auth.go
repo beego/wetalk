@@ -119,7 +119,7 @@ ajaxError:
 
 // Logout implemented user logout page.
 func (this *LoginRouter) Logout() {
-	auth.LogoutUser(&this.Controller)
+	auth.LogoutUser(this.Ctx)
 
 	// write flash message
 	this.FlashWrite("HasLogout", "true")
@@ -302,7 +302,7 @@ func (this *ForgotRouter) ResetPost() {
 		}
 
 		if this.IsLogin {
-			auth.LogoutUser(&this.Controller)
+			auth.LogoutUser(this.Ctx)
 		}
 
 		this.FlashRedirect("/login", 302, "ResetSuccess")

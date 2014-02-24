@@ -53,7 +53,6 @@ var (
 	IsProMode           bool
 	ActiveCodeLives     int
 	ResetPwdCodeLives   int
-	LoginRememberDays   int
 	DateFormat          string
 	DateTimeFormat      string
 	DateTimeShortFormat string
@@ -65,8 +64,13 @@ var (
 	ImageXSend          bool
 	ImageXSendHeader    string
 	Langs               []string
-	LoginMaxRetries     int
-	LoginFailedBlocks   int
+
+	LoginRememberDays int
+	LoginMaxRetries   int
+	LoginFailedBlocks int
+
+	CookieRememberName string
+	CookieUserName     string
 
 	// search
 	SearchEnabled bool
@@ -178,8 +182,8 @@ func LoadConfig() *goconfig.ConfigFile {
 	beego.SessionProvider = Cfg.MustValue("session", "session_provider", "file")
 	beego.SessionSavePath = Cfg.MustValue("session", "session_path", "sessions")
 	beego.SessionName = Cfg.MustValue("session", "session_name", "wetalk_sess")
-	beego.SessionCookieLifeTime = Cfg.MustInt("session", "session_life_time", 86400*30)
-	beego.SessionGCMaxLifetime = 86400 * 365
+	beego.SessionCookieLifeTime = Cfg.MustInt("session", "session_life_time", 0)
+	beego.SessionGCMaxLifetime = Cfg.MustInt("session", "session_gc_time", 86400)
 
 	beego.EnableXSRF = true
 	// xsrf token expire time
@@ -267,6 +271,9 @@ func reloadConfig() {
 	LoginRememberDays = Cfg.MustInt("app", "login_remember_days", 7)
 	LoginMaxRetries = Cfg.MustInt("app", "login_max_retries", 5)
 	LoginFailedBlocks = Cfg.MustInt("app", "login_failed_blocks", 10)
+
+	CookieRememberName = Cfg.MustValue("app", "cookie_remember_name", "wetalk_magic")
+	CookieUserName = Cfg.MustValue("app", "cookie_user_name", "wetalk_powerful")
 
 	RealtimeRenderMD = Cfg.MustBool("app", "realtime_render_markdown")
 

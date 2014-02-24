@@ -184,6 +184,20 @@ func EncodePassword(rawPwd string, salt string) string {
 	return hex.EncodeToString(pwd)
 }
 
+func EncodeHmac(secret, value string, params ...func() hash.Hash) string {
+	var h func() hash.Hash
+	if len(params) > 0 {
+		h = params[0]
+	} else {
+		h = sha1.New
+	}
+
+	hm := hmac.New(h, []byte(secret))
+	hm.Write([]byte(value))
+
+	return hex.EncodeToString(hm.Sum(nil))
+}
+
 func TimesReachedTest(key string, times int) (int, bool) {
 	var retries int
 	if v := setting.Cache.Get(key); v != nil {

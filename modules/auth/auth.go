@@ -121,12 +121,58 @@ func LoginUser(user *models.User, ctx *context.Context, remember bool) {
 	ctx.Input.CruSession.SessionRelease(ctx.ResponseWriter)
 	ctx.Input.CruSession = beego.GlobalSessions.SessionRegenerateId(ctx.ResponseWriter, ctx.Request)
 	ctx.Input.CruSession.Set("auth_user_id", user.Id)
+
+	if remember {
+		WriteRememberCookie(user, ctx)
+	}
+}
+
+func WriteRememberCookie(user *models.User, ctx *context.Context) {
+	secret := utils.EncodeMd5(user.Rands + user.Password)
+	days := 86400 * setting.LoginRememberDays
+	ctx.SetCookie(setting.CookieUserName, user.UserName, days)
+	ctx.SetSecureCookie(secret, setting.CookieRememberName, user.UserName, days)
+}
+
+func DeleteRememberCookie(ctx *context.Context) {
+	ctx.SetCookie(setting.CookieUserName, "", -1)
+	ctx.SetCookie(setting.CookieRememberName, "", -1)
+}
+
+func LoginUserFromRememberCookie(user *models.User, ctx *context.Context) (success bool) {
+	userName := ctx.GetCookie(setting.CookieUserName)
+	if len(userName) == 0 {
+		return false
+	}
+
+	defer func() {
+		if !success {
+			DeleteRememberCookie(ctx)
+		}
+	}()
+
+	user.UserName = userName
+	if err := user.Read("UserName"); err != nil {
+		return false
+	}
+
+	secret := utils.EncodeMd5(user.Rands + user.Password)
+	value, _ := ctx.GetSecureCookie(secret, setting.CookieRememberName)
+	if value != userName {
+		return false
+	}
+
+	LoginUser(user, ctx, true)
+
+	return true
 }
 
 // logout user
-func LogoutUser(c *beego.Controller) {
-	c.CruSession.Delete("auth_user_id")
-	c.DestroySession()
+func LogoutUser(ctx *context.Context) {
+	DeleteRememberCookie(ctx)
+	ctx.Input.CruSession.Delete("auth_user_id")
+	ctx.Input.CruSession.Flush()
+	beego.GlobalSessions.SessionDestroy(ctx.ResponseWriter, ctx.Request)
 }
 
 func GetUserIdFromSession(sess session.SessionStore) int {

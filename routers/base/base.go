@@ -68,21 +68,26 @@ func (this *BaseRouter) Prepare() {
 		this.EndFlashRedirect()
 	}
 
+	switch {
 	// save logined user if exist in session
-	if auth.GetUserFromSession(&this.User, this.CruSession) {
+	case auth.GetUserFromSession(&this.User, this.CruSession):
+		this.IsLogin = true
+	// save logined user if exist in remember cookie
+	case auth.LoginUserFromRememberCookie(&this.User, this.Ctx):
+		this.IsLogin = true
+	}
+
+	if this.IsLogin {
 		this.IsLogin = true
 		this.Data["User"] = &this.User
 		this.Data["IsLogin"] = this.IsLogin
 
 		// if user forbided then do logout
 		if this.User.IsForbid {
-			auth.LogoutUser(&this.Controller)
+			auth.LogoutUser(this.Ctx)
 			this.FlashRedirect("/login", 302, "UserForbid")
 			return
 		}
-
-	} else {
-		this.IsLogin = false
 	}
 
 	// Setting properties.
