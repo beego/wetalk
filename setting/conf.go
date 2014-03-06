@@ -183,7 +183,7 @@ func LoadConfig() *goconfig.ConfigFile {
 	beego.SessionSavePath = Cfg.MustValue("session", "session_path", "sessions")
 	beego.SessionName = Cfg.MustValue("session", "session_name", "wetalk_sess")
 	beego.SessionCookieLifeTime = Cfg.MustInt("session", "session_life_time", 0)
-	beego.SessionGCMaxLifetime = Cfg.MustInt("session", "session_gc_time", 86400)
+	beego.SessionGCMaxLifetime = Cfg.MustInt64("session", "session_gc_time", 86400)
 
 	beego.EnableXSRF = true
 	// xsrf token expire time
