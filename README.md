@@ -26,7 +26,7 @@ bee run watchall
 
 Contrib
 
-* Beego [https://github.com/astaxie/beego](https://github.com/astaxie/beego)
+* Beego [https://github.com/astaxie/beego](https://github.com/astaxie/beego) (develop branch)
 * Social-Auth [https://github.com/beego/social-auth](https://github.com/beego/social-auth)
 * Compress [https://github.com/beego/compress](https://github.com/beego/compress)
 * i18n [https://github.com/beego/i18n](https://github.com/beego/i18n)
@@ -36,10 +36,17 @@ Contrib
 * resize [https://github.com/nfnt/resize](https://github.com/nfnt/resize)
 * blackfriday [https://github.com/slene/blackfriday](https://github.com/slene/blackfriday)
 
-Update all Dependencies
+Plz Note: WeTalk always use Beego develop branch
 
 ```
 go get -u github.com/astaxie/beego
+cd $GOPATH/src/github.com/astaxie/beego
+git checkout develop
+```
+
+Update all Dependencies
+
+```
 go get -u github.com/beego/social-auth
 go get -u github.com/beego/compress
 go get -u github.com/beego/i18n
