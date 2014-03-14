@@ -205,7 +205,7 @@
 			});
 
 			$e.children('p, ol, ul, blockquote').each(function(i,e){
-				$(e).html(function(){
+				$(e).replaceWith(function(){
 					var links = {};
 					var elms = $($(e).outerHTML());
 					elms.find('a').each(function(i,e){
