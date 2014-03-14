@@ -212,7 +212,7 @@
 						links[i] = $(e).outerHTML();
 						$(e).replaceWith('start-ph-a-'+i+'-end');
 					});
-					var html = elms.outerHTML().replace(/\B([@#])([\d\w-_]*)/g, function(_,p1,p2){
+					var html = elms.outerHTML().replace(/\B([@#])([\d\w-_]+)/g, function(_,p1,p2){
 						var link, attrs;
 						if(p1 == '@'){
 							link = '/user/'+p2;

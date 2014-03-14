@@ -466,11 +466,11 @@ func (this *BaseRouter) JsStorage(action, key string, values ...string) {
 	if len(values) > 0 {
 		value += ":::" + values[0]
 	}
-	this.Ctx.SetCookie("JsStorage", value, 1<<31-1, "/")
+	this.Ctx.SetCookie("JsStorage", value, 1<<31-1, "/", nil, nil, false)
 }
 
 func (this *BaseRouter) setLangCookie(lang string) {
-	this.Ctx.SetCookie("lang", lang, 60*60*24*365, "/")
+	this.Ctx.SetCookie("lang", lang, 60*60*24*365, "/", nil, nil, false)
 }
 
 // setLang sets site language version.

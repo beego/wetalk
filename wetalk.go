@@ -20,8 +20,8 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/beego/social-auth"
-	"github.com/beego/wetalk/modules/utils"
 
+	"github.com/beego/wetalk/modules/utils"
 	"github.com/beego/wetalk/routers/admin"
 	"github.com/beego/wetalk/routers/api"
 	"github.com/beego/wetalk/routers/article"

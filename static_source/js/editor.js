@@ -248,14 +248,15 @@
                     return '@' + mention + ' ';
                 }
             }
-        ]).overlay([
-            {
-                match: /\B[@#]([\d\w-_]*)/g,
-                css: {
-                    'background-color': '#ddd'
-                }
-            }
-        ]);
+        ])
+        // .overlay([
+        //     {
+        //         match: /\B[@#]([\d\w-_]*)/g,
+        //         css: {
+        //             'background-color': '#ddd'
+        //         }
+        //     }
+        // ]);
     }
 
     $(function(){
