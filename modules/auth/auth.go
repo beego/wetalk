@@ -257,14 +257,14 @@ func getVerifyUser(user *models.User, code string) bool {
 
 // verify active code when active account
 func VerifyUserActiveCode(user *models.User, code string) bool {
-	hours := setting.ActiveCodeLives
+	minutes := setting.ActiveCodeLives
 
 	if getVerifyUser(user, code) {
 		// time limit code
 		prefix := code[:utils.TimeLimitCodeLength]
 		data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands
 
-		return utils.VerifyTimeLimitCode(data, hours, prefix)
+		return utils.VerifyTimeLimitCode(data, minutes, prefix)
 	}
 
 	return false
@@ -272,9 +272,9 @@ func VerifyUserActiveCode(user *models.User, code string) bool {
 
 // create a time limit code for user active
 func CreateUserActiveCode(user *models.User, startInf interface{}) string {
-	hours := setting.ActiveCodeLives
+	minutes := setting.ActiveCodeLives
 	data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands
-	code := utils.CreateTimeLimitCode(data, hours, startInf)
+	code := utils.CreateTimeLimitCode(data, minutes, startInf)
 
 	// add tail hex username
 	code += hex.EncodeToString([]byte(user.UserName))
@@ -283,14 +283,14 @@ func CreateUserActiveCode(user *models.User, startInf interface{}) string {
 
 // verify code when reset password
 func VerifyUserResetPwdCode(user *models.User, code string) bool {
-	hours := setting.ResetPwdCodeLives
+	minutes := setting.ResetPwdCodeLives
 
 	if getVerifyUser(user, code) {
 		// time limit code
 		prefix := code[:utils.TimeLimitCodeLength]
 		data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands + user.Updated.String()
 
-		return utils.VerifyTimeLimitCode(data, hours, prefix)
+		return utils.VerifyTimeLimitCode(data, minutes, prefix)
 	}
 
 	return false
@@ -298,9 +298,9 @@ func VerifyUserResetPwdCode(user *models.User, code string) bool {
 
 // create a time limit code for user reset password
 func CreateUserResetPwdCode(user *models.User, startInf interface{}) string {
-	hours := setting.ResetPwdCodeLives
+	minutes := setting.ResetPwdCodeLives
 	data := utils.ToStr(user.Id) + user.Email + user.UserName + user.Password + user.Rands + user.Updated.String()
-	code := utils.CreateTimeLimitCode(data, hours, startInf)
+	code := utils.CreateTimeLimitCode(data, minutes, startInf)
 
 	// add tail hex username
 	code += hex.EncodeToString([]byte(user.UserName))
