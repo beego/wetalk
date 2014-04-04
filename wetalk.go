@@ -30,6 +30,8 @@ import (
 	"github.com/beego/wetalk/routers/base"
 	"github.com/beego/wetalk/routers/post"
 	"github.com/beego/wetalk/setting"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // We have to call a initialize function manully
