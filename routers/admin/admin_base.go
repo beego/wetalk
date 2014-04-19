@@ -69,7 +69,8 @@ type ModelAdminRouter struct {
 
 func (this *ModelAdminRouter) ModelPrepare() {
 	// set TplNames for model
-	values := this.Input()
+	values := this.Ctx.Input.Params
+
 	if _, ok := values[":model"]; ok {
 		model := this.GetString(":model")
 
