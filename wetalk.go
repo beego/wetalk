@@ -69,9 +69,9 @@ func main() {
 	}
 
 	// Add Filters
-	beego.AddFilter("/img/:", "BeforeRouter", attachment.ImageFilter)
+	beego.InsertFilter("/img/*", beego.BeforeRouter, attachment.ImageFilter)
 
-	beego.AddFilter("/captcha/:", "BeforeRouter", setting.Captcha.Handler)
+	beego.InsertFilter("/captcha/*", beego.BeforeRouter, setting.Captcha.Handler)
 
 	// Register routers.
 	posts := new(post.PostListRouter)
@@ -102,8 +102,8 @@ func main() {
 	beego.Router("/login", login, "get:Get;post:Login")
 	beego.Router("/logout", login, "get:Logout")
 
-	beego.AddFilter("/login/:/access", "BeforeRouter", auth.OAuthAccess)
-	beego.AddFilter("/login/:", "BeforeRouter", auth.OAuthRedirect)
+	beego.InsertFilter("/login/:id/access", beego.BeforeRouter, auth.OAuthAccess)
+	beego.InsertFilter("/login/*", beego.BeforeRouter, auth.OAuthRedirect)
 
 	socialR := new(auth.SocialAuthRouter)
 	beego.Router("/register/connect", socialR, "get:Connect;post:ConnectPost")
