@@ -52,6 +52,8 @@ func initialize() {
 }
 
 func main() {
+	beego.SetLogFuncCall(true)
+
 	initialize()
 
 	beego.Info("AppPath:", beego.AppPath)
@@ -102,7 +104,7 @@ func main() {
 	beego.Router("/login", login, "get:Get;post:Login")
 	beego.Router("/logout", login, "get:Logout")
 
-	beego.InsertFilter("/login/:id/access", beego.BeforeRouter, auth.OAuthAccess)
+	beego.InsertFilter("/login/*/access", beego.BeforeRouter, auth.OAuthAccess)
 	beego.InsertFilter("/login/*", beego.BeforeRouter, auth.OAuthRedirect)
 
 	socialR := new(auth.SocialAuthRouter)
