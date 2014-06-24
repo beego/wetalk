@@ -155,7 +155,7 @@ func main() {
 	beego.Router("/robot.txt", &base.RobotRouter{})
 
 	articleR := new(article.ArticleRouter)
-	beego.Router("/:slug([0-9a-z-./]+)", articleR, "get:Show")
+	beego.Router("/:slug", articleR, "get:Show")
 
 	if beego.RunMode == "dev" {
 		beego.Router("/test/:tmpl(mail/.*)", new(base.TestRouter))
