@@ -27,6 +27,11 @@
                     <i class="icon-envelope-alt"></i> <a class="color-link" href="mailto:{{.TheUser.Email}}">{{.TheUser.Email}}</a>
                 </li>
             {{end}}
+            {{if .TheUser.Url}}
+                <li>
+                    <i class="icon-link"></i> <a class="color-link" href="{{.TheUser.Url}}">{{.TheUser.Url}}</a>
+                </li>
+            {{end}}
             <li>
                 <i class="icon-time"></i> {{i18n .Lang "user.joined_on"}} {{.TheUser.Created|date}}
             </li>
