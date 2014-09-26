@@ -167,7 +167,7 @@ func LoadConfig() *goconfig.ConfigFile {
 
 	IsProMode = beego.RunMode == "pro"
 	if IsProMode {
-		beego.SetLevel(beego.LevelInfo)
+		beego.SetLevel(beego.LevelInformational)
 	}
 
 	// cache system
