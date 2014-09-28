@@ -1,0 +1,13 @@
+author: ""
+description: ""
+filesets:
+  includes:
+  - README.md
+  - LICENSE
+  - conf
+  - static
+  - views
+  - static_source
+  excludes:
+  - \.git
+  - .*\.go
