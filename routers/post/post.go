@@ -54,7 +54,7 @@ func (this *PostListRouter) postsFilter(qs orm.QuerySeter) orm.QuerySeter {
 // Get implemented Get method for HomeRouter.
 func (this *PostListRouter) Home() {
 	this.Data["IsHome"] = true
-	this.TplNames = "post/home.html"
+	this.TplName = "post/home.html"
 
 	var cats []models.Category
 	this.setCategories(&cats)
@@ -75,7 +75,7 @@ func (this *PostListRouter) Home() {
 
 // Get implemented Get method for HomeRouter.
 func (this *PostListRouter) Category() {
-	this.TplNames = "post/category.html"
+	this.TplName = "post/category.html"
 
 	slug := this.GetString(":slug")
 	cat := models.Category{Slug: slug}
@@ -121,7 +121,7 @@ func (this *PostListRouter) Navs() {
 	}
 
 	this.Data["CategorySlug"] = slug
-	this.TplNames = fmt.Sprintf("post/navs/%s.html", slug)
+	this.TplName = fmt.Sprintf("post/navs/%s.html", slug)
 
 	pers := 25
 
@@ -215,7 +215,7 @@ func (this *PostListRouter) Topic() {
 
 	switch slug {
 	default: // View topic.
-		this.TplNames = "post/topic.html"
+		this.TplName = "post/topic.html"
 		topic := models.Topic{Slug: slug}
 		if err := topic.Read("Slug"); err != nil {
 			this.Abort("404")
@@ -281,7 +281,7 @@ func (this *PostListRouter) TopicSubmit() {
 	}
 
 	this.Data["json"] = result
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 type PostRouter struct {
@@ -289,7 +289,7 @@ type PostRouter struct {
 }
 
 func (this *PostRouter) New() {
-	this.TplNames = "post/new.html"
+	this.TplName = "post/new.html"
 
 	if this.CheckActiveRedirect() {
 		return
@@ -325,7 +325,7 @@ func (this *PostRouter) New() {
 }
 
 func (this *PostRouter) NewSubmit() {
-	this.TplNames = "post/new.html"
+	this.TplName = "post/new.html"
 
 	if this.CheckActiveRedirect() {
 		return
@@ -387,7 +387,7 @@ func (this *PostRouter) loadComments(post *models.Post, comments *[]*models.Comm
 }
 
 func (this *PostRouter) Single() {
-	this.TplNames = "post/post.html"
+	this.TplName = "post/post.html"
 
 	var postMd models.Post
 	if this.loadPost(&postMd, nil) {
@@ -404,7 +404,7 @@ func (this *PostRouter) Single() {
 }
 
 func (this *PostRouter) SingleSubmit() {
-	this.TplNames = "post/post.html"
+	this.TplName = "post/post.html"
 
 	if this.CheckActiveRedirect() {
 		return
@@ -440,7 +440,7 @@ func (this *PostRouter) SingleSubmit() {
 }
 
 func (this *PostRouter) Edit() {
-	this.TplNames = "post/edit.html"
+	this.TplName = "post/edit.html"
 
 	if this.CheckActiveRedirect() {
 		return
@@ -459,7 +459,7 @@ func (this *PostRouter) Edit() {
 }
 
 func (this *PostRouter) EditSubmit() {
-	this.TplNames = "post/edit.html"
+	this.TplName = "post/edit.html"
 
 	if this.CheckActiveRedirect() {
 		return

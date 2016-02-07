@@ -20,5 +20,5 @@ type AdminDashboardRouter struct {
 
 func (this *AdminDashboardRouter) Get() {
 	this.Data["consoleAdmin"] = true
-	this.TplNames = "admin/dashboard.html"
+	this.TplName = "admin/dashboard.html"
 }

@@ -35,6 +35,6 @@ func (this *ApiRouter) Markdown() {
 			result["success"] = true
 		}
 		this.Data["json"] = result
-		this.ServeJson()
+		this.ServeJSON()
 	}
 }

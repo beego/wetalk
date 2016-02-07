@@ -29,7 +29,7 @@ type SearchRouter struct {
 }
 
 func (this *SearchRouter) Get() {
-	this.TplNames = "search/posts.html"
+	this.TplName = "search/posts.html"
 
 	pers := 25
 

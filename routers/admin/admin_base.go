@@ -69,14 +69,14 @@ type ModelAdminRouter struct {
 
 func (this *ModelAdminRouter) ModelPrepare() {
 	// set TplNames for model
-	values := this.Ctx.Input.Params
+	values := this.Ctx.Input.Params()
 
 	if _, ok := values[":model"]; ok {
 		model := this.GetString(":model")
 
 		if _, ok := values[":id"]; ok {
 			if this.GetString(":id") == "new" {
-				this.TplNames = fmt.Sprintf("admin/%s/new.html", model)
+				this.TplName = fmt.Sprintf("admin/%s/new.html", model)
 
 			} else {
 				if this.QueryObject() == false {
@@ -84,13 +84,13 @@ func (this *ModelAdminRouter) ModelPrepare() {
 				}
 
 				if this.GetString(":action") == "delete" {
-					this.TplNames = fmt.Sprintf("admin/%s/delete.html", model)
+					this.TplName = fmt.Sprintf("admin/%s/delete.html", model)
 				} else {
-					this.TplNames = fmt.Sprintf("admin/%s/edit.html", model)
+					this.TplName = fmt.Sprintf("admin/%s/edit.html", model)
 				}
 			}
 		} else {
-			this.TplNames = fmt.Sprintf("admin/%s/list.html", model)
+			this.TplName = fmt.Sprintf("admin/%s/list.html", model)
 		}
 
 		name := fmt.Sprintf("%sAdmin", model)

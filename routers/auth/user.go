@@ -51,7 +51,7 @@ func (this *UserRouter) getUser(user *models.User) bool {
 }
 
 func (this *UserRouter) Home() {
-	this.TplNames = "user/home.html"
+	this.TplName = "user/home.html"
 
 	var user models.User
 	if this.getUser(&user) {
@@ -83,7 +83,7 @@ func (this *UserRouter) Home() {
 }
 
 func (this *UserRouter) Posts() {
-	this.TplNames = "user/posts.html"
+	this.TplName = "user/posts.html"
 
 	var user models.User
 	if this.getUser(&user) {
@@ -104,7 +104,7 @@ func (this *UserRouter) Posts() {
 }
 
 func (this *UserRouter) Comments() {
-	this.TplNames = "user/comments.html"
+	this.TplName = "user/comments.html"
 
 	var user models.User
 	if this.getUser(&user) {
@@ -198,7 +198,7 @@ func (this *UserRouter) getFollows(user *models.User, following bool) []map[stri
 }
 
 func (this *UserRouter) Following() {
-	this.TplNames = "user/following.html"
+	this.TplName = "user/following.html"
 
 	var user models.User
 	if this.getUser(&user) {
@@ -211,7 +211,7 @@ func (this *UserRouter) Following() {
 }
 
 func (this *UserRouter) Followers() {
-	this.TplNames = "user/followers.html"
+	this.TplName = "user/followers.html"
 
 	var user models.User
 	if this.getUser(&user) {
@@ -224,7 +224,7 @@ func (this *UserRouter) Followers() {
 }
 
 func (this *UserRouter) Favs() {
-	this.TplNames = "user/favs.html"
+	this.TplName = "user/favs.html"
 
 	var user models.User
 	if this.getUser(&user) {
