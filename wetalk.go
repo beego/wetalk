@@ -63,11 +63,11 @@ func main() {
 	} else {
 		beego.Info("Develment mode enabled")
 	}
-	beego.Info(beego.AppName, setting.APP_VER, setting.AppUrl)
+	beego.Info(beego.BConfig.AppName, setting.APP_VER, setting.AppUrl)
 
 	if !setting.IsProMode {
 		beego.SetStaticPath("/static_source", "static_source")
-		beego.DirectoryIndex = true
+		beego.BConfig.WebConfig.DirectoryIndex = true
 	}
 
 	// Add Filters
@@ -157,7 +157,7 @@ func main() {
 	articleR := new(article.ArticleRouter)
 	beego.Router("/:slug", articleR, "get:Show")
 
-	if beego.RunMode == "dev" {
+	if beego.BConfig.RunMode == "dev" {
 		beego.Router("/test/:tmpl(mail/.*)", new(base.TestRouter))
 	}
 
