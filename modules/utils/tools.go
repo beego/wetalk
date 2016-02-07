@@ -212,7 +212,7 @@ func TimesReachedTest(key string, times int) (int, bool) {
 }
 
 func TimesReachedSet(key string, times int, reloadMinutes int) {
-	setting.Cache.Put(key, times+1, int64(reloadMinutes)*60)
+	setting.Cache.Put(key, times+1, time.Duration(int64(reloadMinutes)*60))
 }
 
 // convert string to specify type
