@@ -162,10 +162,10 @@ func LoadConfig() *goconfig.ConfigFile {
 	// Trim 4th part.
 	AppVer = strings.Join(strings.Split(APP_VER, ".")[:3], ".")
 
-	beego.RunMode = Cfg.MustValue("app", "run_mode")
-	beego.HttpPort = Cfg.MustInt("app", "http_port")
+	beego.BConfig.RunMode = Cfg.MustValue("app", "run_mode")
+	beego.BConfig.Listen.HTTPPort = Cfg.MustInt("app", "http_port")
 
-	IsProMode = beego.RunMode == "pro"
+	IsProMode = beego.BConfig.RunMode == "pro"
 	if IsProMode {
 		beego.SetLevel(beego.LevelInformational)
 	}
@@ -174,20 +174,20 @@ func LoadConfig() *goconfig.ConfigFile {
 	Cache, err = cache.NewCache("memory", `{"interval":360}`)
 
 	Captcha = captcha.NewCaptcha("/captcha/", Cache)
-	Captcha.FieldIdName = "CaptchaId"
+	Captcha.FieldIDName = "CaptchaId"
 	Captcha.FieldCaptchaName = "Captcha"
 
 	// session settings
-	beego.SessionOn = true
-	beego.SessionProvider = Cfg.MustValue("session", "session_provider", "file")
-	beego.SessionSavePath = Cfg.MustValue("session", "session_path", "sessions")
-	beego.SessionName = Cfg.MustValue("session", "session_name", "wetalk_sess")
-	beego.SessionCookieLifeTime = Cfg.MustInt("session", "session_life_time", 0)
-	beego.SessionGCMaxLifetime = Cfg.MustInt64("session", "session_gc_time", 86400)
+	beego.BConfig.WebConfig.Session.SessionOn = true
+	beego.BConfig.WebConfig.Session.SessionProvider = Cfg.MustValue("session", "session_provider", "file")
+	//beego.BConfig.WebConfig.Session.SessionSavePath = Cfg.MustValue("session", "session_path", "sessions")
+	beego.BConfig.WebConfig.Session.SessionName = Cfg.MustValue("session", "session_name", "wetalk_sess")
+	beego.BConfig.WebConfig.Session.SessionCookieLifeTime = Cfg.MustInt("session", "session_life_time", 0)
+	beego.BConfig.WebConfig.Session.SessionGCMaxLifetime = Cfg.MustInt64("session", "session_gc_time", 86400)
 
-	beego.EnableXSRF = true
+	beego.BConfig.WebConfig.EnableXSRF = true
 	// xsrf token expire time
-	beego.XSRFExpire = 86400 * 365
+	beego.BConfig.WebConfig.XSRFExpire = 86400 * 365
 
 	driverName := Cfg.MustValue("orm", "driver_name", "mysql")
 	dataSource := Cfg.MustValue("orm", "data_source", "root:root@/wetalk?charset=utf8&loc=UTC")
@@ -212,7 +212,7 @@ func LoadConfig() *goconfig.ConfigFile {
 		// for search config
 		SphinxHost = Cfg.MustValue("search", "sphinx_host", "127.0.0.1:9306")
 		SphinxMaxConn = Cfg.MustInt("search", "sphinx_max_conn", 5)
-		orm.RegisterDriver("sphinx", orm.DR_MySQL)
+		orm.RegisterDriver("sphinx", orm.DRMySQL)
 	}
 
 	social.DefaultAppUrl = AppUrl
@@ -247,7 +247,7 @@ func LoadConfig() *goconfig.ConfigFile {
 
 func reloadConfig() {
 	AppName = Cfg.MustValue("app", "app_name", "WeTalk Community")
-	beego.AppName = AppName
+	beego.BConfig.AppName = AppName
 
 	AppHost = Cfg.MustValue("app", "app_host", "127.0.0.1:8092")
 	AppUrl = Cfg.MustValue("app", "app_url", "http://127.0.0.1:8092/")

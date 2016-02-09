@@ -35,7 +35,7 @@ func (this *ArticleRouter) loadArticle(article *models.Article) bool {
 }
 
 func (this *ArticleRouter) Show() {
-	this.TplNames = "article/show.html"
+	this.TplName = "article/show.html"
 	article := models.Article{}
 	if this.loadArticle(&article) {
 		return

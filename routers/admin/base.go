@@ -39,7 +39,7 @@ func (this *AdminRouter) ModelGet() {
 			result["data"] = data[0]
 		}
 		this.Data["json"] = result
-		this.ServeJson()
+		this.ServeJSON()
 	}()
 
 	var qs orm.QuerySeter
@@ -72,7 +72,7 @@ func (this *AdminRouter) ModelSelect() {
 			result["data"] = data
 		}
 		this.Data["json"] = result
-		this.ServeJson()
+		this.ServeJSON()
 	}()
 
 	if len(search) < 3 {

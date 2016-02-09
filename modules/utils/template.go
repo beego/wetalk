@@ -129,8 +129,8 @@ func init() {
 }
 
 func RenderTemplate(TplNames string, Data map[interface{}]interface{}) string {
-	if beego.RunMode == "dev" {
-		beego.BuildTemplate(beego.ViewsPath)
+	if beego.BConfig.RunMode == "dev" {
+		beego.BuildTemplate(beego.BConfig.WebConfig.ViewsPath)
 	}
 
 	ibytes := bytes.NewBufferString("")

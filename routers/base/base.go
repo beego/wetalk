@@ -112,9 +112,9 @@ func (this *BaseRouter) Prepare() {
 	beego.ReadFromRequest(&this.Controller)
 
 	// pass xsrf helper to template context
-	xsrfToken := this.XsrfToken()
+	xsrfToken := this.Controller.XSRFToken()
 	this.Data["xsrf_token"] = xsrfToken
-	this.Data["xsrf_html"] = template.HTML(this.XsrfFormHtml())
+	this.Data["xsrf_html"] = template.HTML(this.Controller.XSRFFormHTML())
 
 	// if method is GET then auto create a form once token
 	if this.Ctx.Request.Method == "GET" {
@@ -367,7 +367,7 @@ func (this *BaseRouter) FormOnceCreate(args ...bool) {
 	this.Data["once_html"] = template.HTML(`<input type="hidden" name="_once" value="` + value + `">`)
 }
 
-func (this *BaseRouter) validForm(form interface{}, names ...string) (bool, map[string]*validation.ValidationError) {
+func (this *BaseRouter) validForm(form interface{}, names ...string) (bool, map[string]*validation.Error) {
 	// parse request params to form ptr struct
 	utils.ParseForm(form, this.Input())
 
@@ -412,7 +412,7 @@ func (this *BaseRouter) SetFormSets(form interface{}, names ...string) *utils.Fo
 	return this.setFormSets(form, nil, names...)
 }
 
-func (this *BaseRouter) setFormSets(form interface{}, errs map[string]*validation.ValidationError, names ...string) *utils.FormSets {
+func (this *BaseRouter) setFormSets(form interface{}, errs map[string]*validation.Error, names ...string) *utils.FormSets {
 	formSets := utils.NewFormSets(form, errs, this.Locale)
 	name := reflect.ValueOf(form).Elem().Type().Name()
 	if len(names) > 0 {
@@ -444,7 +444,7 @@ func (this *BaseRouter) SetFormError(form interface{}, fieldName, errMsg string,
 
 // check xsrf and show a friendly page
 func (this *BaseRouter) CheckXsrfCookie() bool {
-	return this.Controller.CheckXsrfCookie()
+	return this.Controller.CheckXSRFCookie()
 }
 
 func (this *BaseRouter) SystemException() {

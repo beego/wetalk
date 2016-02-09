@@ -83,7 +83,7 @@ func (this *SocialAuthRouter) canConnect(socialType *social.SocialType) bool {
 }
 
 func (this *SocialAuthRouter) Connect() {
-	this.TplNames = "auth/connect.html"
+	this.TplName = "auth/connect.html"
 
 	if this.CheckLoginRedirect(false) {
 		return
@@ -106,7 +106,7 @@ func (this *SocialAuthRouter) Connect() {
 }
 
 func (this *SocialAuthRouter) ConnectPost() {
-	this.TplNames = "auth/connect.html"
+	this.TplName = "auth/connect.html"
 
 	if this.CheckLoginRedirect(false) {
 		return

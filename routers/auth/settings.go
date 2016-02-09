@@ -28,7 +28,7 @@ type SettingsRouter struct {
 
 // Profile implemented user profile settings page.
 func (this *SettingsRouter) Profile() {
-	this.TplNames = "settings/profile.html"
+	this.TplName = "settings/profile.html"
 
 	// need login
 	if this.CheckLoginRedirect() {
@@ -45,7 +45,7 @@ func (this *SettingsRouter) Profile() {
 
 // ProfileSave implemented save user profile.
 func (this *SettingsRouter) ProfileSave() {
-	this.TplNames = "settings/profile.html"
+	this.TplName = "settings/profile.html"
 
 	if this.CheckLoginRedirect() {
 		return
@@ -63,7 +63,7 @@ func (this *SettingsRouter) ProfileSave() {
 				this.Data["json"] = true
 			}
 
-			this.ServeJson()
+			this.ServeJSON()
 			return
 		}
 		return

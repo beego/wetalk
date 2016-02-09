@@ -33,7 +33,7 @@ type LoginRouter struct {
 // Get implemented login page.
 func (this *LoginRouter) Get() {
 	this.Data["IsLoginPage"] = true
-	this.TplNames = "auth/login.html"
+	this.TplName = "auth/login.html"
 
 	loginRedirect := strings.TrimSpace(this.GetString("to"))
 	if utils.IsMatchHost(loginRedirect) == false {
@@ -56,7 +56,7 @@ func (this *LoginRouter) Get() {
 // Login implemented user login.
 func (this *LoginRouter) Login() {
 	this.Data["IsLoginPage"] = true
-	this.TplNames = "auth/login.html"
+	this.TplName = "auth/login.html"
 
 	// no need login
 	if this.CheckLoginRedirect(false) {
@@ -93,7 +93,7 @@ func (this *LoginRouter) Login() {
 				"message":  this.Tr("auth.login_success_ajax"),
 				"redirect": loginRedirect,
 			}
-			this.ServeJson()
+			this.ServeJSON()
 			return
 		}
 
@@ -114,7 +114,7 @@ ajaxError:
 		"message": this.Tr(ajaxErrMsg),
 		"once":    this.Data["once_token"],
 	}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // Logout implemented user logout page.
@@ -140,7 +140,7 @@ func (this *RegisterRouter) Get() {
 	}
 
 	this.Data["IsRegister"] = true
-	this.TplNames = "auth/register.html"
+	this.TplName = "auth/register.html"
 
 	form := auth.RegisterForm{Locale: this.Locale}
 	this.SetFormSets(&form)
@@ -149,7 +149,7 @@ func (this *RegisterRouter) Get() {
 // Register implemented Post method for RegisterRouter.
 func (this *RegisterRouter) Register() {
 	this.Data["IsRegister"] = true
-	this.TplNames = "auth/register.html"
+	this.TplName = "auth/register.html"
 
 	// no need login
 	if this.CheckLoginRedirect(false) {
@@ -184,7 +184,7 @@ func (this *RegisterRouter) Register() {
 
 // Active implemented check Email actice code.
 func (this *RegisterRouter) Active() {
-	this.TplNames = "auth/active.html"
+	this.TplName = "auth/active.html"
 
 	// no need active
 	if this.CheckActiveRedirect(false) {
@@ -214,7 +214,7 @@ func (this *RegisterRouter) Active() {
 
 // ActiveSuccess implemented success page when email active code verified.
 func (this *RegisterRouter) ActiveSuccess() {
-	this.TplNames = "auth/active.html"
+	this.TplName = "auth/active.html"
 
 	this.Data["Success"] = true
 }
@@ -226,7 +226,7 @@ type ForgotRouter struct {
 
 // Get implemented Get method for ForgotRouter.
 func (this *ForgotRouter) Get() {
-	this.TplNames = "auth/forgot.html"
+	this.TplName = "auth/forgot.html"
 
 	// no need login
 	if this.CheckLoginRedirect(false) {
@@ -239,7 +239,7 @@ func (this *ForgotRouter) Get() {
 
 // Get implemented Post method for ForgotRouter.
 func (this *ForgotRouter) Post() {
-	this.TplNames = "auth/forgot.html"
+	this.TplName = "auth/forgot.html"
 
 	// no need login
 	if this.CheckLoginRedirect(false) {
@@ -261,7 +261,7 @@ func (this *ForgotRouter) Post() {
 
 // Reset implemented user password reset.
 func (this *ForgotRouter) Reset() {
-	this.TplNames = "auth/reset.html"
+	this.TplName = "auth/reset.html"
 
 	code := this.GetString(":code")
 	this.Data["Code"] = code
@@ -279,7 +279,7 @@ func (this *ForgotRouter) Reset() {
 
 // Reset implemented user password reset.
 func (this *ForgotRouter) ResetPost() {
-	this.TplNames = "auth/reset.html"
+	this.TplName = "auth/reset.html"
 
 	code := this.GetString(":code")
 	this.Data["Code"] = code

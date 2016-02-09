@@ -63,7 +63,7 @@ func PostBrowsersAdd(uid int, ip string, post *models.Post) {
 		return
 	}
 	_, err := models.Posts().Filter("Id", post.Id).Update(orm.Params{
-		"Browsers": orm.ColValue(orm.Col_Add, 1),
+		"Browsers": orm.ColValue(orm.ColAdd, 1),
 	})
 	if err != nil {
 		beego.Error("PostCounterAdd ", err)

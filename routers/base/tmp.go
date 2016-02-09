@@ -23,7 +23,7 @@ type TestRouter struct {
 }
 
 func (this *TestRouter) Get() {
-	this.TplNames = this.GetString(":tmpl")
+	this.TplName = this.GetString(":tmpl")
 	this.Data = mailer.GetMailTmplData(this.Locale.Lang, &this.User)
 	this.Data["Code"] = "CODE"
 }
